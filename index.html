@@ -347,6 +347,39 @@
   .video-wrap video{width:100%;display:block;max-height:74vh}
   .video-cap{color:var(--gris);font-size:.86rem;margin-top:12px;text-align:center}
 
+  /* ---------- EQUIPO / BÁSCULA ---------- */
+  .equipo{
+    display:grid;grid-template-columns:260px 1fr;gap:30px;align-items:center;margin-top:26px;
+    background:var(--carbon);border:1px solid var(--linea);border-radius:8px;padding:26px;
+  }
+  .equipo__img{width:100%;aspect-ratio:1/1;background:#fff center/contain no-repeat;border-radius:8px;border:1px solid var(--linea)}
+  .equipo .marca{color:var(--rojo);font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:.12em;text-transform:uppercase;font-size:.78rem;margin-bottom:6px}
+  .equipo h3{font-size:1.4rem;color:var(--hueso)}
+  .equipo>div>p{color:var(--gris-claro);font-size:.95rem;margin-top:10px}
+  .equipo .specs{list-style:none;margin-top:14px;columns:2;column-gap:24px}
+  .equipo .specs li{padding:5px 0 5px 16px;position:relative;color:var(--gris-claro);font-size:.88rem;break-inside:avoid}
+  .equipo .specs li::before{content:"";position:absolute;left:0;top:11px;width:6px;height:6px;background:var(--rojo)}
+  .equipo .dexa{margin-top:16px;background:var(--negro);border-left:3px solid var(--rojo);border-radius:4px;padding:12px 16px;font-size:.9rem;color:var(--hueso)}
+  @media(max-width:720px){.equipo{grid-template-columns:1fr}}
+
+  /* ---------- MOCKUP INFORME (ejemplo) ---------- */
+  .paper{background:#fdfdfd;color:#12261a;border-radius:10px;padding:22px 24px;box-shadow:0 20px 50px rgba(0,0,0,.5);max-width:640px;margin-top:18px}
+  .paper__top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;border-bottom:2px solid #b3151d;padding-bottom:10px;margin-bottom:16px}
+  .paper__brand{font-family:'Anton',sans-serif;font-size:1.2rem;color:#0d0d0d;letter-spacing:.01em;line-height:1}
+  .paper__brand span{color:#E21C25}
+  .paper__brand small{display:block;font-family:'Barlow',sans-serif;font-weight:600;font-size:.6rem;letter-spacing:.02em;color:#5a6b7a;text-transform:uppercase;margin-top:4px}
+  .paper__conf{background:#E21C25;color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.58rem;letter-spacing:.1em;padding:3px 8px;border-radius:3px;white-space:nowrap}
+  .kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}
+  .kpi{border:1px solid #e3e8ee;border-radius:7px;overflow:hidden;text-align:center;background:#fff}
+  .kpi .kh{padding:5px 3px;color:#fff;font-size:.58rem;font-weight:700;text-transform:uppercase;letter-spacing:.02em}
+  .kpi--g .kh{background:#127a37}
+  .kpi .kn{font-family:'Barlow',sans-serif;font-weight:800;font-size:1.35rem;color:#12261a;padding:7px 2px 0}
+  .kpi .ku{font-size:.62rem;color:#68788a;padding-bottom:4px}
+  .kpi .kd{font-size:.64rem;font-weight:700;padding-bottom:7px}
+  .kpi .up{color:#127a37}.kpi .dn{color:#127a37}
+  .paper__cap{color:#5a6b7a;font-size:.74rem;margin-top:14px;font-style:italic;line-height:1.4}
+  @media(max-width:560px){.kpi-row{grid-template-columns:1fr 1fr}}
+
   @media(max-width:720px){ .nav__links a:not(.nav__cta):not(.soc-link){display:none} }
   @media(max-width:480px){ .galeria{grid-template-columns:1fr} }
 </style>
@@ -514,6 +547,46 @@
         <li><b>Comparativa clara:</b> el cambio real en cada parámetro, en números.</li>
       </ul>
       <p style="color:var(--gris);font-size:.84rem;margin-top:16px">Informe descriptivo de seguimiento físico. No constituye diagnóstico médico.</p>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <!-- El equipo -->
+    <div class="equipo reveal">
+      <div class="equipo__img" style="background-image:url('img/bascula.jpg')" role="img" aria-label="Báscula inteligente BodyPro GO"></div>
+      <div>
+        <div class="marca">El equipo que usamos</div>
+        <h3>BodyPro GO · Smart Scale</h3>
+        <p>Báscula inteligente de doble frecuencia que mide hasta <b>28 indicadores</b> de composición corporal, con 8 sensores de alta precisión (mano a pie), mango retráctil y app gratuita.</p>
+        <ul class="specs">
+          <li>8 sensores de alta precisión</li>
+          <li>Tecnología de doble frecuencia</li>
+          <li>Hasta 28 indicadores corporales</li>
+          <li>App gratuita (Android / iPhone)</li>
+          <li>Identificación de usuarios</li>
+          <li>Vidrio templado ITO premium</li>
+        </ul>
+        <div class="dexa">Correlación <b>superior a 0.986 frente a DEXA</b> (estándar internacional): datos consistentes, reproducibles y confiables.</div>
+      </div>
+    </div>
+
+    <!-- Ejemplo del informe (datos de demostración) -->
+    <p class="eyebrow reveal" style="margin-top:46px">Así se ve tu informe</p>
+    <h3 class="section-title reveal" style="font-size:clamp(1.4rem,4.5vw,2rem)">Un reporte claro de tu evolución</h3>
+    <div class="reveal">
+      <div class="paper">
+        <div class="paper__top">
+          <div class="paper__brand">ULTRA-SPORT <span>19</span><small>Informe de seguimiento · Composición corporal</small></div>
+          <span class="paper__conf">Confidencial</span>
+        </div>
+        <div class="kpi-row">
+          <div class="kpi kpi--g"><div class="kh">Grasa corporal</div><div class="kn">−2.3</div><div class="ku">%</div><div class="kd dn">▼ bajó</div></div>
+          <div class="kpi kpi--g"><div class="kh">Masa muscular</div><div class="kn">+3.0</div><div class="ku">kg</div><div class="kd up">▲ subió</div></div>
+          <div class="kpi kpi--g"><div class="kh">Agua corporal</div><div class="kn">+1.7</div><div class="ku">%</div><div class="kd up">▲ subió</div></div>
+          <div class="kpi kpi--g"><div class="kh">Puntuación</div><div class="kn">+5</div><div class="ku">/ 100</div><div class="kd up">▲ mejoró</div></div>
+        </div>
+        <p class="paper__cap">Ejemplo con datos de demostración. Tu informe real incluye: composición corporal completa, índices de salud (IMC, grasa visceral, TMB), circunferencias, gráfico comparativo entre evaluaciones y firma del evaluador.</p>
+      </div>
     </div>
   </div>
 </section>
