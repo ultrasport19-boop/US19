@@ -333,6 +333,20 @@
   .ig-tile:hover::after{opacity:1}
   @media(max-width:640px){.red-cards{grid-template-columns:1fr}}
 
+  /* ---------- BIOIMPEDANCIA ---------- */
+  .bio-precio{
+    margin-top:28px;background:var(--carbon);border:1px solid var(--linea);
+    border-left:4px solid var(--rojo);border-radius:4px;padding:22px 26px;
+  }
+  .bio-monto{font-family:'Anton',sans-serif;font-size:2.6rem;line-height:1;color:var(--hueso)}
+  .bio-detalle{display:block;color:var(--gris);font-size:.85rem;letter-spacing:.04em;margin-top:2px}
+  .bio-nota{color:var(--rojo);font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:.06em;font-size:.85rem;margin-top:12px;text-transform:uppercase}
+
+  /* ---------- VIDEO ---------- */
+  .video-wrap{margin-top:26px;border-radius:8px;overflow:hidden;border:1px solid var(--linea);background:#000}
+  .video-wrap video{width:100%;display:block;max-height:74vh}
+  .video-cap{color:var(--gris);font-size:.86rem;margin-top:12px;text-align:center}
+
   @media(max-width:720px){ .nav__links a:not(.nav__cta):not(.soc-link){display:none} }
   @media(max-width:480px){ .galeria{grid-template-columns:1fr} }
 </style>
@@ -388,6 +402,13 @@
       <figure class="foto reveal" style="background-image:url('img/gym-3.jpg')" role="img" aria-label="Sala de entrenamiento con rack y pesos libres"></figure>
       <figure class="foto reveal" style="background-image:url('img/gym-4.jpg')" role="img" aria-label="Zona de cardio: trotadora y bicicletas"></figure>
     </div>
+    <div class="video-wrap reveal">
+      <video controls preload="none" playsinline poster="img/hero.jpg">
+        <source src="media/promo.mp4" type="video/mp4">
+        Tu navegador no reproduce este video.
+      </video>
+    </div>
+    <p class="video-cap">▶ Toca para reproducir · Un vistazo a una sesión en Ultra-Sport19</p>
   </div>
 </section>
 
@@ -466,6 +487,33 @@
     <div class="cupo reveal">
       <strong>Cupo máximo: 6 personas por sesión</strong>
       <span>Atención cercana · Sin esperas</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ BIOIMPEDANCIA + INFORME ============ -->
+<section id="bioimpedancia">
+  <div class="wrap feature">
+    <div class="reveal">
+      <p class="eyebrow">Evaluación de composición corporal</p>
+      <h2 class="section-title">Bioimpedancia<br>+ informe profesional</h2>
+      <p class="section-sub">Medimos tu cuerpo con bioimpedanciometría y te entregamos un informe claro con tu estado actual y tu evolución. Nada de adivinar: decisiones con datos.</p>
+      <div class="bio-precio">
+        <span class="bio-monto">$4.000</span>
+        <span class="bio-detalle">Evaluación de bioimpedancia + informe (individual)</span>
+        <p class="bio-nota">Incluida sin costo en todos los planes desde 2×/semana</p>
+      </div>
+    </div>
+    <div class="morning reveal">
+      <h3>Qué incluye tu informe</h3>
+      <ul>
+        <li><b>Resumen ejecutivo:</b> peso, grasa %, masa muscular e IMC frente a tu evaluación anterior.</li>
+        <li><b>Composición corporal:</b> músculo, grasa, agua, proteína y masa esquelética.</li>
+        <li><b>Índices de salud:</b> IMC, grasa visceral, metabolismo basal (TMB) y edad corporal.</li>
+        <li><b>Circunferencias:</b> cintura, cadera, brazos y piernas.</li>
+        <li><b>Comparativa clara:</b> el cambio real en cada parámetro, en números.</li>
+      </ul>
+      <p style="color:var(--gris);font-size:.84rem;margin-top:16px">Informe descriptivo de seguimiento físico. No constituye diagnóstico médico.</p>
     </div>
   </div>
 </section>
@@ -556,7 +604,7 @@
         <span><span class="lbl">Instagram</span><span class="val">@ultrasport_19</span></span>
         <span class="go">Seguir →</span>
       </a>
-      <a class="red-card reveal" href="https://facebook.com/Ultrasport19" target="_blank" rel="noopener">
+      <a class="red-card reveal" href="https://www.facebook.com/Sport1019" target="_blank" rel="noopener">
         <span class="ic ic--fb"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M24 12.07C24 5.4 18.63 0 12 0S0 5.4 0 12.07C0 18.1 4.39 23.1 10.13 24v-8.44H7.08v-3.49h3.05V9.41c0-3.02 1.79-4.69 4.53-4.69 1.31 0 2.68.24 2.68.24v2.97h-1.51c-1.49 0-1.96.93-1.96 1.89v2.25h3.33l-.53 3.49h-2.8V24C19.61 23.1 24 18.1 24 12.07z"/></svg></span>
         <span><span class="lbl">Facebook</span><span class="val">Ultrasport19</span></span>
         <span class="go">Seguir →</span>
@@ -577,8 +625,9 @@
       <p class="eyebrow">Contacto directo</p>
       <ul class="datos">
         <li><span class="k">WhatsApp</span><a href="https://wa.me/56929244042" target="_blank" rel="noopener">+56 9 2924 4042</a></li>
+        <li><span class="k">Asistente 24/7</span><a href="https://wa.me/56965902238" target="_blank" rel="noopener">Chatea con nuestro asistente virtual</a></li>
         <li><span class="k">Instagram</span><a href="https://instagram.com/ultrasport_19" target="_blank" rel="noopener">@ultrasport_19</a></li>
-        <li><span class="k">Facebook</span><a href="https://facebook.com/Ultrasport19" target="_blank" rel="noopener">Ultrasport19</a></li>
+        <li><span class="k">Facebook</span><a href="https://www.facebook.com/Sport1019" target="_blank" rel="noopener">Ultrasport19</a></li>
         <li><span class="k">Dirección</span><span>Hernando Bravo 811, Pencahue · Costado Plaza Portal de la Cueca</span></li>
         <li><span class="k">Horario</span><span>Lunes a viernes 06:00 – 22:00 hrs · Fin de semana: evaluaciones con cita</span></li>
       </ul>
@@ -596,7 +645,7 @@
   <p style="margin-top:8px">Pencahue, Maule · Despierta tu instinto</p>
   <div class="soc" style="justify-content:center;margin:18px 0 6px">
     <a href="https://instagram.com/ultrasport_19" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.16c3.2 0 3.58.01 4.85.07 1.17.05 1.8.25 2.23.41.56.22.96.48 1.38.9.42.42.68.82.9 1.38.16.42.36 1.06.41 2.23.06 1.27.07 1.65.07 4.85s-.01 3.58-.07 4.85c-.05 1.17-.25 1.8-.41 2.23a3.7 3.7 0 0 1-.9 1.38 3.7 3.7 0 0 1-1.38.9c-.42.16-1.06.36-2.23.41-1.27.06-1.65.07-4.85.07s-3.58-.01-4.85-.07c-1.17-.05-1.8-.25-2.23-.41a3.7 3.7 0 0 1-1.38-.9 3.7 3.7 0 0 1-.9-1.38c-.16-.42-.36-1.06-.41-2.23-.06-1.27-.07-1.65-.07-4.85s.01-3.58.07-4.85c.05-1.17.25-1.8.41-2.23.22-.56.48-.96.9-1.38.42-.42.82-.68 1.38-.9.42-.16 1.06-.36 2.23-.41C8.42 2.17 8.8 2.16 12 2.16M12 0C8.74 0 8.33.01 7.05.07 5.78.13 4.9.33 4.14.63a5.9 5.9 0 0 0-2.12 1.38A5.9 5.9 0 0 0 .63 4.14c-.3.76-.5 1.64-.56 2.9C.01 8.33 0 8.74 0 12s.01 3.67.07 4.95c.06 1.27.26 2.15.56 2.91.3.79.72 1.46 1.38 2.12.66.66 1.33 1.08 2.12 1.38.76.3 1.64.5 2.91.56C8.33 23.99 8.74 24 12 24s3.67-.01 4.95-.07c1.27-.06 2.15-.26 2.91-.56a5.9 5.9 0 0 0 2.12-1.38 5.9 5.9 0 0 0 1.38-2.12c.3-.76.5-1.64.56-2.91.06-1.28.07-1.69.07-4.95s-.01-3.67-.07-4.95c-.06-1.27-.26-2.15-.56-2.91a5.9 5.9 0 0 0-1.38-2.12A5.9 5.9 0 0 0 19.86.63c-.76-.3-1.64-.5-2.91-.56C15.67.01 15.26 0 12 0zm0 5.84a6.16 6.16 0 1 0 0 12.32 6.16 6.16 0 0 0 0-12.32zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.41-11.85a1.44 1.44 0 1 0 0 2.88 1.44 1.44 0 0 0 0-2.88z"/></svg></a>
-    <a href="https://facebook.com/Ultrasport19" target="_blank" rel="noopener" aria-label="Facebook"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M24 12.07C24 5.4 18.63 0 12 0S0 5.4 0 12.07C0 18.1 4.39 23.1 10.13 24v-8.44H7.08v-3.49h3.05V9.41c0-3.02 1.79-4.69 4.53-4.69 1.31 0 2.68.24 2.68.24v2.97h-1.51c-1.49 0-1.96.93-1.96 1.89v2.25h3.33l-.53 3.49h-2.8V24C19.61 23.1 24 18.1 24 12.07z"/></svg></a>
+    <a href="https://www.facebook.com/Sport1019" target="_blank" rel="noopener" aria-label="Facebook"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M24 12.07C24 5.4 18.63 0 12 0S0 5.4 0 12.07C0 18.1 4.39 23.1 10.13 24v-8.44H7.08v-3.49h3.05V9.41c0-3.02 1.79-4.69 4.53-4.69 1.31 0 2.68.24 2.68.24v2.97h-1.51c-1.49 0-1.96.93-1.96 1.89v2.25h3.33l-.53 3.49h-2.8V24C19.61 23.1 24 18.1 24 12.07z"/></svg></a>
     <a href="https://wa.me/56929244042" target="_blank" rel="noopener" aria-label="WhatsApp"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.5 14.4c-.3-.1-1.7-.8-2-.9-.3-.1-.5-.1-.7.1-.2.3-.7.9-.9 1.1-.2.2-.3.2-.6.1-1.6-.8-2.6-1.4-3.7-3.2-.3-.5.3-.5.8-1.5.1-.2 0-.4 0-.5 0-.1-.7-1.6-.9-2.2-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.3 5.2 4.6.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.2.2-1.4-.1-.1-.3-.2-.6-.3zM12 2a10 10 0 0 0-8.6 15l-1.3 4.7 4.8-1.3A10 10 0 1 0 12 2z"/></svg></a>
   </div>
   <p style="margin-top:4px;opacity:.7">Precios vigentes desde junio 2026, sujetos a actualización.</p>
