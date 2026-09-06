@@ -112,6 +112,12 @@
     Se reserva por WhatsApp y se paga con transferencia o en efectivo en el gimnasio, al retirar.
     Hernando Bravo de Villalba 811, Pencahue, Maule.
     <span id="actualizado"></span>
+    <br><br>
+    <!-- El texto prellenado lleva la palabra «ropa» a proposito: asi el
+         asistente sabe que la conversacion va de la tienda y no le ofrece
+         el gimnasio a alguien que solo vino a comprar. -->
+    ¿Dudas con una talla o quieres ver algo de cerca?
+    <a id="preguntar" href="#">Escríbenos por WhatsApp</a>.
   </p>
 </div>
 
@@ -213,6 +219,14 @@
 
   $('vaciar').addEventListener('click', function(){ carro = {}; pintar(); });
 
+  /* Se arma al final, cuando ya se conoce el numero que vino en el catalogo. */
+  function enlacePreguntar(){
+    var a = $('preguntar');
+    if (a) a.href = 'https://wa.me/' + WSP + '?text=' +
+      encodeURIComponent('Hola, vengo por la tienda de ropa. Tengo una duda:');
+  }
+  enlacePreguntar();
+
   $('pedir').addEventListener('click', function(){
     if (!Object.keys(carro).length) return;
     window.location.href = 'https://wa.me/' + WSP + '?text=' + encodeURIComponent(mensaje());
@@ -233,6 +247,7 @@
       }
       pintarFiltros();
       pintar();
+      enlacePreguntar();
     })
     .catch(function(){
       $('conteo').textContent = '';
