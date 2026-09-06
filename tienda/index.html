@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tienda · Ultra-Sport 19</title>
+<meta name="description" content="Ropa deportiva en Ultra-Sport 19, Pencahue. Prendas únicas, se reservan por WhatsApp.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Barlow+Condensed:wght@500;600;700&display=swap">
+<style>
+  :root{
+    --papel:#f4f2ee; --papel-2:#eae7e1; --tinta:#141416; --tinta-2:#4a4a50;
+    --tinta-3:#7d7d85; --linea:#d6d2ca; --linea-fuerte:#9a9a9f; --rojo:#E21C25;
+    --negro:#0b0b0c; --verde:#128C4A;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --papel:#0f0f11; --papel-2:#18181b; --tinta:#eceae6; --tinta-2:#b3b1ac;
+      --tinta-3:#8a8880; --linea:#26262a; --linea-fuerte:#3d3d42; --rojo:#F2555C;
+      --negro:#0b0b0c; --verde:#4ec27f;
+    }
+  }
+  :root[data-theme="dark"]{
+    --papel:#0f0f11; --papel-2:#18181b; --tinta:#eceae6; --tinta-2:#b3b1ac;
+    --tinta-3:#8a8880; --linea:#26262a; --linea-fuerte:#3d3d42; --rojo:#F2555C;
+    --negro:#0b0b0c; --verde:#4ec27f;
+  }
+  *{box-sizing:border-box}
+  body{background:var(--papel);color:var(--tinta);font-family:'Barlow','Segoe UI',system-ui,sans-serif;font-size:16px;line-height:1.55;margin:0}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 18px 140px}
+
+  .cab{background:var(--negro);margin:0 -18px;padding:22px 18px 18px;border-bottom:5px solid var(--rojo)}
+  .cab .marca{font-family:'Anton',Impact,sans-serif;font-size:clamp(1.5rem,6vw,2.1rem);color:#f4f2ee;margin:0;line-height:1}
+  .cab .marca span{color:var(--rojo)}
+  .cab .lema{font-family:'Barlow Condensed',sans-serif;font-size:.76rem;letter-spacing:.26em;color:var(--rojo);margin:7px 0 0;text-transform:uppercase}
+
+  h1{font-family:'Anton',Impact,sans-serif;font-size:clamp(1.7rem,6vw,2.4rem);line-height:1.02;margin:26px 0 6px}
+  .sub{color:var(--tinta-2);margin:0;max-width:60ch}
+
+  .filtros{display:flex;flex-wrap:wrap;gap:8px;margin:22px 0 6px}
+  .chip{
+    font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:.86rem;letter-spacing:.08em;text-transform:uppercase;
+    background:transparent;color:var(--tinta-2);border:1px solid var(--linea-fuerte);border-radius:999px;
+    padding:6px 14px;cursor:pointer;
+  }
+  .chip[aria-pressed="true"]{background:var(--tinta);color:var(--papel);border-color:var(--tinta)}
+  .conteo{font-size:.9rem;color:var(--tinta-3);margin:10px 0 0}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:18px;margin-top:20px;padding:0;list-style:none}
+  .card{background:var(--papel-2);border:1px solid var(--linea);border-radius:6px;overflow:hidden;display:flex;flex-direction:column}
+  .card .foto{position:relative;aspect-ratio:3/4;background:var(--linea);overflow:hidden}
+  .card .foto img{width:100%;height:100%;object-fit:cover;display:block}
+  .card .foto .vacia{display:flex;align-items:center;justify-content:center;height:100%;color:var(--tinta-3);font-family:'Barlow Condensed',sans-serif;font-size:.8rem;letter-spacing:.14em;text-transform:uppercase}
+  .card .talla{
+    position:absolute;top:9px;left:9px;background:var(--negro);color:#f4f2ee;
+    font-family:'Anton',sans-serif;font-size:.85rem;padding:3px 9px;border-radius:3px;letter-spacing:.04em;
+  }
+  .card .cuerpo{padding:12px 13px 13px;display:flex;flex-direction:column;gap:5px;flex:1}
+  .card h3{font-family:'Barlow',sans-serif;font-weight:600;font-size:1rem;margin:0;line-height:1.25}
+  .card .meta{font-family:'Barlow Condensed',sans-serif;font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;color:var(--tinta-3)}
+  .card .precio{font-family:'Anton',sans-serif;font-size:1.25rem;color:var(--rojo);margin-top:auto;padding-top:6px}
+  .card button{
+    font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.92rem;letter-spacing:.1em;text-transform:uppercase;
+    background:var(--tinta);color:var(--papel);border:none;border-radius:4px;padding:10px;cursor:pointer;margin-top:9px;
+  }
+  .card.puesto{border-color:var(--verde)}
+  .card.puesto button{background:var(--verde);color:#fff}
+
+  .vacio{border:1px dashed var(--linea-fuerte);border-radius:6px;padding:34px 22px;text-align:center;color:var(--tinta-3);margin-top:24px}
+  .vacio strong{display:block;color:var(--tinta);font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px}
+
+  .barra{
+    position:fixed;left:0;right:0;bottom:0;background:var(--negro);color:#f4f2ee;
+    padding:13px 18px;display:none;align-items:center;gap:14px;justify-content:center;flex-wrap:wrap;
+    border-top:4px solid var(--rojo);
+  }
+  .barra.visible{display:flex}
+  .barra .resumen{font-family:'Barlow Condensed',sans-serif;font-size:.95rem;letter-spacing:.06em;text-transform:uppercase}
+  .barra .total{font-family:'Anton',sans-serif;font-size:1.35rem;color:var(--rojo)}
+  .barra button{
+    font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1rem;letter-spacing:.1em;text-transform:uppercase;
+    background:var(--verde);color:#fff;border:none;border-radius:5px;padding:12px 22px;cursor:pointer;
+  }
+  .barra .vaciar{background:transparent;color:#9a9a9f;border:1px solid #3d3d42;padding:11px 15px}
+
+  .pie{margin-top:40px;padding-top:16px;border-top:1px solid var(--linea);font-size:.85rem;color:var(--tinta-3)}
+  a{color:var(--rojo)}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="cab">
+    <p class="marca">ULTRA-SPORT <span>19</span></p>
+    <p class="lema">Despierta tu instinto</p>
+  </header>
+
+  <h1>Tienda</h1>
+  <p class="sub">Ropa deportiva seleccionada pieza por pieza. Cada prenda es única: cuando alguien la aparta, desaparece de aquí.</p>
+
+  <div class="filtros" id="filtros" role="group" aria-label="Filtrar por categoría"></div>
+  <p class="conteo" id="conteo">Cargando el catálogo…</p>
+
+  <ul class="grid" id="grid"></ul>
+
+  <div class="vacio" id="vacio" hidden>
+    <strong>Todavía no hay prendas publicadas</strong>
+    Estamos preparando el próximo fardo. Escríbenos por WhatsApp y te avisamos cuando llegue.
+  </div>
+
+  <p class="pie">
+    Se reserva por WhatsApp y se paga con transferencia o en efectivo en el gimnasio, al retirar.
+    Hernando Bravo de Villalba 811, Pencahue, Maule.
+    <span id="actualizado"></span>
+  </p>
+</div>
+
+<div class="barra" id="barra">
+  <span class="resumen" id="resumen">0 prendas</span>
+  <span class="total" id="total">$0</span>
+  <button type="button" id="pedir">Reservar por WhatsApp</button>
+  <button type="button" class="vaciar" id="vaciar">Vaciar</button>
+</div>
+
+<script>
+(function(){
+  var API = 'https://script.google.com/macros/s/AKfycbxeL2ayoSdGiUj-beM-DGEqdg0UoAv_01vg3kB2EwD39siaVi3naask1CDY3tVoUs69/exec?tipo=tienda';
+  var WSP = '56965902238';
+
+  var $ = function(id){ return document.getElementById(id); };
+  var prendas = [], filtro = '', carro = {};
+
+  function clp(n){ return '$' + Number(n || 0).toLocaleString('es-CL'); }
+  function esc(s){
+    return String(s == null ? '' : s)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function pintarFiltros(){
+    var cats = [];
+    prendas.forEach(function(p){ if (p.categoria && cats.indexOf(p.categoria) === -1) cats.push(p.categoria); });
+    cats.sort();
+    var html = '<button class="chip" type="button" data-cat="" aria-pressed="' + (filtro === '') + '">Todo</button>';
+    cats.forEach(function(c){
+      html += '<button class="chip" type="button" data-cat="' + esc(c) + '" aria-pressed="' + (filtro === c) + '">' + esc(c) + '</button>';
+    });
+    $('filtros').innerHTML = html;
+  }
+
+  function visibles(){
+    return filtro ? prendas.filter(function(p){ return p.categoria === filtro; }) : prendas;
+  }
+
+  function pintar(){
+    var lista = visibles();
+    $('conteo').textContent = lista.length === 1 ? '1 prenda disponible' : (lista.length + ' prendas disponibles');
+    $('grid').innerHTML = lista.map(function(p){
+      var puesto = !!carro[p.id];
+      var meta = [p.categoria, p.estado].filter(Boolean).join(' · ');
+      return '<li class="card' + (puesto ? ' puesto' : '') + '">' +
+        '<div class="foto">' +
+          (p.foto ? '<img src="' + esc(p.foto) + '" alt="' + esc(p.nombre) + '" loading="lazy">'
+                  : '<div class="vacia">sin foto</div>') +
+          (p.talla ? '<span class="talla">' + esc(p.talla) + '</span>' : '') +
+        '</div>' +
+        '<div class="cuerpo">' +
+          '<h3>' + esc(p.nombre) + '</h3>' +
+          (meta ? '<span class="meta">' + esc(meta) + '</span>' : '') +
+          (p.notas ? '<span class="meta" style="text-transform:none;letter-spacing:0">' + esc(p.notas) + '</span>' : '') +
+          '<span class="precio">' + clp(p.precio) + '</span>' +
+          '<button type="button" data-id="' + esc(p.id) + '">' + (puesto ? 'Quitar' : 'Lo quiero') + '</button>' +
+        '</div>' +
+      '</li>';
+    }).join('');
+    barra();
+  }
+
+  function barra(){
+    var ids = Object.keys(carro);
+    var t = 0; ids.forEach(function(id){ t += Number(carro[id].precio) || 0; });
+    $('resumen').textContent = ids.length === 1 ? '1 prenda' : (ids.length + ' prendas');
+    $('total').textContent = clp(t);
+    $('barra').className = ids.length ? 'barra visible' : 'barra';
+  }
+
+  function mensaje(){
+    var ids = Object.keys(carro), t = 0, L = ['PEDIDO US19', ''];
+    ids.forEach(function(id){
+      var p = carro[id];
+      t += Number(p.precio) || 0;
+      L.push('- ' + p.nombre + (p.talla ? ' (' + p.talla + ')' : '') + ' ' + clp(p.precio) + ' #' + id);
+    });
+    L.push('');
+    L.push('Total: ' + clp(t));
+    return L.join('\n');
+  }
+
+  document.addEventListener('click', function(ev){
+    var chip = ev.target.closest ? ev.target.closest('.chip') : null;
+    if (chip){ filtro = chip.getAttribute('data-cat') || ''; pintarFiltros(); pintar(); return; }
+    var btn = ev.target.closest ? ev.target.closest('.card button') : null;
+    if (btn){
+      var id = btn.getAttribute('data-id');
+      if (carro[id]) delete carro[id];
+      else {
+        for (var i = 0; i < prendas.length; i++) if (prendas[i].id === id) { carro[id] = prendas[i]; break; }
+      }
+      pintar();
+    }
+  });
+
+  $('vaciar').addEventListener('click', function(){ carro = {}; pintar(); });
+
+  $('pedir').addEventListener('click', function(){
+    if (!Object.keys(carro).length) return;
+    window.location.href = 'https://wa.me/' + WSP + '?text=' + encodeURIComponent(mensaje());
+  });
+
+  fetch(API)
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      prendas = (d && Array.isArray(d.prendas)) ? d.prendas : [];
+      if (d && d.wsp) WSP = String(d.wsp);
+      if (!prendas.length){
+        $('conteo').textContent = '';
+        $('vacio').hidden = false;
+        return;
+      }
+      if (d && d.actualizado){
+        $('actualizado').textContent = ' · Catálogo actualizado el ' + String(d.actualizado).slice(8,10) + '/' + String(d.actualizado).slice(5,7) + ' a las ' + String(d.actualizado).slice(11,16) + '.';
+      }
+      pintarFiltros();
+      pintar();
+    })
+    .catch(function(){
+      $('conteo').textContent = '';
+      $('vacio').hidden = false;
+      $('vacio').innerHTML = '<strong>No pudimos cargar el catálogo</strong>Recarga la página en un momento, o escríbenos por WhatsApp y te contamos qué hay disponible.';
+    });
+})();
+</script>
+</body>
+</html>
