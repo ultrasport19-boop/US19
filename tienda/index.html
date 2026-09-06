@@ -66,6 +66,10 @@
     padding:6px 14px;cursor:pointer;
   }
   .chip[aria-pressed="true"]{background:var(--tinta);color:var(--papel);border-color:var(--tinta)}
+  .minis{display:flex;gap:5px;padding:7px 10px 0;flex-wrap:wrap}
+  .mini{width:34px;height:44px;padding:0;border:1px solid var(--linea);border-radius:3px;overflow:hidden;background:var(--linea);cursor:pointer;flex:0 0 auto}
+  .mini img{width:100%;height:100%;object-fit:cover;display:block}
+  .mini[aria-pressed="true"]{border-color:var(--rojo);border-width:2px}
   .filtros.tallas{margin:8px 0 0}
   .filtros.tallas .chip{font-size:.78rem;padding:4px 11px}
   .conteo{font-size:.9rem;color:var(--tinta-3);margin:10px 0 0}
@@ -200,6 +204,7 @@
 
   var $ = function(id){ return document.getElementById(id); };
   var prendas = [], filtro = '', filtroTalla = '', carro = {}, ultimaCarga = 0;
+  var MAX_PEDIDO = 12;                 // igual que TIENDA_CFG.MAX_POR_PEDIDO en el bot
 
   /* El carro sobrevive a una recarga o a un viaje a WhatsApp y de vuelta.
      Caduca a las 24 h: mas alla, lo que eligio ya no existe. */
@@ -281,6 +286,15 @@
                   : '<div class="vacia">sin foto</div>') +
           (p.talla ? '<span class="talla">' + esc(p.talla) + '</span>' : '') +
         '</div>' +
+        /* La segunda y la tercera foto son las que muestran el desgaste o
+           la etiqueta. Sin ellas «lo declarado» se queda en el texto. */
+        (p.fotos && p.fotos.length > 1
+          ? '<div class="minis">' + p.fotos.map(function(f, i){
+              return '<button class="mini" type="button" data-mini="' + i + '" data-para="' + esc(p.id) + '"' +
+                     ' aria-pressed="' + (i === 0) + '" aria-label="Foto ' + (i + 1) + '">' +
+                     '<img src="' + esc(f) + '" alt="" loading="lazy"></button>';
+            }).join('') + '</div>'
+          : '') +
         '<div class="cuerpo">' +
           '<h3>' + esc(p.nombre) + '</h3>' +
           (meta ? '<span class="meta">' + esc(meta) + '</span>' : '') +
@@ -314,6 +328,18 @@
   }
 
   document.addEventListener('click', function(ev){
+    var mini = ev.target.closest ? ev.target.closest('.mini') : null;
+    if (mini){
+      /* Se cambia el src a mano en vez de repintar: repintar perderia el
+         scroll y volveria a descargar todas las fotos de la rejilla. */
+      var tarjeta = mini.closest('.card');
+      var g = tarjeta ? tarjeta.querySelector('.foto img') : null;
+      var pequena = mini.querySelector('img');
+      if (g && pequena) g.src = pequena.src;
+      var todas = tarjeta.querySelectorAll('.mini');
+      for (var k = 0; k < todas.length; k++) todas[k].setAttribute('aria-pressed', String(todas[k] === mini));
+      return;
+    }
     var chip = ev.target.closest ? ev.target.closest('.chip') : null;
     if (chip){
       if (chip.hasAttribute('data-talla')) filtroTalla = chip.getAttribute('data-talla') || '';
@@ -325,10 +351,29 @@
       var id = btn.getAttribute('data-id');
       if (carro[id]) delete carro[id];
       else {
+        /* El bot solo aparta 12 por pedido y descartaba el resto sin decir
+           nada: alguien elegia 15 y recibia 12 sin explicacion. */
+        if (Object.keys(carro).length >= MAX_PEDIDO){
+          nota('Puedes reservar hasta <b>' + MAX_PEDIDO + ' prendas por pedido</b>. Manda este y enseguida armamos otro, o escríbenos y lo vemos juntos.');
+          return;
+        }
         for (var i = 0; i < prendas.length; i++) if (prendas[i].id === id) { carro[id] = prendas[i]; break; }
+        nota('');
       }
       guardarCarro();
-      pintar();
+      /* Solo esta tarjeta, no la rejilla entera: con 80 prendas repintar
+         todo en cada toque se siente en un telefono barato, y ademas
+         devolveria todas las fotos a la primera, deshaciendo la miniatura
+         que el comprador acababa de elegir en otra tarjeta. */
+      var tarj = btn.closest('.card');
+      if (tarj){
+        var puesto = !!carro[id];
+        tarj.className = 'card' + (puesto ? ' puesto' : '');
+        btn.textContent = puesto ? 'Quitar' : 'Lo quiero';
+      } else {
+        pintar();
+      }
+      barra();
     }
   });
 
