@@ -43,7 +43,10 @@
     padding:6px 14px;cursor:pointer;
   }
   .chip[aria-pressed="true"]{background:var(--tinta);color:var(--papel);border-color:var(--tinta)}
+  .filtros.tallas{margin:8px 0 0}
+  .filtros.tallas .chip{font-size:.78rem;padding:4px 11px}
   .conteo{font-size:.9rem;color:var(--tinta-3);margin:10px 0 0}
+  .nota{margin:14px 0 0;padding:11px 14px;border-left:4px solid var(--rojo);background:var(--papel-2);font-size:.9rem}
 
   .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:18px;margin-top:20px;padding:0;list-style:none}
   .card{background:var(--papel-2);border:1px solid var(--linea);border-radius:6px;overflow:hidden;display:flex;flex-direction:column}
@@ -107,7 +110,9 @@
   <p class="sub">Ropa deportiva seleccionada pieza por pieza. Cada prenda es única: cuando alguien la aparta, desaparece de aquí.</p>
 
   <div class="filtros" id="filtros" role="group" aria-label="Filtrar por categoría"></div>
+  <div class="filtros tallas" id="tallas" role="group" aria-label="Filtrar por talla"></div>
   <p class="conteo" id="conteo">Cargando el catálogo…</p>
+  <p class="nota" id="nota" hidden></p>
 
   <ul class="grid" id="grid"></ul>
 
@@ -171,7 +176,23 @@
   var WSP = '56965902238';
 
   var $ = function(id){ return document.getElementById(id); };
-  var prendas = [], filtro = '', carro = {};
+  var prendas = [], filtro = '', filtroTalla = '', carro = {}, ultimaCarga = 0;
+
+  /* El carro sobrevive a una recarga o a un viaje a WhatsApp y de vuelta.
+     Caduca a las 24 h: mas alla, lo que eligio ya no existe. */
+  var LLAVE = 'us19_tienda_carro_v1';
+  function guardarCarro(){
+    try { localStorage.setItem(LLAVE, JSON.stringify({ t: Date.now(), c: carro })); } catch(e){}
+  }
+  function cargarCarro(){
+    try {
+      var raw = localStorage.getItem(LLAVE);
+      if (!raw) return;
+      var o = JSON.parse(raw);
+      if (!o || !o.c || (Date.now() - (o.t || 0)) > 86400000){ localStorage.removeItem(LLAVE); return; }
+      carro = o.c;
+    } catch(e){ carro = {}; }
+  }
 
   function clp(n){ return '$' + Number(n || 0).toLocaleString('es-CL'); }
   function esc(s){
@@ -188,21 +209,52 @@
       html += '<button class="chip" type="button" data-cat="' + esc(c) + '" aria-pressed="' + (filtro === c) + '">' + esc(c) + '</button>';
     });
     $('filtros').innerHTML = html;
+
+    /* Asi se compra ropa usada: primero la talla, despues que sea. Solo
+       aparece si hay tallas distintas que elegir. */
+    var tallas = [];
+    prendas.forEach(function(p){ if (p.talla && tallas.indexOf(p.talla) === -1) tallas.push(p.talla); });
+    var orden = ['XS','S','M','L','XL','XXL'];
+    tallas.sort(function(a,b){
+      var ia = orden.indexOf(String(a).toUpperCase()), ib = orden.indexOf(String(b).toUpperCase());
+      if (ia !== -1 && ib !== -1) return ia - ib;
+      if (ia !== -1) return -1;
+      if (ib !== -1) return 1;
+      return String(a).localeCompare(String(b), 'es', { numeric: true });
+    });
+    if (tallas.length < 2){ $('tallas').innerHTML = ''; return; }
+    var ht = '<button class="chip" type="button" data-talla="" aria-pressed="' + (filtroTalla === '') + '">Toda talla</button>';
+    tallas.forEach(function(t){
+      ht += '<button class="chip" type="button" data-talla="' + esc(t) + '" aria-pressed="' + (filtroTalla === t) + '">' + esc(t) + '</button>';
+    });
+    $('tallas').innerHTML = ht;
   }
 
   function visibles(){
-    return filtro ? prendas.filter(function(p){ return p.categoria === filtro; }) : prendas;
+    return prendas.filter(function(p){
+      if (filtro && p.categoria !== filtro) return false;
+      if (filtroTalla && p.talla !== filtroTalla) return false;
+      return true;
+    });
   }
 
   function pintar(){
     var lista = visibles();
-    $('conteo').textContent = lista.length === 1 ? '1 prenda disponible' : (lista.length + ' prendas disponibles');
+    if (!lista.length && prendas.length){
+      $('conteo').textContent = 'Nada con ese filtro. De ' + prendas.length + ' prendas disponibles, prueba con otra categoría o talla.';
+    } else {
+      $('conteo').textContent = (lista.length === 1 ? '1 prenda disponible' : (lista.length + ' prendas disponibles')) +
+        (lista.length !== prendas.length ? ' de ' + prendas.length : '');
+    }
     $('grid').innerHTML = lista.map(function(p){
       var puesto = !!carro[p.id];
       var meta = [p.categoria, p.estado].filter(Boolean).join(' · ');
       return '<li class="card' + (puesto ? ' puesto' : '') + '">' +
         '<div class="foto">' +
-          (p.foto ? '<img src="' + esc(p.foto) + '" alt="' + esc(p.nombre) + '" loading="lazy">'
+          /* Las URL de Notion caducan a la hora: si la foto no carga, el
+             recuadro «sin foto» se entiende, el hueco gris no. */
+          (p.foto ? '<img src="' + esc(p.foto) + '" alt="' + esc(p.nombre) + '" loading="lazy"' +
+                    ' onerror="this.parentNode.insertAdjacentHTML(\'afterbegin\',\'<div class=&quot;vacia&quot;>sin foto</div>\');this.remove();">'
                   : '<div class="vacia">sin foto</div>') +
           (p.talla ? '<span class="talla">' + esc(p.talla) + '</span>' : '') +
         '</div>' +
@@ -240,7 +292,11 @@
 
   document.addEventListener('click', function(ev){
     var chip = ev.target.closest ? ev.target.closest('.chip') : null;
-    if (chip){ filtro = chip.getAttribute('data-cat') || ''; pintarFiltros(); pintar(); return; }
+    if (chip){
+      if (chip.hasAttribute('data-talla')) filtroTalla = chip.getAttribute('data-talla') || '';
+      else filtro = chip.getAttribute('data-cat') || '';
+      pintarFiltros(); pintar(); return;
+    }
     var btn = ev.target.closest ? ev.target.closest('.card button') : null;
     if (btn){
       var id = btn.getAttribute('data-id');
@@ -248,11 +304,12 @@
       else {
         for (var i = 0; i < prendas.length; i++) if (prendas[i].id === id) { carro[id] = prendas[i]; break; }
       }
+      guardarCarro();
       pintar();
     }
   });
 
-  $('vaciar').addEventListener('click', function(){ carro = {}; pintar(); });
+  $('vaciar').addEventListener('click', function(){ carro = {}; guardarCarro(); pintar(); });
 
   /* Se arma al final, cuando ya se conoce el numero que vino en el catalogo. */
   function enlacePreguntar(){
@@ -267,28 +324,84 @@
     window.location.href = 'https://wa.me/' + WSP + '?text=' + encodeURIComponent(mensaje());
   });
 
-  fetch(API)
-    .then(function(r){ return r.json(); })
-    .then(function(d){
-      prendas = (d && Array.isArray(d.prendas)) ? d.prendas : [];
-      if (d && d.wsp) WSP = String(d.wsp);
-      if (!prendas.length){
+  function nota(txt){
+    var n = $('nota');
+    if (!txt){ n.hidden = true; n.textContent = ''; return; }
+    n.innerHTML = txt; n.hidden = false;
+  }
+
+  /* Lo que el carro guarda puede llevarselo otra persona mientras tanto.
+     Al releer se compara contra lo que sigue disponible y se dice cuales
+     se cayeron: mejor enterarse aqui que despues de mandar el pedido. */
+  function reconciliar(){
+    var vivos = {}, perdidas = [];
+    prendas.forEach(function(p){ vivos[p.id] = p; });
+    Object.keys(carro).forEach(function(id){
+      if (vivos[id]) carro[id] = vivos[id];
+      else { perdidas.push(carro[id] && carro[id].nombre ? carro[id].nombre : 'una prenda'); delete carro[id]; }
+    });
+    guardarCarro();
+    return perdidas;
+  }
+
+  function cargar(esRecarga){
+    return fetch(API)
+      .then(function(r){ return r.json(); })
+      .then(function(d){
+        ultimaCarga = Date.now();
+        prendas = (d && Array.isArray(d.prendas)) ? d.prendas : [];
+        if (d && d.wsp) WSP = String(d.wsp);
+
+        if (d && d.error){
+          $('conteo').textContent = '';
+          $('vacio').hidden = false;
+          $('vacio').innerHTML = '<strong>No pudimos cargar el catálogo</strong>Recarga la página en un momento, o escríbenos por WhatsApp y te contamos qué hay disponible.';
+          return;
+        }
+        if (!prendas.length){
+          $('conteo').textContent = '';
+          $('vacio').hidden = false;
+          $('grid').innerHTML = '';
+          $('filtros').innerHTML = ''; $('tallas').innerHTML = '';
+          return;
+        }
+        $('vacio').hidden = true;
+
+        var perdidas = reconciliar();
+        if (d && d.respaldo){
+          nota('Estamos mostrando la última versión guardada del catálogo, así que puede que alguna foto no cargue. Recarga en un rato.');
+        } else if (perdidas.length){
+          nota('<b>' + perdidas.slice(0,3).join(', ') + (perdidas.length > 3 ? ' y otras' : '') + '</b> ya no está' + (perdidas.length > 1 ? 'n' : '') + ' disponible' + (perdidas.length > 1 ? 's' : '') + '. Las quitamos de tu selección.');
+        } else {
+          nota('');
+        }
+
+        if (d && d.actualizado){
+          $('actualizado').textContent = ' · Catálogo actualizado el ' + String(d.actualizado).slice(8,10) + '/' + String(d.actualizado).slice(5,7) + ' a las ' + String(d.actualizado).slice(11,16) + '.';
+        }
+        pintarFiltros();
+        pintar();
+        enlacePreguntar();
+      })
+      .catch(function(){
+        if (esRecarga) return;                 // ya hay algo pintado: no lo borres
         $('conteo').textContent = '';
         $('vacio').hidden = false;
-        return;
-      }
-      if (d && d.actualizado){
-        $('actualizado').textContent = ' · Catálogo actualizado el ' + String(d.actualizado).slice(8,10) + '/' + String(d.actualizado).slice(5,7) + ' a las ' + String(d.actualizado).slice(11,16) + '.';
-      }
-      pintarFiltros();
-      pintar();
-      enlacePreguntar();
-    })
-    .catch(function(){
-      $('conteo').textContent = '';
-      $('vacio').hidden = false;
-      $('vacio').innerHTML = '<strong>No pudimos cargar el catálogo</strong>Recarga la página en un momento, o escríbenos por WhatsApp y te contamos qué hay disponible.';
-    });
+        $('vacio').innerHTML = '<strong>No pudimos cargar el catálogo</strong>Recarga la página en un momento, o escríbenos por WhatsApp y te contamos qué hay disponible.';
+      });
+  }
+
+  cargarCarro();
+  cargar(false);
+
+  /* Notion firma las URL de las fotos por una hora. Una pestana que lleva
+     abierta desde la manana muestra recuadros rotos y un stock que ya no
+     existe; al volver a ella se relee. */
+  document.addEventListener('visibilitychange', function(){
+    if (document.visibilityState !== 'visible') return;
+    if (Date.now() - ultimaCarga < 300000) return;
+    cargar(true);
+  });
 })();
 </script>
 </body>
