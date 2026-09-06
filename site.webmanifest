@@ -1,0 +1,27 @@
+{
+  "name": "Ultra-Sport19 · Gimnasio boutique en Pencahue",
+  "short_name": "Ultra-Sport19",
+  "description": "Entrenamiento acompañado en grupos de máximo 8 personas, bioimpedancia incluida y seguimiento mensual. Pencahue, Maule.",
+  "lang": "es-CL",
+  "start_url": "./?utm_source=pwa",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0b0b0c",
+  "theme_color": "#0b0b0c",
+  "icons": [
+    { "src": "img/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "img/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ],
+  "shortcuts": [
+    {
+      "name": "Quiero ingresar",
+      "url": "https://wa.me/56965902238?text=Hola%2C%20quiero%20informaci%C3%B3n%20para%20ingresar%20(web)",
+      "icons": [{ "src": "img/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Ver planes",
+      "url": "./#planes",
+      "icons": [{ "src": "img/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}
