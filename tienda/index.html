@@ -124,7 +124,9 @@
 
 <script>
 (function(){
-  var API = 'https://script.google.com/macros/s/AKfycbxeL2ayoSdGiUj-beM-DGEqdg0UoAv_01vg3kB2EwD39siaVi3naask1CDY3tVoUs69/exec?tipo=tienda';
+  /* Despliegue PUBLICO, distinto del que usa Meta. La URL del webhook no
+     puede aparecer aqui: es por donde entran los mensajes de WhatsApp. */
+  var API = 'https://script.google.com/macros/s/AKfycbzHduQ31Eva3oxhXPdHj3QWHDsQl9N5Z72GEcV_MdQGtDMd_9p-1jy3hz1pIC5__k3c/exec?tipo=tienda';
   var WSP = '56965902238';
 
   var $ = function(id){ return document.getElementById(id); };
