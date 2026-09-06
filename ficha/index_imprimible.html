@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Ficha de ingreso · Ultra-Sport 19</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Barlow+Condensed:wght@500;600;700&display=swap">
+<style>
+  :root{
+    --papel:#f4f2ee;
+    --papel-2:#eae7e1;
+    --tinta:#141416;
+    --tinta-2:#4a4a50;
+    --tinta-3:#7d7d85;
+    --linea:#d6d2ca;
+    --linea-fuerte:#9a9a9f;
+    --rojo:#E21C25;
+    --rojo-suave:#fbe6e7;
+    --negro:#0b0b0c;
+    --aviso:#8a6b14;
+    --aviso-suave:#f7f0da;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --papel:#121214;
+      --papel-2:#1a1a1d;
+      --tinta:#eceae6;
+      --tinta-2:#b3b1ac;
+      --tinta-3:#8a8880;
+      --linea:#2c2c30;
+      --linea-fuerte:#4a4a50;
+      --rojo:#F2555C;
+      --rojo-suave:#2a1416;
+      --negro:#0b0b0c;
+      --aviso:#d6b352;
+      --aviso-suave:#2a2415;
+    }
+  }
+  :root[data-theme="dark"]{
+    --papel:#121214; --papel-2:#1a1a1d; --tinta:#eceae6; --tinta-2:#b3b1ac;
+    --tinta-3:#8a8880; --linea:#2c2c30; --linea-fuerte:#4a4a50; --rojo:#F2555C;
+    --rojo-suave:#2a1416; --negro:#0b0b0c; --aviso:#d6b352; --aviso-suave:#2a2415;
+  }
+
+  *{box-sizing:border-box}
+  body{
+    background:var(--papel); color:var(--tinta);
+    font-family:'Barlow','Segoe UI',system-ui,sans-serif;
+    font-size:16px; line-height:1.6; margin:0;
+  }
+  .hoja{max-width:860px;margin:0 auto;padding:0 22px 90px}
+
+  /* cabecera */
+  .cab{background:var(--negro);margin:0 -22px;padding:26px 22px 20px;border-bottom:5px solid var(--rojo)}
+  .cab .marca{font-family:'Anton',Impact,sans-serif;font-size:clamp(1.7rem,5.5vw,2.4rem);color:#f4f2ee;margin:0;line-height:1}
+  .cab .marca span{color:var(--rojo)}
+  .cab .lema{font-family:'Barlow Condensed',sans-serif;font-size:.8rem;letter-spacing:.28em;color:var(--rojo);margin:8px 0 0;text-transform:uppercase}
+  .cab .dir{font-family:'Barlow',sans-serif;font-size:.8rem;color:#9a9a9f;margin:10px 0 0}
+
+  h1{font-family:'Anton',Impact,sans-serif;font-size:clamp(1.6rem,4.5vw,2.1rem);line-height:1.05;margin:30px 0 6px;text-wrap:balance}
+  .sub{color:var(--tinta-2);margin:0 0 4px;max-width:62ch}
+
+  h2{
+    font-family:'Barlow Condensed',sans-serif;font-weight:600;
+    font-size:1rem;letter-spacing:.2em;text-transform:uppercase;
+    margin:36px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--linea-fuerte);
+    display:flex;align-items:baseline;gap:11px;
+  }
+  h2 .n{color:var(--rojo);font-size:.85rem}
+  h3{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:.95rem;letter-spacing:.1em;text-transform:uppercase;color:var(--tinta-2);margin:22px 0 6px}
+  p{max-width:66ch}
+  .lead{max-width:66ch;color:var(--tinta-2)}
+
+  /* campos para rellenar */
+  .campos{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px 26px;margin-top:14px}
+  .campo{display:flex;flex-direction:column;gap:5px}
+  .campo span{font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;color:var(--tinta-3)}
+  .campo i{display:block;border-bottom:1px solid var(--linea-fuerte);height:1.5rem}
+  .campo.ancho{grid-column:1/-1}
+
+  /* casillas */
+  ul.casillas{list-style:none;padding:0;margin:12px 0 0;display:grid;gap:9px}
+  ul.casillas li{display:flex;gap:11px;align-items:flex-start;max-width:66ch}
+  ul.casillas li::before{
+    content:"";flex:0 0 auto;width:15px;height:15px;margin-top:5px;
+    border:1.5px solid var(--linea-fuerte);border-radius:2px;background:transparent;
+  }
+
+  ol.num{padding-left:1.1rem;max-width:66ch}
+  ol.num li{margin:.45rem 0}
+
+  /* bloques */
+  .bloque{background:var(--papel-2);border-left:4px solid var(--linea-fuerte);padding:16px 20px;margin:20px 0}
+  .bloque.rojo{border-left-color:var(--rojo);background:var(--rojo-suave)}
+  .bloque.aviso{border-left-color:var(--aviso);background:var(--aviso-suave)}
+  .bloque h3{margin-top:0;color:inherit}
+  .bloque p:last-child{margin-bottom:0}
+
+  /* firmas */
+  .firmas{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:34px;margin-top:34px}
+  .firma{text-align:center}
+  .firma .linea{border-bottom:1px solid var(--tinta);height:3.2rem;margin-bottom:8px}
+  .firma span{font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;color:var(--tinta-3)}
+
+  table{border-collapse:collapse;width:100%;min-width:460px;font-size:.94rem;background:var(--papel-2)}
+  .tabla{overflow-x:auto;margin-top:16px;border:1px solid var(--linea)}
+  th,td{padding:9px 13px;text-align:left;border-bottom:1px solid var(--linea);vertical-align:top}
+  thead th{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:.76rem;letter-spacing:.14em;text-transform:uppercase;color:var(--tinta-3);border-bottom:1px solid var(--linea-fuerte)}
+  tbody tr:last-child td{border-bottom:none}
+
+  code{font-family:ui-monospace,'Cascadia Mono',Consolas,monospace;font-size:.86em;background:var(--papel-2);padding:1px 5px;border-radius:2px}
+
+  .pie{margin-top:44px;padding-top:16px;border-top:1px solid var(--linea);font-size:.82rem;color:var(--tinta-3)}
+  .solo-pantalla{}
+  @media print{
+    .solo-pantalla{display:none!important}
+    body{background:#fff;color:#000;font-size:11pt}
+    .cab{background:#000;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .hoja{max-width:none;padding:0 0 0 0}
+    h2{page-break-after:avoid}
+    .firmas{page-break-inside:avoid}
+  }
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="hoja">
+
+  <header class="cab">
+    <p class="marca">ULTRA-SPORT <span>19</span></p>
+    <p class="lema">Despierta tu instinto</p>
+    <p class="dir">Hernando Bravo de Villalba 811, Pencahue, Maule &nbsp;·&nbsp; +56 9 2924 4042 &nbsp;·&nbsp; ultrasport19@gmail.com</p>
+  </header>
+
+  <h1>Ficha de ingreso</h1>
+  <p class="sub">Declaración de salud, reconocimiento de riesgos y autorizaciones. Se completa una vez, al entrar, y se actualiza si algo cambia.</p>
+
+<h2><span class="n">01</span> Datos del socio</h2>
+  <div class="campos">
+    <label class="campo"><span>Nombre completo</span><i></i></label>
+    <label class="campo"><span>RUT</span><i></i></label>
+    <label class="campo"><span>Fecha de nacimiento</span><i></i></label>
+    <label class="campo"><span>WhatsApp</span><i></i></label>
+    <label class="campo"><span>Correo</span><i></i></label>
+    <label class="campo"><span>Plan contratado</span><i></i></label>
+    <label class="campo ancho"><span>En caso de emergencia, avisar a — nombre, parentesco y teléfono</span><i></i></label>
+  </div>
+
+  <h2><span class="n">02</span> Declaración de salud</h2>
+  <p class="lead">Responde con honestidad. Esta información se usa para adaptar tu entrenamiento, no para excluirte. Ocultar una condición te pone en riesgo a ti.</p>
+
+  <h3>Marca lo que corresponda</h3>
+  <ul class="casillas">
+    <li>Un médico me ha dicho alguna vez que solo debo hacer actividad física bajo supervisión médica.</li>
+    <li>Siento dolor en el pecho al hacer esfuerzo físico.</li>
+    <li>He perdido el equilibrio por mareos, o he perdido la conciencia en el último año.</li>
+    <li>Tengo un problema de huesos o articulaciones que podría agravarse con el ejercicio.</li>
+    <li>Tomo medicamentos para la presión arterial o para el corazón.</li>
+    <li>Estoy embarazada o lo he estado en los últimos seis meses.</li>
+    <li>Tengo alguna otra razón por la que no debería hacer actividad física.</li>
+  </ul>
+
+  <div class="campos" style="margin-top:20px">
+    <label class="campo ancho"><span>Cirugías, lesiones previas o condiciones que debamos conocer</span><i></i></label>
+    <label class="campo ancho"><span>Medicamentos de uso habitual</span><i></i></label>
+  </div>
+
+  <div class="bloque rojo">
+    <p><strong>Si marcaste alguna casilla</strong>, antes de empezar necesitamos que un médico te autorice a hacer ejercicio. No es un trámite para complicarte: es para poder entrenarte bien y sin riesgo.</p>
+  </div>
+
+  <p style="margin-top:18px"><strong>Declaro</strong> que la información anterior es verdadera y completa, y me comprometo a avisar al equipo de Ultra-Sport 19 si mi estado de salud cambia, si empiezo un tratamiento nuevo o si sufro una lesión, dentro o fuera del gimnasio.</p>
+
+  <h2><span class="n">03</span> Qué es este servicio, y qué no es</h2>
+  <p class="lead">Entiendo y acepto lo siguiente:</p>
+  <ol class="num">
+    <li>La actividad física intensa conlleva riesgos propios, como molestias musculares, esguinces, caídas y, en casos poco frecuentes, lesiones mayores o eventos cardiovasculares.</li>
+    <li>Ultra-Sport 19 es un espacio de <strong>acondicionamiento físico</strong>. No presta atención de salud de ningún tipo, no realiza diagnósticos, no indica tratamientos y no sustituye la consulta con un profesional de la salud.</li>
+    <li><strong>Las personas que acompañan las sesiones no lo hacen en calidad de profesionales de la salud.</strong> Su rol es orientar la ejecución de los ejercicios programados y cuidar la técnica. No entregan indicaciones médicas, kinesiológicas ni nutricionales, y así lo entiendo al contratar.</li>
+    <li>Las mediciones que se realizan aquí, incluida la bioimpedancia, sirven para seguir mi progreso físico. <strong>No son un examen de salud ni un diagnóstico</strong>, y no deben usarse para tomar decisiones sobre mi salud sin consultar a un profesional.</li>
+    <li>Es mi responsabilidad seguir las indicaciones de quien acompaña la sesión, respetar las cargas sugeridas y detenerme si siento dolor, mareo o falta de aire, avisando de inmediato.</li>
+    <li>Si entreno fuera del horario con acompañamiento en sala, lo hago por decisión propia, sabiendo que en ese horario no hay nadie orientando los ejercicios.</li>
+    <li>Si busco tratar una lesión, una dolencia o una condición de salud, entiendo que <strong>debo acudir a un profesional habilitado</strong>, y que este espacio no reemplaza esa atención.</li>
+  </ol>
+
+  <h2><span class="n">04</span> Reglas del espacio y daños</h2>
+  <ol class="num">
+    <li>Devuelvo el material a su lugar y no dejo discos ni mancuernas en el suelo.</li>
+    <li>Uso toalla y limpio la máquina después de usarla.</li>
+    <li>Reservo mis sesiones con la anticipación acordada y aviso si no puedo asistir, para liberar el cupo.</li>
+    <li><strong>Si daño equipamiento o instalaciones por un uso indebido o negligente —no por el desgaste normal—, me hago cargo de su reparación o reposición.</strong></li>
+    <li>Ultra-Sport 19 no responde por objetos personales perdidos o dejados sin vigilancia en el recinto.</li>
+  </ol>
+
+  <h2><span class="n">05</span> Autorización de imagen <span style="font-family:'Barlow',sans-serif;font-size:.72rem;letter-spacing:0;text-transform:none;color:var(--rojo);font-weight:600;">— opcional</span></h2>
+  <div class="bloque">
+    <p><strong>Esta sección es voluntaria y separada.</strong> Puedes entrenar aquí sin autorizar nada de esto. Rechazarla no afecta tu membresía, tu plan ni tu trato en el gimnasio.</p>
+  </div>
+
+  <h3>Autorizo a Ultra-Sport 19 a</h3>
+  <ul class="casillas">
+    <li>Tomarme fotografías y grabarme en video durante mis entrenamientos y en actividades del gimnasio.</li>
+    <li>Publicar ese material en las redes sociales del gimnasio (Instagram, Facebook, Threads) y en su sitio web, con fines de difusión de la actividad del centro.</li>
+    <li>Usar ese material en material impreso o digital de promoción del gimnasio.</li>
+  </ul>
+
+  <p style="margin-top:18px">Entiendo además que:</p>
+  <ol class="num">
+    <li>Esta autorización <strong>no incluye</strong> ceder mi imagen a terceros, ni usarla en publicidad pagada de otras marcas, ni venderla.</li>
+    <li><strong>Puedo revocarla cuando quiera</strong>, avisando por WhatsApp o por correo. Desde ese momento no se publicará material nuevo mío, y se retirará el que siga publicado en los canales propios del gimnasio, dentro de lo técnicamente posible.</li>
+    <li>Mis datos de salud y de contacto se usan solo para gestionar mi membresía y mi entrenamiento, no se comparten con terceros ajenos al servicio, y puedo pedir acceso a ellos, su corrección o su eliminación.</li>
+  </ol>
+
+  <h2><span class="n">06</span> Firmas</h2>
+  <p class="lead">Firmo habiendo leído y entendido todo lo anterior. Recibo una copia si la solicito.</p>
+
+  <div class="campos" style="margin-top:6px">
+    <label class="campo"><span>Fecha</span><i></i></label>
+    <label class="campo"><span>Lugar</span><i></i></label>
+  </div>
+
+  <div class="firmas">
+    <div class="firma"><div class="linea"></div><span>Firma del socio</span></div>
+    <div class="firma"><div class="linea"></div><span>Nombre y RUT en letra imprenta</span></div>
+  </div>
+
+  <div class="bloque" style="margin-top:30px">
+    <h3>Si el socio es menor de 18 años</h3>
+    <p>Firma también su madre, padre o tutor, y esa firma es la que vale para la declaración de salud y para la autorización de imagen.</p>
+    <div class="firmas" style="margin-top:20px">
+      <div class="firma"><div class="linea"></div><span>Firma del apoderado</span></div>
+      <div class="firma"><div class="linea"></div><span>Nombre, RUT y parentesco</span></div>
+    </div>
+  </div>
+
+  <p class="pie">Ultra-Sport 19 · Ficha de ingreso, versión de septiembre de 2026. Documento en revisión: no usar como texto definitivo sin revisión legal.</p>
+
+</div>
+
+</body>
+</html>
