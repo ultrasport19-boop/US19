@@ -59,6 +59,16 @@
   h1{font-family:'Anton',Impact,sans-serif;font-size:clamp(1.7rem,6vw,2.4rem);line-height:1.02;margin:26px 0 6px}
   .sub{color:var(--tinta-2);margin:0;max-width:60ch}
 
+  .pronto{margin:22px 0 4px;border:1px solid var(--linea-fuerte);border-left:5px solid var(--rojo);
+    background:var(--papel-2);border-radius:5px;padding:20px 22px}
+  .pronto .eti{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.82rem;
+    letter-spacing:.20em;text-transform:uppercase;color:var(--rojo);display:block;margin-bottom:7px}
+  .pronto h2{font-family:'Anton',Impact,sans-serif;font-size:1.3rem;margin:0 0 8px;letter-spacing:.01em}
+  .pronto p{margin:0 0 14px;max-width:56ch;font-size:.95rem;color:var(--tinta-2)}
+  .pronto a{display:inline-block;background:var(--verde);color:#fff;text-decoration:none;
+    font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.95rem;letter-spacing:.10em;
+    text-transform:uppercase;padding:11px 20px;border-radius:5px}
+
   .filtros{display:flex;flex-wrap:wrap;gap:8px;margin:22px 0 6px}
   .chip{
     font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:.86rem;letter-spacing:.08em;text-transform:uppercase;
@@ -135,6 +145,18 @@
 
   <h1>Tienda</h1>
   <p class="sub">Ropa deportiva seleccionada pieza por pieza. Cada prenda es única: cuando alguien la aparta, desaparece de aquí.</p>
+
+  <!-- Mientras no llegue el primer fardo. Cuando esté cargado, se borra
+       esta sección entera: dejarla después haría parecer vacía una tienda
+       que ya tiene ropa. -->
+  <section class="pronto">
+    <span class="eti">Próximamente</span>
+    <h2>El primer fardo viene en camino</h2>
+    <p>Lo que ves acá abajo es el comienzo. En cuanto llegue, esto se llena de prendas —cada una
+    única, con su talla, su estado y su precio. Escríbenos y te avisamos apenas estén cargadas,
+    antes de que se publiquen.</p>
+    <a id="avisame" href="#">Avísame cuando llegue</a>
+  </section>
 
   <div class="filtros" id="filtros" role="group" aria-label="Filtrar por categoría"></div>
   <div class="filtros tallas" id="tallas" role="group" aria-label="Filtrar por talla"></div>
@@ -384,6 +406,11 @@
     var a = $('preguntar');
     if (a) a.href = 'https://wa.me/' + WSP + '?text=' +
       encodeURIComponent('Hola, vengo por la tienda de ropa. Tengo una duda:');
+    /* La palabra «ropa» va a proposito: es lo que le dice al asistente que
+       esta conversacion es de tienda y no de gimnasio. */
+    var b = $('avisame');
+    if (b) b.href = 'https://wa.me/' + WSP + '?text=' +
+      encodeURIComponent('Hola, quiero que me avisen cuando llegue la ropa nueva a la tienda.');
   }
   enlacePreguntar();
 
