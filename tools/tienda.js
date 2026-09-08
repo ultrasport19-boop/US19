@@ -85,6 +85,100 @@ comprobar('contrato · el tope por pedido lo manda el catalogo',
   /d\.maxPedido/.test(codigo),
   'si vuelve a estar fijo en la pagina, cambiar el del bot no sirve de nada');
 
+/* --- 1 ter · EL CONTRATO ENTERO, CONTRA EL CÓDIGO DEL BOT -----------
+   Arriba solo se ataba el tope. Los otros nueve campos no los miraba
+   nadie, y es el mismo fallo silencioso que ya tiene su prueba en
+   `ficha.js`: el bot renombra `precio` -> `precioCLP` en
+   `US19_TIENDA_leer_`, la pagina sigue leyendo `p.precio`, y la tienda se
+   ve entera con toda la ropa a $0. No hay error en ninguna consola, ni en
+   el registro del bot, ni en Notion. Se descubre cuando alguien pregunta
+   por WhatsApp por que la ropa sale gratis.
+
+   Los dos lados viven en repositorios distintos y nada los ataba.
+
+   La pagina tiene una convencion firme: `p` es siempre una prenda y `d` es
+   siempre el payload del catalogo. Si esto falla, es que se renombro un
+   campo en el bot... o que alguien uso `p`/`d` para otra cosa. Las dos
+   merecen mirarse. */
+
+const RUTA_BOT = process.env.US19_BOT
+  || path.join('C:', 'Users', 'diego', 'OneDrive', 'Documentos',
+               'RESPALDO_ASISTENTE_APPSSCRIPT', 'proyecto_clasp', 'Código.js');
+
+if (!fs.existsSync(RUTA_BOT)) {
+  avisos.push('CONTRATO SIN COMPROBAR: no encuentro el Código.js del asistente en ' + RUTA_BOT
+    + '. Es el repositorio del bot, que no viaja con este. Con la variable US19_BOT se le puede dar otra ruta.');
+} else {
+  const bot = fs.readFileSync(RUTA_BOT, 'utf8');
+
+  /* Se corta desde la funcion que interesa: `out.push({` aparece en varios
+     sitios del Código.js y el primero no tiene por que ser este. */
+  const iLeer = bot.indexOf('function US19_TIENDA_leer_');
+  comprobar('contrato · el bot sigue teniendo US19_TIENDA_leer_', iLeer >= 0,
+    'es la funcion que arma cada prenda del catalogo');
+  const trozoLeer = iLeer >= 0 ? bot.slice(iLeer) : '';
+
+  /* Lo que el bot manda por prenda: el objeto del `out.push({...})`. */
+  const mPrenda = /out\.push\(\{([\s\S]*?)\n\s*\}\);/.exec(trozoLeer);
+  comprobar('contrato · encuentro el objeto que el bot manda por prenda',
+    !!mPrenda, 'busco el out.push({...}) de US19_TIENDA_leer_ — ¿se reescribio?');
+
+  /* Y lo que manda envolviendo: el JSON.stringify del catalogo, mas los
+     dos campos que solo aparecen cuando algo va mal. */
+  const mSobre = /var payload = JSON\.stringify\(\{([\s\S]*?)\n\s*\}\);/.exec(bot);
+  comprobar('contrato · encuentro el sobre del catalogo',
+    !!mSobre, 'busco el var payload = JSON.stringify({...}) de US19_TIENDA_catalogo_');
+
+  if (mPrenda && mSobre) {
+    const claves = txt => {
+      const out = new Set(), re = /(?:^|\n)\s*([a-zA-Z_$][\w$]*)\s*:/g;
+      let c; while ((c = re.exec(txt)) !== null) out.add(c[1]);
+      return out;
+    };
+    const dePrenda = claves(mPrenda[1]);
+    const deSobre  = claves(mSobre[1]);
+    /* `error` y `respaldo` no estan en el sobre normal: los pone el bot
+       solo cuando Notion falla, y la pagina los lee para decirlo. */
+    /* Los dos se ponen de formas distintas: `error` es una clave del objeto
+       de emergencia y `respaldo` una asignacion sobre el sobre ya parseado
+       (`o.respaldo = true`). Se aceptan las dos formas a proposito. */
+    ['error', 'respaldo'].forEach(k => {
+      comprobar('contrato · el bot sigue marcando «' + k + '» cuando Notion falla',
+        new RegExp('[.\\s{]' + k + '\\s*[:=]\\s*true').test(bot),
+        'la pagina lo lee para avisar de que el catalogo puede estar viejo');
+      deSobre.add(k);
+    });
+
+    /* `p` no es SIEMPRE una prenda: en algun sitio es un array y se le
+       llama `p.push`, `p.length`, `p.join`. Se descartan los miembros
+       propios del lenguaje. El precio de esta lista es que un campo del
+       catalogo que se llamara `length` pasaria sin mirar — no va a pasar,
+       y es mejor que una prueba que grita por un `.push`. */
+    const DEL_LENGUAJE = new Set(['push', 'pop', 'shift', 'unshift', 'length', 'join',
+      'map', 'filter', 'forEach', 'indexOf', 'lastIndexOf', 'slice', 'splice', 'concat',
+      'sort', 'reverse', 'includes', 'some', 'every', 'find', 'findIndex', 'reduce',
+      'trim', 'toLowerCase', 'toUpperCase', 'replace', 'split', 'charAt', 'substring',
+      'substr', 'startsWith', 'endsWith', 'padStart', 'padEnd', 'repeat', 'match',
+      'toString', 'valueOf', 'hasOwnProperty', 'toFixed', 'toLocaleString']);
+    const leidos = campo => {
+      const out = new Set(), re = new RegExp('\\b' + campo + '\\.([a-zA-Z_$][\\w$]*)', 'g');
+      let c; while ((c = re.exec(codigo)) !== null) if (!DEL_LENGUAJE.has(c[1])) out.add(c[1]);
+      return out;
+    };
+    const huerfanos = [];
+    leidos('p').forEach(k => { if (!dePrenda.has(k)) huerfanos.push('p.' + k); });
+    leidos('d').forEach(k => { if (!deSobre.has(k))  huerfanos.push('d.' + k); });
+
+    comprobar('contrato · todo lo que la pagina lee, el bot lo manda',
+      huerfanos.length === 0,
+      'la pagina lee ' + huerfanos.join(', ') + ' y el bot no lo manda. ' +
+      'Campos del bot: prenda {' + [...dePrenda].join(', ') + '}  sobre {' + [...deSobre].join(', ') + '}');
+
+    avisos.push('contrato comprobado contra el Código.js del asistente (' +
+      dePrenda.size + ' campos por prenda, ' + deSobre.size + ' en el sobre)');
+  }
+}
+
 /* --- 2 · Un navegador de mentira ------------------------------------ */
 
 function nuevoElemento(id) {

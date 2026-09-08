@@ -1,0 +1,32 @@
+{
+  "suite": "tools/tienda.js",
+  "fuente": "tienda/index.html",
+  "acompana": [],
+  "mutantes": [
+    {
+      "nombre": "el bot renombra el precio y la ropa se ve entera a $0",
+      "de": "'<span class=\"precio\">' + clp(p.precio) + '</span>' +",
+      "a": "'<span class=\"precio\">' + clp(p.precioCLP) + '</span>' +"
+    },
+    {
+      "nombre": "la pagina lee un campo de prenda que el catalogo no manda",
+      "de": "      if (filtroTalla && p.talla !== filtroTalla) return false;",
+      "a": "      if (filtroTalla && p.tallaEU !== filtroTalla) return false;"
+    },
+    {
+      "nombre": "la pagina deja de enterarse de que el catalogo viene del respaldo",
+      "de": "    } else if (d && d.respaldo){",
+      "a": "    } else if (d && d.deRespaldo){"
+    },
+    {
+      "nombre": "el tope por pedido vuelve a estar escrito a mano en la pagina",
+      "de": "    if (d && Number(d.maxPedido) > 0) MAX_PEDIDO = Number(d.maxPedido);",
+      "a": "    if (d) MAX_PEDIDO = 12;"
+    },
+    {
+      "nombre": "el mensaje de WhatsApp se queda sin el id de la prenda",
+      "de": "      L.push('- ' + p.nombre + (p.talla ? ' (' + p.talla + ')' : '') + ' ' + clp(p.precio) + ' #' + id);",
+      "a": "      L.push('- ' + p.nombre + (p.talla ? ' (' + p.talla + ')' : '') + ' ' + clp(p.precio));"
+    }
+  ]
+}
