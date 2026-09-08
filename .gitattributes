@@ -3,6 +3,29 @@
 # que es justo el momento en que nadie lo mira.
 *.sh text eol=lf
 
-# Las paginas quedan como estan: tienda/index.html esta en CRLF y las
-# anclas de los parches cuentan con ello.
-*.html -text
+# Los finales de linea de las paginas NO son cosmetica: las anclas de
+# coincidencia exacta con las que se parchean cuentan con ellos, y un
+# ancla escrita con \r\n da CERO coincidencias en un archivo LF.
+#
+# Antes esto decia «*.html -text» con un comentario que afirmaba que
+# tienda/index.html estaba en CRLF. Con -text git no convierte nada, asi
+# que ese CRLF solo existia en el disco de Diego: el repositorio guarda
+# los seis .html en LF y un clon nuevo -o un simple git checkout- los
+# entrega en LF. La afirmacion era falsa fuera de esta maquina.
+#
+# Declarandolo por archivo, el blob sigue en LF (que es lo correcto) y la
+# copia de trabajo sale con el final que dice aqui, en cualquier maquina
+# y con cualquier core.autocrlf.
+index.html                  text eol=crlf
+404.html                    text eol=crlf
+privacidad.html             text eol=crlf
+tienda/index.html           text eol=crlf
+ficha/index.html            text eol=lf
+ficha/index_imprimible.html text eol=lf
+
+# Python: LF, como el resto de las herramientas.
+*.py text eol=lf
+
+# Las piezas de redes son binarios; que git no intente convertirlas.
+*.jpg -text
+*.png -text
