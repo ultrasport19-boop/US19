@@ -49,6 +49,36 @@ const codigo = m[1];
   if (codigo.indexOf(f) < 0) abortar('el script no contiene ' + f + ')  ¿se renombro?');
 });
 
+/* --- 1 bis · Los ids, sacados de la pagina ---------------------------
+   Esta suite tenia un agujero que encontro la auditoria del 8-sep: la
+   lista de ids del DOM de mentira estaba escrita A MANO, asi que
+   renombrar `id="pronto"` en la pagina pasaba en VERDE — el navegador
+   falso devolvia un elemento para un id que ya no existia.
+   Ahora los ids salen del marcado, y el DOM falso devuelve null para
+   cualquier otro, igual que un navegador de verdad. */
+
+const idsPagina = new Set();
+(src.match(/\bid="[A-Za-z0-9_-]+"/g) || []).forEach(function (t) {
+  idsPagina.add(t.slice(4, -1));
+});
+const idsPedidos = new Set();
+(codigo.match(/\$\(\s*['"][A-Za-z0-9_-]+['"]\s*\)/g) || []).forEach(function (t) {
+  idsPedidos.add(t.replace(/^\$\(\s*['"]/, '').replace(/['"]\s*\)$/, ''));
+});
+if (!idsPedidos.size) abortar('el script no pide ningun elemento por id: ¿cambio el ayudante $()?');
+
+const huerfanos = [...idsPedidos].filter(id => !idsPagina.has(id));
+/* Aborta en vez de anotar el fallo y seguir. Sin ese elemento, todo lo que
+   viene despues revienta con un TypeError que no explica nada; asi se dice
+   cual es el id y donde mirar. */
+if (huerfanos.length) {
+  abortar('el script pide elementos que ya no estan en el marcado: ' + huerfanos.join(', ')
+    + '\n    ¿se renombro un id en la pagina y no en el <script>?');
+}
+pasa();
+const sinUsar = [...idsPagina].filter(id => !idsPedidos.has(id));
+if (sinUsar.length) aviso('ids en la pagina que el script no usa: ' + sinUsar.join(', '));
+
 /* La pagina y el bot tienen que hablar del mismo tope. Antes estaba
    escrito a mano en los dos sitios. */
 comprobar('contrato · el tope por pedido lo manda el catalogo',
@@ -76,10 +106,10 @@ function nuevoEntorno(respuestas, opciones) {
   opciones = opciones || {};
   const els = {};
   const store = {};
-  const idsUsados = ['filtros', 'tallas', 'orden', 'conteo', 'nota', 'grid', 'vacio',
-                     'barra', 'resumen', 'total', 'pedir', 'vaciar', 'preguntar',
-                     'avisame', 'actualizado', 'pronto'];
-  idsUsados.forEach(function (id) { els[id] = nuevoElemento(id); });
+  /* Solo existen los ids que estan de verdad en la pagina. Si uno se
+     renombra en el marcado, aqui devuelve null y la prueba que lo usaba
+     se cae — que es justo lo que antes no pasaba. */
+  idsPagina.forEach(function (id) { els[id] = nuevoElemento(id); });
 
   let handlerClick = null;
   let handlerVis = null;
