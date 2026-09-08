@@ -23,8 +23,16 @@ tienda/index.html           text eol=crlf
 ficha/index.html            text eol=lf
 ficha/index_imprimible.html text eol=lf
 
-# Python: LF, como el resto de las herramientas.
+# Las herramientas, en LF. Sin declararlo, con core.autocrlf=true —el valor
+# de fabrica en Windows— git avisa de que «LF will be replaced by CRLF the
+# next time Git touches it» y el archivo cambia solo en el siguiente
+# checkout. No rompe node, pero es deriva silenciosa del mismo tipo que ya
+# hizo mentir al comentario de arriba.
 *.py text eol=lf
+*.js text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+.gitattributes text eol=lf
 
 # Las piezas de redes son binarios; que git no intente convertirlas.
 *.jpg -text
