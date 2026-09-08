@@ -3,7 +3,17 @@
 # tools/instalar_hook.sh — los hooks no viajan con el repo, hay que
 # instalarlos en cada clon.
 #
-# Tres barreras, una por pagina publica, y las tres fallan en silencio:
+# Cuatro barreras. La primera corre SIEMPRE; las otras tres, una por pagina
+# publica, solo si el commit toca su pagina.
+#
+#   secretos  va la primera y no depende de que se toque nada. Una
+#             credencial puede aterrizar en cualquier archivo: un .py de
+#             tools/redes, el sitemap, una nota. Y este es el repositorio
+#             mas publico de los tres — no es que se pueda leer, es que
+#             GitHub Pages lo sirve. El barrido de los 43 commits del
+#             historial salio limpio; esto es para que siga siendo verdad.
+#
+# Las otras tres fallan en silencio, que es de lo que defienden:
 #
 #   tienda/  es lo unico que ve alguien que llega desde Instagram, y sus
 #            fallos no se ven leyendo el codigo. Se ven el dia que Apps
@@ -22,6 +32,9 @@
 #            contra el Codigo.js del asistente cuando lo encuentra.
 RAIZ="$(git rev-parse --show-toplevel)"
 CAMBIADOS="$(git diff --cached --name-only)"
+
+node "$RAIZ/tools/secretos.js" \
+  || { echo ""; echo "hay algo con forma de credencial en el repositorio: commit cancelado."; exit 1; }
 
 if echo "$CAMBIADOS" | grep -q "^tienda/index.html$"; then
   node "$RAIZ/tools/tienda.js" "$RAIZ/tienda/index.html" \
