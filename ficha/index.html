@@ -134,6 +134,10 @@
         <option value="Google / Web">Google o internet</option>
         <option value="Otro">Otro</option>
       </select></label>
+    <!-- Si llegó por recomendación, quién. Es el único canal con evidencia
+         de traer gente, y sin el nombre no se le puede agradecer. Opcional
+         siempre: nadie tiene que delatar a nadie para poder entrenar. -->
+    <label class="campo ancho"><span>Si te lo recomendó alguien, ¿quién? <em>(opcional, para agradecérselo)</em></span><input type="text" id="quienrecomendo" placeholder="Nombre de quien te habló de nosotros"></label>
   </div>
 
   <div class="bloque rojo" id="aviso-salud" hidden>
@@ -218,7 +222,8 @@
       'Fotos: ' + (imagen() === 'Si' ? 'SI' : 'NO'),
       /* Va al final y con etiqueta propia: el bot lo lee con
          US19_FICHA_campo_ y lo escribe en «Cómo nos conoció». */
-      'Como llegaste: ' + ($('comollegaste').value || '-')
+      'Como llegaste: ' + ($('comollegaste').value || '-'),
+      'Quien recomendo: ' + (limpio($('quienrecomendo').value) || '-')
     ].join('\n');
   }
 
