@@ -1,0 +1,57 @@
+{
+  "suite": "tools/ficha.js",
+  "fuente": "ficha/index.html",
+  "acompana": [],
+  "mutantes": [
+    {
+      "nombre": "se renombra la etiqueta que lee el bot (Emergencia -> Contacto)",
+      "de": "      'Emergencia: ' + (limpio($('emergencia').value) || '-'),",
+      "a": "      'Contacto: ' + (limpio($('emergencia').value) || '-'),"
+    },
+    {
+      "nombre": "se cae del mensaje la linea de como llego",
+      "de": "      'Como llegaste: ' + ($('comollegaste').value || '-'),\n",
+      "a": ""
+    },
+    {
+      "nombre": "las marcas de salud se separan con coma en vez de \" / \"",
+      "de": "s.join(' / ')",
+      "a": "s.join(', ')"
+    },
+    {
+      "nombre": "un campo vacio deja de viajar como \"-\"",
+      "de": "      'Medicamentos: ' + (limpio($('medicamentos').value) || '-'),",
+      "a": "      'Medicamentos: ' + limpio($('medicamentos').value),"
+    },
+    {
+      "nombre": "se puede enviar sin marcar el consentimiento",
+      "de": "    if (!$('acepta').checked) return falla(",
+      "a": "    if (false) return falla("
+    },
+    {
+      "nombre": "se puede enviar sin nombre",
+      "de": "    if (!limpio($('nombre').value)) return falla(",
+      "a": "    if (false) return falla("
+    },
+    {
+      "nombre": "decir NO a las fotos deja de poder enviarse",
+      "de": "    if (!imagen()) return falla(",
+      "a": "    if (imagen() !== 'Si') return falla("
+    },
+    {
+      "nombre": "la pagina empieza a guardar la ficha en el navegador",
+      "de": "    a.textContent = 'Abriendo WhatsApp...'; a.className = 'aviso-envio';",
+      "a": "    a.textContent = 'Abriendo WhatsApp...'; a.className = 'aviso-envio'; localStorage.setItem('us19_ficha', armar());"
+    },
+    {
+      "nombre": "se renombra un id en el marcado y no en el script",
+      "de": "id=\"emergencia\"",
+      "a": "id=\"contacto-emergencia\""
+    },
+    {
+      "nombre": "el limpiador deja de colapsar los espacios de mas",
+      "de": "  function limpio(v){ return String(v == null ? '' : v).trim().replace(/\\s+/g, ' '); }",
+      "a": "  function limpio(v){ return String(v == null ? '' : v).trim(); }"
+    }
+  ]
+}
