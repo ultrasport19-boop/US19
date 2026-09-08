@@ -1,0 +1,52 @@
+{
+  "suite": "tools/web.js",
+  "fuente": "index.html",
+  "acompana": [],
+  "mutantes": [
+    {
+      "nombre": "un JSON-LD se queda con una coma de mas y deja de parsear",
+      "de": "  \"currenciesAccepted\": \"CLP\",",
+      "a": "  \"currenciesAccepted\": \"CLP\",,"
+    },
+    {
+      "nombre": "el horario del JSON-LD deja de coincidir con el de la pagina",
+      "de": "    \"closes\": \"22:00\"",
+      "a": "    \"closes\": \"23:00\""
+    },
+    {
+      "nombre": "el telefono del JSON-LD deja de estar en la pagina",
+      "de": "  \"telephone\": \"+56929244042\",",
+      "a": "  \"telephone\": \"+56911111111\","
+    },
+    {
+      "nombre": "el precio minimo declarado no es el del plan mas barato",
+      "de": "  \"priceRange\": \"$15.000 - $35.000 CLP\",",
+      "a": "  \"priceRange\": \"$9.000 - $35.000 CLP\","
+    },
+    {
+      "nombre": "se renombra una seccion y el boton que apunta a ella se queda quieto",
+      "de": "id=\"planes\"",
+      "a": "id=\"nuestros-planes\""
+    },
+    {
+      "nombre": "desaparece «No constituye diagnostico medico» de la bioimpedancia",
+      "de": "No constituye diagnóstico médico.",
+      "a": "Resultados precisos y confiables."
+    },
+    {
+      "nombre": "se deja de remitir al medico ante una molestia",
+      "de": "te sugerimos consultar primero a tu médico",
+      "a": "adaptamos la carga y seguimos"
+    },
+    {
+      "nombre": "se cuela lenguaje clinico nuevo en el texto que lee el cliente",
+      "de": "<h3>Conversamos tu historial y tus objetivos</h3>",
+      "a": "<h3>Diagnóstico funcional y plan de tratamiento</h3>"
+    },
+    {
+      "nombre": "una imagen se queda sin alt",
+      "de": "<img src=\"img/hero.jpg\" alt=\"\" width=\"960\" height=\"1280\"",
+      "a": "<img src=\"img/hero.jpg\" width=\"960\" height=\"1280\""
+    }
+  ]
+}
