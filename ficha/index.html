@@ -120,6 +120,20 @@
   <div class="campos" style="margin-top:16px">
     <label class="campo ancho"><span>Cirugías, lesiones previas o condiciones que debamos conocer</span><textarea id="antecedentes"></textarea></label>
     <label class="campo ancho"><span>Medicamentos de uso habitual</span><textarea id="medicamentos"></textarea></label>
+    <!-- Atribución en el momento de entrar. El bot ya lo pregunta por
+         WhatsApp, pero solo si la persona escribe, y la mayoría no escribe:
+         104 de 113 fichas estaban sin este dato. Aquí lo llena todo el que
+         entra, sin un mensaje más. -->
+    <label class="campo ancho"><span>¿Cómo llegaste a Ultra-Sport 19? <em>(nos ayuda a saber qué funciona)</em></span>
+      <select id="comollegaste">
+        <option value="">Prefiero no decir</option>
+        <option value="Instagram">Instagram</option>
+        <option value="Facebook">Facebook</option>
+        <option value="Recomendación">Me lo recomendó alguien</option>
+        <option value="Pasó por el gym">Pasé por fuera y lo vi</option>
+        <option value="Google / Web">Google o internet</option>
+        <option value="Otro">Otro</option>
+      </select></label>
   </div>
 
   <div class="bloque rojo" id="aviso-salud" hidden>
@@ -201,7 +215,10 @@
       'Antecedentes: ' + (limpio($('antecedentes').value) || '-'),
       'Medicamentos: ' + (limpio($('medicamentos').value) || '-'),
       'Acepta: SI',
-      'Fotos: ' + (imagen() === 'Si' ? 'SI' : 'NO')
+      'Fotos: ' + (imagen() === 'Si' ? 'SI' : 'NO'),
+      /* Va al final y con etiqueta propia: el bot lo lee con
+         US19_FICHA_campo_ y lo escribe en «Cómo nos conoció». */
+      'Como llegaste: ' + ($('comollegaste').value || '-')
     ].join('\n');
   }
 
