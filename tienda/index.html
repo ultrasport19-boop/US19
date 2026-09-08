@@ -31,20 +31,30 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Barlow+Condensed:wght@500;600;700&display=swap">
 <style>
   :root{
+    /* Contraste medido, no a ojo. En claro fallaban cuatro colores el
+       minimo AA de 4.5:1 para texto pequeno: el gris secundario (3.65),
+       el rojo sobre el gris de las tarjetas (3.84), el rojo sobre el negro
+       de la cabecera (4.15) y el blanco sobre el verde del boton (4.31).
+       Se conserva --rojo para lo que es marca —bordes, cifras grandes— y
+       se anaden dos rojos legibles para texto. */
     --papel:#f4f2ee; --papel-2:#eae7e1; --tinta:#141416; --tinta-2:#4a4a50;
-    --tinta-3:#7d7d85; --linea:#d6d2ca; --linea-fuerte:#9a9a9f; --rojo:#E21C25;
-    --negro:#0b0b0c; --verde:#128C4A;
+    --tinta-3:#66666e; --linea:#d6d2ca; --linea-fuerte:#9a9a9f; --rojo:#E21C25;
+    --rojo-txt:#C8151D;   /* texto pequeno sobre papel: 5.25:1 y 4.75:1 */
+    --rojo-neg:#EC3A42;   /* texto pequeno sobre el negro de la cabecera: 4.92:1 */
+    --negro:#0b0b0c; --verde:#0E7A40;   /* blanco encima: 5.42:1 */
   }
   @media (prefers-color-scheme: dark){
     :root:not([data-theme="light"]){
       --papel:#0f0f11; --papel-2:#18181b; --tinta:#eceae6; --tinta-2:#b3b1ac;
       --tinta-3:#8a8880; --linea:#26262a; --linea-fuerte:#3d3d42; --rojo:#F2555C;
+      --rojo-txt:#F2555C; --rojo-neg:#F2555C;   /* en oscuro ya pasaban */
       --negro:#0b0b0c; --verde:#4ec27f;
     }
   }
   :root[data-theme="dark"]{
     --papel:#0f0f11; --papel-2:#18181b; --tinta:#eceae6; --tinta-2:#b3b1ac;
     --tinta-3:#8a8880; --linea:#26262a; --linea-fuerte:#3d3d42; --rojo:#F2555C;
+    --rojo-txt:#F2555C; --rojo-neg:#F2555C;
     --negro:#0b0b0c; --verde:#4ec27f;
   }
   *{box-sizing:border-box}
@@ -54,7 +64,7 @@
   .cab{background:var(--negro);margin:0 -18px;padding:22px 18px 18px;border-bottom:5px solid var(--rojo)}
   .cab .marca{font-family:'Anton',Impact,sans-serif;font-size:clamp(1.5rem,6vw,2.1rem);color:#f4f2ee;margin:0;line-height:1}
   .cab .marca span{color:var(--rojo)}
-  .cab .lema{font-family:'Barlow Condensed',sans-serif;font-size:.76rem;letter-spacing:.26em;color:var(--rojo);margin:7px 0 0;text-transform:uppercase}
+  .cab .lema{font-family:'Barlow Condensed',sans-serif;font-size:.76rem;letter-spacing:.26em;color:var(--rojo-neg);margin:7px 0 0;text-transform:uppercase}
 
   h1{font-family:'Anton',Impact,sans-serif;font-size:clamp(1.7rem,6vw,2.4rem);line-height:1.02;margin:26px 0 6px}
   .sub{color:var(--tinta-2);margin:0;max-width:60ch}
@@ -62,7 +72,7 @@
   .pronto{margin:22px 0 4px;border:1px solid var(--linea-fuerte);border-left:5px solid var(--rojo);
     background:var(--papel-2);border-radius:5px;padding:20px 22px}
   .pronto .eti{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.82rem;
-    letter-spacing:.20em;text-transform:uppercase;color:var(--rojo);display:block;margin-bottom:7px}
+    letter-spacing:.20em;text-transform:uppercase;color:var(--rojo-txt);display:block;margin-bottom:7px}
   .pronto h2{font-family:'Anton',Impact,sans-serif;font-size:1.3rem;margin:0 0 8px;letter-spacing:.01em}
   .pronto p{margin:0 0 14px;max-width:56ch;font-size:.95rem;color:var(--tinta-2)}
   .pronto a{display:inline-block;background:var(--verde);color:#fff;text-decoration:none;
@@ -97,7 +107,8 @@
   .card .cuerpo{padding:12px 13px 13px;display:flex;flex-direction:column;gap:5px;flex:1}
   .card h3{font-family:'Barlow',sans-serif;font-weight:600;font-size:1rem;margin:0;line-height:1.25}
   .card .meta{font-family:'Barlow Condensed',sans-serif;font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;color:var(--tinta-3)}
-  .card .precio{font-family:'Anton',sans-serif;font-size:1.25rem;color:var(--rojo);margin-top:auto;padding-top:6px}
+  .card .precio{font-family:'Anton',sans-serif;font-size:1.25rem;color:var(--rojo-txt);margin-top:auto;padding-top:6px}
+  .card .meta.notas{text-transform:none;letter-spacing:0}
   .card button{
     font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.92rem;letter-spacing:.1em;text-transform:uppercase;
     background:var(--tinta);color:var(--papel);border:none;border-radius:4px;padding:10px;cursor:pointer;margin-top:9px;
@@ -105,12 +116,25 @@
   .card.puesto{border-color:var(--verde)}
   .card.puesto button{background:var(--verde);color:#fff}
 
+  /* Mientras responde Apps Script (en frio tarda segundos) la pagina se
+     quedaba en blanco con una linea de texto. Seis siluetas dicen «esto va
+     a llenarse» sin prometer nada. */
+  .card.esq{pointer-events:none}
+  .card.esq .foto{background:linear-gradient(90deg,var(--linea) 25%,var(--papel-2) 37%,var(--linea) 63%);background-size:400% 100%;animation:brillo 1.4s ease-in-out infinite}
+  .card.esq .lin{display:block;height:11px;border-radius:3px;background:var(--linea)}
+  .card.esq .lin.corta{width:55%}
+  @keyframes brillo{0%{background-position:100% 0}100%{background-position:0 0}}
+  @media (prefers-reduced-motion:reduce){.card.esq .foto{animation:none}}
+
   .vacio{border:1px dashed var(--linea-fuerte);border-radius:6px;padding:34px 22px;text-align:center;color:var(--tinta-3);margin-top:24px}
   .vacio strong{display:block;color:var(--tinta);font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px}
 
   .barra{
     position:fixed;left:0;right:0;bottom:0;background:var(--negro);color:#f4f2ee;
-    padding:13px 18px;display:none;align-items:center;gap:14px;justify-content:center;flex-wrap:wrap;
+    /* En un iPhone la franja del gesto de inicio se come el ultimo centimetro
+       y el boton de reservar quedaba medio tapado. */
+    padding:13px 18px calc(13px + env(safe-area-inset-bottom,0px));
+    display:none;align-items:center;gap:14px;justify-content:center;flex-wrap:wrap;
     border-top:4px solid var(--rojo);
   }
   .barra.visible{display:flex}
@@ -131,7 +155,7 @@
   .cond .fuerte{background:var(--papel-2);border-left:4px solid var(--rojo);padding:14px 17px;margin:12px 0}
   .cond .fuerte p:last-child{margin-bottom:0}
   .pie{margin-top:40px;padding-top:16px;border-top:1px solid var(--linea);font-size:.85rem;color:var(--tinta-3)}
-  a{color:var(--rojo)}
+  a{color:var(--rojo-txt)}
   @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -146,10 +170,11 @@
   <h1>Tienda</h1>
   <p class="sub">Ropa deportiva seleccionada pieza por pieza. Cada prenda es única: cuando alguien la aparta, desaparece de aquí.</p>
 
-  <!-- Mientras no llegue el primer fardo. Cuando esté cargado, se borra
-       esta sección entera: dejarla después haría parecer vacía una tienda
-       que ya tiene ropa. -->
-  <section class="pronto">
+  <!-- Mientras no haya ropa cargada. Ya NO hay que acordarse de borrarla:
+       el script la esconde solo en cuanto el catálogo trae prendas. Se deja
+       visible en el HTML a propósito, porque si el catálogo no carga es lo
+       correcto que se vea. -->
+  <section class="pronto" id="pronto">
     <span class="eti">Próximamente</span>
     <h2>El primer fardo viene en camino</h2>
     <p>Lo que ves acá abajo es el comienzo. En cuanto llegue, esto se llena de prendas —cada una
@@ -160,10 +185,15 @@
 
   <div class="filtros" id="filtros" role="group" aria-label="Filtrar por categoría"></div>
   <div class="filtros tallas" id="tallas" role="group" aria-label="Filtrar por talla"></div>
-  <p class="conteo" id="conteo">Cargando el catálogo…</p>
-  <p class="nota" id="nota" hidden></p>
+  <div class="filtros tallas" id="orden" role="group" aria-label="Ordenar"></div>
+  <!-- aria-live: quien navega con lector de pantalla se entera de que el
+       recuento cambió al tocar un filtro, en vez de quedarse a ciegas. -->
+  <p class="conteo" id="conteo" aria-live="polite">Cargando el catálogo…</p>
+  <p class="nota" id="nota" role="status" aria-live="polite" hidden></p>
 
-  <ul class="grid" id="grid"></ul>
+  <!-- role="list" explícito: con list-style:none Safari deja de anunciarla
+       como lista y el lector no dice cuántas prendas hay. -->
+  <ul class="grid" id="grid" role="list"></ul>
 
   <div class="vacio" id="vacio" hidden>
     <strong>Todavía no hay prendas publicadas</strong>
@@ -225,12 +255,24 @@
   var WSP = '56965902238';
 
   var $ = function(id){ return document.getElementById(id); };
-  var prendas = [], filtro = '', filtroTalla = '', carro = {}, ultimaCarga = 0;
-  var MAX_PEDIDO = 12;                 // igual que TIENDA_CFG.MAX_POR_PEDIDO en el bot
+  var prendas = [], filtro = '', filtroTalla = '', orden = '', carro = {}, ultimaCarga = 0;
+  /* Lo manda el propio catalogo (TIENDA_CFG.MAX_POR_PEDIDO). El 12 es solo
+     el valor de respaldo por si el endpoint no lo trae: antes estaba escrito
+     a mano en los dos sitios y bastaba cambiar uno para que dejaran de
+     coincidir en silencio. */
+  var MAX_PEDIDO = 12;
 
   /* El carro sobrevive a una recarga o a un viaje a WhatsApp y de vuelta.
      Caduca a las 24 h: mas alla, lo que eligio ya no existe. */
   var LLAVE = 'us19_tienda_carro_v1';
+  /* Copia del ultimo catalogo que se vio bien. Sirve para pintar la tienda
+     al instante mientras responde Apps Script (que en frio tarda segundos)
+     y para no dejar la pagina en blanco si el servidor no contesta. Media
+     hora: las fotos que firma Notion duran una, y una copia mas vieja
+     mostraria recuadros rotos. */
+  var LLAVE_CAT = 'us19_tienda_catalogo_v1';
+  var SNAP_MS = 1800000;
+
   function guardarCarro(){
     try { localStorage.setItem(LLAVE, JSON.stringify({ t: Date.now(), c: carro })); } catch(e){}
   }
@@ -243,11 +285,47 @@
       carro = o.c;
     } catch(e){ carro = {}; }
   }
+  function guardarCatalogo(d){
+    try { localStorage.setItem(LLAVE_CAT, JSON.stringify({ t: Date.now(), d: d })); } catch(e){}
+  }
+  function cargarCatalogo(){
+    try {
+      var raw = localStorage.getItem(LLAVE_CAT);
+      if (!raw) return null;
+      var o = JSON.parse(raw);
+      if (!o || !o.d || (Date.now() - (o.t || 0)) > SNAP_MS) return null;
+      return o.d;
+    } catch(e){ return null; }
+  }
 
   function clp(n){ return '$' + Number(n || 0).toLocaleString('es-CL'); }
   function esc(s){
     return String(s == null ? '' : s)
-      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  }
+
+  /* --- Filtros en la direccion ---------------------------------------
+     Para poder mandar por WhatsApp «mira las poleras talla M» y que el
+     enlace abra ya filtrado. Tambien hace que el boton Atras del telefono
+     deshaga el filtro en vez de salirse de la tienda. */
+  function leerHash(){
+    var h = String(location.hash || '').replace(/^#/, '');
+    if (!h) return;
+    h.split('&').forEach(function(par){
+      var i = par.indexOf('='); if (i < 0) return;
+      var k = par.slice(0, i), v = decodeURIComponent(par.slice(i + 1));
+      if (k === 'cat') filtro = v;
+      else if (k === 'talla') filtroTalla = v;
+      else if (k === 'orden') orden = v;
+    });
+  }
+  function escribirHash(){
+    var p = [];
+    if (filtro) p.push('cat=' + encodeURIComponent(filtro));
+    if (filtroTalla) p.push('talla=' + encodeURIComponent(filtroTalla));
+    if (orden) p.push('orden=' + encodeURIComponent(orden));
+    var nuevo = p.length ? '#' + p.join('&') : ' ';
+    try { history.replaceState(null, '', nuevo === ' ' ? location.pathname + location.search : nuevo); } catch(e){}
   }
 
   function pintarFiltros(){
@@ -264,28 +342,51 @@
        aparece si hay tallas distintas que elegir. */
     var tallas = [];
     prendas.forEach(function(p){ if (p.talla && tallas.indexOf(p.talla) === -1) tallas.push(p.talla); });
-    var orden = ['XS','S','M','L','XL','XXL'];
+    var ordenTallas = ['XS','S','M','L','XL','XXL'];
     tallas.sort(function(a,b){
-      var ia = orden.indexOf(String(a).toUpperCase()), ib = orden.indexOf(String(b).toUpperCase());
+      var ia = ordenTallas.indexOf(String(a).toUpperCase()), ib = ordenTallas.indexOf(String(b).toUpperCase());
       if (ia !== -1 && ib !== -1) return ia - ib;
       if (ia !== -1) return -1;
       if (ib !== -1) return 1;
       return String(a).localeCompare(String(b), 'es', { numeric: true });
     });
-    if (tallas.length < 2){ $('tallas').innerHTML = ''; return; }
-    var ht = '<button class="chip" type="button" data-talla="" aria-pressed="' + (filtroTalla === '') + '">Toda talla</button>';
-    tallas.forEach(function(t){
-      ht += '<button class="chip" type="button" data-talla="' + esc(t) + '" aria-pressed="' + (filtroTalla === t) + '">' + esc(t) + '</button>';
-    });
-    $('tallas').innerHTML = ht;
+    if (tallas.length < 2){ $('tallas').innerHTML = ''; }
+    else {
+      var ht = '<button class="chip" type="button" data-talla="" aria-pressed="' + (filtroTalla === '') + '">Toda talla</button>';
+      tallas.forEach(function(t){
+        ht += '<button class="chip" type="button" data-talla="' + esc(t) + '" aria-pressed="' + (filtroTalla === t) + '">' + esc(t) + '</button>';
+      });
+      $('tallas').innerHTML = ht;
+    }
+
+    /* Ordenar solo tiene sentido cuando hay bastante que ordenar. Con seis
+       prendas se ven todas de un vistazo y el control estorba. */
+    var o = $('orden');
+    if (!o) return;
+    if (prendas.length < 8){ o.innerHTML = ''; return; }
+    o.innerHTML =
+      '<button class="chip" type="button" data-orden="" aria-pressed="' + (orden === '') + '">Lo último</button>' +
+      '<button class="chip" type="button" data-orden="barato" aria-pressed="' + (orden === 'barato') + '">Más barato</button>' +
+      '<button class="chip" type="button" data-orden="caro" aria-pressed="' + (orden === 'caro') + '">Más caro</button>';
   }
 
   function visibles(){
-    return prendas.filter(function(p){
+    var lista = prendas.filter(function(p){
       if (filtro && p.categoria !== filtro) return false;
       if (filtroTalla && p.talla !== filtroTalla) return false;
       return true;
     });
+    /* Sin orden elegido manda el que trae el catalogo: lo ultimo cargado
+       primero, que es lo que la gente vuelve a mirar. */
+    if (orden === 'barato') lista = lista.slice().sort(function(a,b){ return (a.precio||0) - (b.precio||0); });
+    else if (orden === 'caro') lista = lista.slice().sort(function(a,b){ return (b.precio||0) - (a.precio||0); });
+    return lista;
+  }
+
+  function esqueleto(n){
+    var h = '';
+    for (var i = 0; i < n; i++) h += '<li class="card esq" aria-hidden="true"><div class="foto"></div><div class="cuerpo"><span class="lin"></span><span class="lin corta"></span></div></li>';
+    $('grid').innerHTML = h;
   }
 
   function pintar(){
@@ -303,7 +404,7 @@
         '<div class="foto">' +
           /* Las URL de Notion caducan a la hora: si la foto no carga, el
              recuadro «sin foto» se entiende, el hueco gris no. */
-          (p.foto ? '<img src="' + esc(p.foto) + '" alt="' + esc(p.nombre) + '" loading="lazy"' +
+          (p.foto ? '<img src="' + esc(p.foto) + '" alt="' + esc(p.nombre) + '" loading="lazy" decoding="async"' +
                     ' onerror="this.parentNode.insertAdjacentHTML(\'afterbegin\',\'<div class=&quot;vacia&quot;>sin foto</div>\');this.remove();">'
                   : '<div class="vacia">sin foto</div>') +
           (p.talla ? '<span class="talla">' + esc(p.talla) + '</span>' : '') +
@@ -313,14 +414,14 @@
         (p.fotos && p.fotos.length > 1
           ? '<div class="minis">' + p.fotos.map(function(f, i){
               return '<button class="mini" type="button" data-mini="' + i + '" data-para="' + esc(p.id) + '"' +
-                     ' aria-pressed="' + (i === 0) + '" aria-label="Foto ' + (i + 1) + '">' +
-                     '<img src="' + esc(f) + '" alt="" loading="lazy"></button>';
+                     ' aria-pressed="' + (i === 0) + '" aria-label="Foto ' + (i + 1) + ' de ' + esc(p.nombre) + '">' +
+                     '<img src="' + esc(f) + '" alt="" loading="lazy" decoding="async"></button>';
             }).join('') + '</div>'
           : '') +
         '<div class="cuerpo">' +
           '<h3>' + esc(p.nombre) + '</h3>' +
           (meta ? '<span class="meta">' + esc(meta) + '</span>' : '') +
-          (p.notas ? '<span class="meta" style="text-transform:none;letter-spacing:0">' + esc(p.notas) + '</span>' : '') +
+          (p.notas ? '<span class="meta notas">' + esc(p.notas) + '</span>' : '') +
           '<span class="precio">' + clp(p.precio) + '</span>' +
           '<button type="button" data-id="' + esc(p.id) + '">' + (puesto ? 'Quitar' : 'Lo quiero') + '</button>' +
         '</div>' +
@@ -357,6 +458,17 @@
       var tarjeta = mini.closest('.card');
       var g = tarjeta ? tarjeta.querySelector('.foto img') : null;
       var pequena = mini.querySelector('img');
+      /* Si la foto grande fallo, this.remove() la saco del DOM y no habia
+         nada que cambiar: el toque en la miniatura no hacia nada. Se repone
+         la imagen con la que el comprador acaba de elegir. */
+      if (!g && tarjeta && pequena){
+        var hueco = tarjeta.querySelector('.foto .vacia');
+        if (hueco){
+          hueco.insertAdjacentHTML('beforebegin', '<img alt="" loading="lazy" decoding="async">');
+          g = tarjeta.querySelector('.foto img');
+          hueco.remove();
+        }
+      }
       if (g && pequena) g.src = pequena.src;
       var todas = tarjeta.querySelectorAll('.mini');
       for (var k = 0; k < todas.length; k++) todas[k].setAttribute('aria-pressed', String(todas[k] === mini));
@@ -365,18 +477,20 @@
     var chip = ev.target.closest ? ev.target.closest('.chip') : null;
     if (chip){
       if (chip.hasAttribute('data-talla')) filtroTalla = chip.getAttribute('data-talla') || '';
+      else if (chip.hasAttribute('data-orden')) orden = chip.getAttribute('data-orden') || '';
       else filtro = chip.getAttribute('data-cat') || '';
-      pintarFiltros(); pintar(); return;
+      escribirHash(); pintarFiltros(); pintar(); return;
     }
     var btn = ev.target.closest ? ev.target.closest('.card button') : null;
     if (btn){
       var id = btn.getAttribute('data-id');
+      if (!id) return;
       if (carro[id]) delete carro[id];
       else {
-        /* El bot solo aparta 12 por pedido y descartaba el resto sin decir
-           nada: alguien elegia 15 y recibia 12 sin explicacion. */
+        /* El bot solo aparta MAX_PEDIDO por pedido y descartaba el resto sin
+           decir nada: alguien elegia 15 y recibia 12 sin explicacion. */
         if (Object.keys(carro).length >= MAX_PEDIDO){
-          nota('Puedes reservar hasta <b>' + MAX_PEDIDO + ' prendas por pedido</b>. Manda este y enseguida armamos otro, o escríbenos y lo vemos juntos.');
+          nota('Puedes reservar hasta <b>' + MAX_PEDIDO + ' prendas por pedido</b>. Manda este y enseguida armamos otro, o escríbenos y lo vemos juntos.', true);
           return;
         }
         for (var i = 0; i < prendas.length; i++) if (prendas[i].id === id) { carro[id] = prendas[i]; break; }
@@ -419,10 +533,14 @@
     window.location.href = 'https://wa.me/' + WSP + '?text=' + encodeURIComponent(mensaje());
   });
 
-  function nota(txt){
+  /* `html` en true solo para los textos que escribimos nosotros. Lo que
+     viene de Notion pasa SIEMPRE por esc(): un nombre de prenda con un
+     signo raro no puede acabar ejecutandose en el navegador de nadie. */
+  function nota(txt, html){
     var n = $('nota');
     if (!txt){ n.hidden = true; n.textContent = ''; return; }
-    n.innerHTML = txt; n.hidden = false;
+    if (html) n.innerHTML = txt; else n.textContent = txt;
+    n.hidden = false;
   }
 
   /* Lo que el carro guarda puede llevarselo otra persona mientras tanto.
@@ -439,54 +557,102 @@
     return perdidas;
   }
 
+  function noSePudo(){
+    $('conteo').textContent = '';
+    $('vacio').hidden = false;
+    $('vacio').innerHTML = '<strong>No pudimos cargar el catálogo</strong>Recarga la página en un momento, o escríbenos por WhatsApp y te contamos qué hay disponible.';
+  }
+
+  /* Apps Script en frio tarda segundos y a veces no contesta. Sin plazo, la
+     pagina se quedaba en «Cargando el catálogo…» para siempre. */
+  function pedirCatalogo(ms){
+    if (typeof AbortController !== 'function' || typeof fetch !== 'function'){
+      return fetch(API).then(function(r){ return r.json(); });
+    }
+    var ctrl = new AbortController();
+    var reloj = setTimeout(function(){ ctrl.abort(); }, ms);
+    return fetch(API, { signal: ctrl.signal })
+      .then(function(r){ clearTimeout(reloj); return r.json(); },
+            function(e){ clearTimeout(reloj); throw e; });
+  }
+
+  function aplicar(d, deCopia){
+    prendas = (d && Array.isArray(d.prendas)) ? d.prendas : [];
+    if (d && d.wsp) WSP = String(d.wsp);
+    if (d && Number(d.maxPedido) > 0) MAX_PEDIDO = Number(d.maxPedido);
+
+    /* El aviso de «próximamente» es de cuando no habia nada que vender. Con
+       ropa cargada, dejarlo puesto hace parecer vacia una tienda llena, y
+       ademas nadie se acuerda de borrarlo a mano. Se decide solo. */
+    var pronto = $('pronto');
+    if (pronto) pronto.hidden = prendas.length > 0;
+
+    if (d && d.error && !prendas.length){ noSePudo(); return; }
+    if (!prendas.length){
+      $('conteo').textContent = '';
+      $('vacio').hidden = false;
+      $('grid').innerHTML = '';
+      $('filtros').innerHTML = ''; $('tallas').innerHTML = '';
+      var oo = $('orden'); if (oo) oo.innerHTML = '';
+      return;
+    }
+    $('vacio').hidden = true;
+
+    var perdidas = reconciliar();
+    if (deCopia){
+      nota('Mostrando lo último que guardamos mientras cargamos el catálogo…', true);
+    } else if (d && d.respaldo){
+      nota('Estamos mostrando la última versión guardada del catálogo, así que puede que alguna foto no cargue. Recarga en un rato.', true);
+    } else if (perdidas.length){
+      nota('<b>' + esc(perdidas.slice(0,3).join(', ')) + (perdidas.length > 3 ? ' y otras' : '') + '</b> ya no está' + (perdidas.length > 1 ? 'n' : '') + ' disponible' + (perdidas.length > 1 ? 's' : '') + '. Las quitamos de tu selección.', true);
+    } else {
+      nota('');
+    }
+
+    if (d && d.actualizado){
+      $('actualizado').textContent = ' · Catálogo actualizado el ' + String(d.actualizado).slice(8,10) + '/' + String(d.actualizado).slice(5,7) + ' a las ' + String(d.actualizado).slice(11,16) + '.';
+    }
+    pintarFiltros();
+    pintar();
+    enlacePreguntar();
+  }
+
   function cargar(esRecarga){
-    return fetch(API)
-      .then(function(r){ return r.json(); })
+    return pedirCatalogo(9000)
       .then(function(d){
         ultimaCarga = Date.now();
-        prendas = (d && Array.isArray(d.prendas)) ? d.prendas : [];
-        if (d && d.wsp) WSP = String(d.wsp);
-
-        if (d && d.error){
-          $('conteo').textContent = '';
-          $('vacio').hidden = false;
-          $('vacio').innerHTML = '<strong>No pudimos cargar el catálogo</strong>Recarga la página en un momento, o escríbenos por WhatsApp y te contamos qué hay disponible.';
-          return;
-        }
-        if (!prendas.length){
-          $('conteo').textContent = '';
-          $('vacio').hidden = false;
-          $('grid').innerHTML = '';
-          $('filtros').innerHTML = ''; $('tallas').innerHTML = '';
-          return;
-        }
-        $('vacio').hidden = true;
-
-        var perdidas = reconciliar();
-        if (d && d.respaldo){
-          nota('Estamos mostrando la última versión guardada del catálogo, así que puede que alguna foto no cargue. Recarga en un rato.');
-        } else if (perdidas.length){
-          nota('<b>' + perdidas.slice(0,3).join(', ') + (perdidas.length > 3 ? ' y otras' : '') + '</b> ya no está' + (perdidas.length > 1 ? 'n' : '') + ' disponible' + (perdidas.length > 1 ? 's' : '') + '. Las quitamos de tu selección.');
-        } else {
-          nota('');
-        }
-
-        if (d && d.actualizado){
-          $('actualizado').textContent = ' · Catálogo actualizado el ' + String(d.actualizado).slice(8,10) + '/' + String(d.actualizado).slice(5,7) + ' a las ' + String(d.actualizado).slice(11,16) + '.';
-        }
-        pintarFiltros();
-        pintar();
-        enlacePreguntar();
+        if (d && Array.isArray(d.prendas) && !d.respaldo && !d.error) guardarCatalogo(d);
+        aplicar(d, false);
       })
       .catch(function(){
-        if (esRecarga) return;                 // ya hay algo pintado: no lo borres
-        $('conteo').textContent = '';
-        $('vacio').hidden = false;
-        $('vacio').innerHTML = '<strong>No pudimos cargar el catálogo</strong>Recarga la página en un momento, o escríbenos por WhatsApp y te contamos qué hay disponible.';
+        /* Un solo reintento, y a los dos segundos: casi siempre es el
+           arranque en frio de Apps Script, no una caida. */
+        return new Promise(function(ok){ setTimeout(ok, 2000); }).then(function(){
+          return pedirCatalogo(9000).then(function(d){
+            ultimaCarga = Date.now();
+            if (d && Array.isArray(d.prendas) && !d.respaldo && !d.error) guardarCatalogo(d);
+            aplicar(d, false);
+          });
+        });
+      })
+      .catch(function(){
+        /* Ni con reintento. Si hay algo pintado —de la copia o de una carga
+           anterior— se deja: una tienda con precios de hace un rato sirve
+           mucho mas que un cartel de error. */
+        if (esRecarga || prendas.length){
+          nota('No pudimos actualizar el catálogo. Lo que ves puede haber cambiado; te lo confirmamos por WhatsApp.', true);
+          return;
+        }
+        noSePudo();
       });
   }
 
+  leerHash();
   cargarCarro();
+  /* Primero lo que ya tenemos, para que la tienda aparezca de inmediato;
+     el catalogo de verdad la reemplaza en cuanto llega. */
+  var copia = cargarCatalogo();
+  if (copia) aplicar(copia, true); else esqueleto(6);
   cargar(false);
 
   /* Notion firma las URL de las fotos por una hora. Una pestana que lleva
