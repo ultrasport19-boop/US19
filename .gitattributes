@@ -1,0 +1,8 @@
+# Los scripts de shell van SIEMPRE en LF. Con CRLF, un clon nuevo en Git
+# Bash puede fallar con «bad interpreter: /bin/sh^M» y el hook no corre,
+# que es justo el momento en que nadie lo mira.
+*.sh text eol=lf
+
+# Las paginas quedan como estan: tienda/index.html esta en CRLF y las
+# anclas de los parches cuentan con ello.
+*.html -text
