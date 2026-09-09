@@ -47,7 +47,12 @@ FOTOS = IMG
 # El repo de las paginas es publico y este material es de terceros.
 ILUS = os.path.join(BASE, "fuentes_img")
 
-W, H = 1080, 1350          # 4:5 — el unico vertical que acepta el feed
+# Dos formatos con el mismo diseno:
+#   feed 1080x1350 (4:5) — el unico vertical que acepta el feed de Instagram
+#   historia 1080x1920 (9:16) — el que rechaza el feed y pide la historia
+# W, H y MITAD se reasignan antes de cada tanda; el resto del dibujo los lee.
+FORMATOS = [("feed", 1080, 1350), ("historia", 1080, 1920)]
+W, H = 1080, 1350
 MITAD = H // 2
 M = 72
 
@@ -195,57 +200,105 @@ def lamina(idx, frase, antes, despues, maqueta, img_antes=None, img_despues=None
 #  Cada entrada: la frase que se repite, y que se ve en cada mitad.
 # =========================================================================
 LAMINAS = [
-    dict(frase="No tengo tiempo.",
-         antes="La excusa: sentado, agotado, mirando el telefono.",
-         despues="La prioridad: la hora reservada y aparecer.",
+    dict(frase="Me subió el peso.",
+         antes="La báscula. Cara de derrota.",
+         despues="La barra. La misma frase, otra cosa.",
          img_antes="antes.jpg", img_despues="despues.jpg"),
 
-    dict(frase="Me esta costando.",
-         antes="Suena a queja, a mitad de la serie.",
-         despues="Suena a orgullo: cuesta porque estas subiendo.",
+    dict(frase="Mañana toca pierna.",
+         antes="Pánico. Ya duele solo de pensarlo.",
+         despues="Ganas. Es el día bueno de la semana.",
          img_antes="antes.jpg", img_despues="despues.jpg"),
 
-    dict(frase="Solo llevo una semana.",
-         antes="Impaciencia, comparandose con el de al lado.",
-         despues="Una semana mas que quien no empezo.",
+    dict(frase="No puedo más.",
+         antes="Rendirse en la serie tres.",
+         despues="La última repetición, la que cuenta.",
          img_antes="antes.jpg", img_despues="despues.jpg"),
 
-    dict(frase="Hoy no tenia ganas.",
-         antes="La razon para no ir.",
-         despues="Y fue igual. Eso es lo que lo cambia todo.",
+    dict(frase="Me duele todo.",
+         antes="Queja del día siguiente.",
+         despues="Medalla del día siguiente.",
          img_antes="antes.jpg", img_despues="despues.jpg"),
 
-    dict(frase="Voy lento.",
-         antes="Verguenza, ultimo del grupo.",
-         despues="Lento sigue siendo hacia adelante.",
+    dict(frase="Otra vez aquí.",
+         antes="Suena a condena.",
+         despues="Suena a casa.",
          img_antes="antes.jpg", img_despues="despues.jpg"),
 ]
 
 
-def main():
-    for carpeta in ("maqueta", "final"):
-        os.makedirs(os.path.join(SALIDA, carpeta), exist_ok=True)
+# Segunda tanda, con el otro par de caras. Mismo formato: la misma frase
+# dicha desde el agotamiento y desde la satisfaccion. Aqui el «antes» esta
+# sentado y reventado, asi que las frases van del esfuerzo y no del miedo.
+LAMINAS_B = [
+    dict(frase="Terminé la rutina.",
+         antes="Reventado, sentado, sin aire.",
+         despues="Orgulloso. La misma frase, otro dia.",
+         img_antes="antes_goku.jpg", img_despues="despues_goku.jpg"),
 
-    print("US19 · carrusel «la misma frase, otra persona»  " + str(W) + "x" + str(H))
+    dict(frase="No siento las piernas.",
+         antes="Justo después del día de pierna.",
+         despues="Y volvería a hacerlo mañana.",
+         img_antes="antes_goku.jpg", img_despues="despues_goku.jpg"),
+
+    dict(frase="Me falta la última serie.",
+         antes="Agonía. Falta una y pesa como diez.",
+         despues="Recta final. Falta una y ya está.",
+         img_antes="antes_goku.jpg", img_despues="despues_goku.jpg"),
+
+    dict(frase="Llevo tres meses viniendo.",
+         antes="Dicho con cansancio.",
+         despues="Dicho como lo que es: una racha.",
+         img_antes="antes_goku.jpg", img_despues="despues_goku.jpg"),
+
+    dict(frase="Hoy vine solo.",
+         antes="Nadie me acompañó.",
+         despues="No necesité que nadie me acompañara.",
+         img_antes="antes_goku.jpg", img_despues="despues_goku.jpg"),
+]
+
+
+TANDAS = [("US19C", LAMINAS), ("US19D", LAMINAS_B)]
+
+
+def main():
+    global W, H, MITAD
+    # Se vacia antes de generar: si no, al cambiar una frase queda el PNG
+    # viejo al lado del nuevo y acabas subiendo la tanda equivocada.
+    carpetas = [f + "_" + c for (f, _, _) in FORMATOS for c in ("maqueta", "final")]
+    for carpeta in carpetas:
+        ruta = os.path.join(SALIDA, carpeta)
+        os.makedirs(ruta, exist_ok=True)
+        for viejo in os.listdir(ruta):
+            if viejo.lower().endswith(".png"):
+                os.remove(os.path.join(ruta, viejo))
+
+    print("US19 · «la misma frase, otra persona»")
     print("")
-    for i, p in enumerate(LAMINAS, 1):
-        for carpeta, maq in (("maqueta", True), ("final", False)):
+    for nombre_f, ancho, alto in FORMATOS:
+      W, H = ancho, alto
+      MITAD = H // 2
+      print("  " + nombre_f + "  " + str(W) + "x" + str(H))
+      for prefijo, laminas in TANDAS:
+       for i, p in enumerate(laminas, 1):
+        for sufijo, maq in (("maqueta", True), ("final", False)):
+            carpeta = nombre_f + "_" + sufijo
             im = lamina(i, p["frase"], p["antes"], p["despues"], maq,
                         p.get("img_antes"), p.get("img_despues"))
-            nom = "US19C_%02d_%s.png" % (i, p["frase"].lower()
+            nom = prefijo + "_%02d_%s.png" % (i, p["frase"].lower()
                                          .replace(" ", "-").replace(".", "")
                                          .replace("á", "a").replace("é", "e")
                                          .replace("í", "i").replace("ó", "o")
-                                         .replace("ú", "u"))
+                                         .replace("ú", "u")
+                                         .replace("ñ", "n"))
             ruta = os.path.join(SALIDA, carpeta, nom)
             im.save(ruta, "PNG")
-        print("  %d/5  «%s»" % (i, p["frase"]))
+       print("    " + prefijo + ": 5 laminas")
 
     print("")
-    print("  maqueta -> " + os.path.join(SALIDA, "maqueta") + "   (con guias y que va en cada hueco)")
-    print("  final   -> " + os.path.join(SALIDA, "final") + "   (limpio, para montar la ilustracion)")
-    print("")
-    print("  Cada hueco de ilustracion mide " + str(W - M) + "x" + str(MITAD - M) + " px.")
+    print("  Todo en " + SALIDA)
+    print("  <formato>_final    limpio, para publicar")
+    print("  <formato>_maqueta  con guias, para encargar la ilustracion")
 
 
 if __name__ == "__main__":
