@@ -40,6 +40,12 @@ FUENTES = os.path.join(BASE, "fuentes")
 SALIDA = os.path.join(BASE, "salida_carrusel")
 IMG = os.path.abspath(os.path.join(BASE, "..", "..", "img"))
 LOGO = os.path.join(IMG, "logo.png")
+# Un nombre suelto en `img_antes` se busca aqui; una ruta absoluta se usa
+# tal cual, que es como entran las ilustraciones que no viven en el repo.
+FOTOS = IMG
+# Las ilustraciones del carrusel: NO se versionan (van en .gitignore).
+# El repo de las paginas es publico y este material es de terceros.
+ILUS = os.path.join(BASE, "fuentes_img")
 
 W, H = 1080, 1350          # 4:5 — el unico vertical que acepta el feed
 MITAD = H // 2
@@ -109,13 +115,56 @@ def marca(d, y):
     d.text((x, y), "19", font=fnt, fill=DORADO, anchor="la")
 
 
-def lamina(idx, frase, antes, despues, maqueta):
+def montar(im, ruta, y0, y1, velo):
+    """Encaja una imagen en la mitad que le toca, recortando por el centro.
+
+    El velo oscuro no es decoracion: el titular va en blanco y sobre una foto
+    clara desaparece. Es la misma razon por la que la piel «foto» de
+    historias.py lleva degradado.
+    """
+    if not ruta:
+        return False
+    if os.path.isabs(ruta):
+        p = ruta
+    else:
+        p = os.path.join(ILUS, ruta)
+        if not os.path.exists(p):
+            p = os.path.join(FOTOS, ruta)
+    if not os.path.exists(p):
+        print("    (no encuentro " + ruta + ", ese hueco queda liso)")
+        return False
+
+    alto = y1 - y0
+    src = Image.open(p).convert("RGB")
+    # Recorte por el centro al aspecto del hueco: deformar una foto de la
+    # sala se nota enseguida en las lineas rectas del techo.
+    escala = max(W / src.width, alto / src.height)
+    nueva = src.resize((max(1, int(src.width * escala)), max(1, int(src.height * escala))))
+    izq = (nueva.width - W) // 2
+    arr = (nueva.height - alto) // 2
+    im.paste(nueva.crop((izq, arr, izq + W, arr + alto)), (0, y0))
+
+    if velo:
+        capa = Image.new("RGBA", (W, alto), (0, 0, 0, velo))
+        im.paste(Image.alpha_composite(
+            im.crop((0, y0, W, y1)).convert("RGBA"), capa).convert("RGB"), (0, y0))
+    return True
+
+
+def lamina(idx, frase, antes, despues, maqueta, img_antes=None, img_despues=None):
     im = Image.new("RGB", (W, H), ROJO)
     d = ImageDraw.Draw(im, "RGBA")
 
     # La mitad de abajo, un punto mas oscura: separa las dos escenas sin
     # necesidad de una linea, que ensuciaria el montaje de la ilustracion.
     d.rectangle([0, MITAD, W, H], fill=ROJO_OSCURO)
+
+    if not maqueta:
+        # Arriba mas apagado y abajo mas limpio: quien empieza y quien ya
+        # lleva tiempo. El contraste cuenta la historia sin decirla.
+        montar(im, img_antes, 0, MITAD, 150)
+        montar(im, img_despues, MITAD, H, 90)
+        d = ImageDraw.Draw(im, "RGBA")
 
     if maqueta:
         for (y0, y1, etiqueta) in ((0, MITAD, antes), (MITAD, H, despues)):
@@ -147,24 +196,29 @@ def lamina(idx, frase, antes, despues, maqueta):
 # =========================================================================
 LAMINAS = [
     dict(frase="No tengo tiempo.",
-         antes="Sentado, agotado, mirando el telefono. Es la excusa.",
-         despues="Entrenando temprano, con la hora reservada. Es la prioridad."),
+         antes="La excusa: sentado, agotado, mirando el telefono.",
+         despues="La prioridad: la hora reservada y aparecer.",
+         img_antes="antes.jpg", img_despues="despues.jpg"),
 
     dict(frase="Me esta costando.",
-         antes="Rendido a mitad de la serie. Suena a queja.",
-         despues="Apretando los dientes, subiendo la carga. Suena a orgullo."),
+         antes="Suena a queja, a mitad de la serie.",
+         despues="Suena a orgullo: cuesta porque estas subiendo.",
+         img_antes="antes.jpg", img_despues="despues.jpg"),
 
     dict(frase="Solo llevo una semana.",
-         antes="Impaciente, comparandose con el de al lado.",
-         despues="Tranquilo: una semana mas que quien no empezo."),
+         antes="Impaciencia, comparandose con el de al lado.",
+         despues="Una semana mas que quien no empezo.",
+         img_antes="antes.jpg", img_despues="despues.jpg"),
 
     dict(frase="Hoy no tenia ganas.",
-         antes="En la puerta, dudando si entrar.",
-         despues="Dentro, terminando. Fue igual, y eso es lo que cambia todo."),
+         antes="La razon para no ir.",
+         despues="Y fue igual. Eso es lo que lo cambia todo.",
+         img_antes="antes.jpg", img_despues="despues.jpg"),
 
     dict(frase="Voy lento.",
-         antes="Cabizbajo, ultimo del grupo.",
-         despues="De pie, firme. Lento sigue siendo hacia adelante."),
+         antes="Verguenza, ultimo del grupo.",
+         despues="Lento sigue siendo hacia adelante.",
+         img_antes="antes.jpg", img_despues="despues.jpg"),
 ]
 
 
@@ -176,7 +230,8 @@ def main():
     print("")
     for i, p in enumerate(LAMINAS, 1):
         for carpeta, maq in (("maqueta", True), ("final", False)):
-            im = lamina(i, p["frase"], p["antes"], p["despues"], maq)
+            im = lamina(i, p["frase"], p["antes"], p["despues"], maq,
+                        p.get("img_antes"), p.get("img_despues"))
             nom = "US19C_%02d_%s.png" % (i, p["frase"].lower()
                                          .replace(" ", "-").replace(".", "")
                                          .replace("á", "a").replace("é", "e")
