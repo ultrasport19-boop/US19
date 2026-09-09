@@ -258,7 +258,37 @@ LAMINAS_B = [
 ]
 
 
-TANDAS = [("US19C", LAMINAS), ("US19D", LAMINAS_B)]
+# Tercera tanda: alterna los dos pares de caras dentro de la misma serie,
+# para que cinco historias seguidas no sean siempre el mismo personaje.
+LAMINAS_C = [
+    dict(frase="Hoy es día de descanso.",
+         antes="Dicho con culpa, como si fuera hacer trampa.",
+         despues="Dicho como lo que es: parte del plan.",
+         img_antes="antes.jpg", img_despues="despues.jpg"),
+
+    dict(frase="Mañana empiezo.",
+         antes="La promesa de siempre.",
+         despues="Y esta vez fue verdad.",
+         img_antes="antes_goku.jpg", img_despues="despues_goku.jpg"),
+
+    dict(frase="Solo vengo a cardio.",
+         antes="La excusa para no tocar una pesa.",
+         despues="La decisión de quien ya sabe qué le sirve.",
+         img_antes="antes.jpg", img_despues="despues.jpg"),
+
+    dict(frase="Me falta técnica.",
+         antes="Vergüenza. Por eso no se acerca a la barra.",
+         despues="Lo dice quien ya progresó lo suficiente para notarlo.",
+         img_antes="antes_goku.jpg", img_despues="despues_goku.jpg"),
+
+    dict(frase="Vine a las seis de la mañana.",
+         antes="Sacrificio, con cara de sueño.",
+         despues="Privilegio: el gimnasio entero para ti.",
+         img_antes="antes.jpg", img_despues="despues.jpg"),
+]
+
+
+TANDAS = [("US19C", LAMINAS), ("US19D", LAMINAS_B), ("US19E", LAMINAS_C)]
 
 
 def main():
