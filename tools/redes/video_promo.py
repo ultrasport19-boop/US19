@@ -131,7 +131,10 @@ GUIONES = {
     # 2 · El horario, para quien cree que no le va a calzar.
     "horarios": [
         (0.2, 4.0, "", "ENTRENA A LA HORA\nQUE PUEDAS", ""),
-        (4.0, 8.4, "HORARIO", "LUNES\nA SÁBADO", "De 07:00 a 22:00"),
+        # 9-sep-2026 — decia «lunes a sabado, de 07:00 a 22:00», que era un
+        # dato mio equivocado: salia de la ventana de Calendly, no del
+        # horario del gimnasio. El bot y la web dicen lo mismo y dicen esto.
+        (4.0, 8.4, "HORARIO", "LUNES\nA VIERNES", "De 06:00 a 22:00"),
         (8.4, 12.6, "CÓMO SE AGENDA", "ELIGES\nTU HORA",
          "Y la cambias si se te complica la semana"),
         CIERRE,

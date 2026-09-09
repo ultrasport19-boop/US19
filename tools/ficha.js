@@ -291,5 +291,25 @@ if (fallos.length) {
   console.log('\ncomprobaciones OK: ' + ok + '  ·  FALLIDAS: ' + fallos.length);
   process.exit(1);
 }
+
+/* --- Vocabulario prohibido en una pagina publica ---------------------
+   Regla de Diego del 8-sep-2026: nada de kinesiologia en contenido
+   publico, «ni el tema, ni insinuado». El 9-sep se encontro la palabra
+   dentro del consentimiento —en una negacion, puesta para protegerle— y
+   se cambio por «de salud», que cubre lo mismo y ademas cubre mas.
+
+   tools/web.js ya vigila esto en index.html. La ficha no tenia ningun
+   chequeo: por eso la palabra llevaba meses ahi sin que nada la viera.
+
+   Ojo con lo que NO esta en esta lista: «diagnostico» y «tratamiento» se
+   usan a proposito en el descargo, igual que en index.html, y quitarlos
+   convertiria la pagina en una que afirma en vez de describir. */
+['kinesiolog', 'fisioterap', 'kinesiterap', 'rehabilitaci', 'paciente',
+ 'deficit', 'déficit', 'riesgo de lesi'].forEach(function (mala) {
+  comprobar('vocabulario · la ficha no dice «' + mala + '»',
+    src.toLowerCase().indexOf(mala) === -1,
+    'nombrar la disciplina, aunque sea para negarla, sigue siendo nombrarla; y esta pagina la firma cada socio nuevo');
+});
+
 console.log('comprobaciones OK: ' + ok + '  ·  sin fallos');
 process.exit(0);
