@@ -55,6 +55,8 @@ FORMATOS = [("feed", 1080, 1350), ("historia", 1080, 1920)]
 W, H = 1080, 1350
 MITAD = H // 2
 M = 72
+# El contador «N/5» de la esquina: solo en historia. Ver lamina().
+CONTADOR = True
 
 ROJO = (226, 28, 37)
 ROJO_OSCURO = (150, 16, 22)
@@ -156,7 +158,8 @@ def montar(im, ruta, y0, y1, velo):
     return True
 
 
-def lamina(idx, frase, antes, despues, maqueta, img_antes=None, img_despues=None):
+def lamina(idx, frase, antes, despues, maqueta, img_antes=None,
+           img_despues=None, frase2=None):
     im = Image.new("RGB", (W, H), ROJO)
     d = ImageDraw.Draw(im, "RGBA")
 
@@ -184,13 +187,24 @@ def lamina(idx, frase, antes, despues, maqueta, img_antes=None, img_despues=None
                        fill=(255, 255, 255, 170), anchor="la")
 
     # La MISMA frase en las dos mitades: es todo el chiste del formato.
+    # Con `frase2` las dos mitades dicen cosas DISTINTAS: arriba lo que
+    # nadie te exige y abajo lo minimo que si. Es el formato que Diego
+    # trajo de @vulcanuzxz el 9-sep-2026, y usa exactamente esta misma
+    # geometria. Sin `frase2` se repite la frase arriba y abajo, que es
+    # el chiste del formato original.
     frase_en(d, frase, MITAD // 2, W - 2 * M)
-    frase_en(d, frase, MITAD + MITAD // 2, W - 2 * M)
+    frase_en(d, frase2 or frase, MITAD + MITAD // 2, W - 2 * M)
 
     marca(d, H - 62)
-    fp = f("Barlow-Bold.ttf", 26)
-    pie = str(idx) + "/5"
-    d.text((W - M, H - 56), pie, font=fp, fill=(255, 255, 255, 170), anchor="ra")
+    # El «N/5» solo dice la verdad cuando las cinco laminas se ven
+    # seguidas, que es lo que pasa en historias. En el feed cada una se
+    # publica SOLA —MODULO_POST sube files[0], una imagen por fila, no
+    # hay carrusel—, asi que ahi el numero promete cuatro piezas que
+    # nadie va a poder deslizar.
+    if CONTADOR:
+        fp = f("Barlow-Bold.ttf", 26)
+        pie = str(idx) + "/5"
+        d.text((W - M, H - 56), pie, font=fp, fill=(255, 255, 255, 170), anchor="ra")
 
     return im
 
@@ -288,11 +302,73 @@ LAMINAS_C = [
 ]
 
 
-TANDAS = [("US19C", LAMINAS), ("US19D", LAMINAS_B), ("US19E", LAMINAS_C)]
+# Cuarta y quinta tanda: los dos formatos de @vulcanuzxz, con frase
+# distinta arriba y abajo. Van al FEED de noviembre y diciembre, que es
+# el hueco real del calendario: en esos dos meses hay 50 y 47 historias
+# programadas pero solo 1 y 0 publicaciones de feed.
+#
+# Sin puntos al final, por la regla de Diego del 9-sep-2026. La
+# referencia los lleva; aqui no.
+LAMINAS_D = [
+    dict(frase="No tienes que esperar a enero",
+         frase2="Empieza esta semana",
+         antes="El proposito de siempre.",
+         despues="El dia que fue verdad.",
+         img_antes="antes.jpg", img_despues="despues.jpg"),
+
+    dict(frase="No tienes que entrenar todos los dias",
+         frase2="Empieza con dos a la semana",
+         antes="La exigencia imposible.",
+         despues="Lo que si se sostiene.",
+         img_antes="antes_goku.jpg", img_despues="despues_goku.jpg"),
+
+    dict(frase="No tienes que llegar en forma",
+         frase2="Empieza como estas",
+         antes="La excusa mas repetida.",
+         despues="Esa parte es la que se entrena.",
+         img_antes="seiya_pegaso.jpg", img_despues="seiya_brazos.jpg"),
+
+    dict(frase="No tienes que levantar pesado",
+         frase2="Empieza con la barra sola",
+         antes="El miedo a la sala de pesas.",
+         despues="Por donde empieza todo el mundo.",
+         img_antes="thorfinn.jpg", img_despues="armadura_dorada.jpg"),
+]
+
+LAMINAS_E = [
+    dict(frase="El precio de la fuerza",
+         frase2="Es aparecer",
+         antes="Lo que todos quieren.",
+         despues="Lo que casi nadie hace.",
+         img_antes="antes_goku.jpg", img_despues="despues.jpg"),
+
+    dict(frase="El precio del progreso",
+         frase2="Es la constancia",
+         antes="El resultado.",
+         despues="Lo que cuesta de verdad.",
+         img_antes="thorfinn.jpg", img_despues="seiya_brazos.jpg"),
+
+    dict(frase="El precio de sentirte bien",
+         frase2="Es empezar",
+         antes="La meta.",
+         despues="El unico paso que falta.",
+         img_antes="antes.jpg", img_despues="despues_goku.jpg"),
+
+    dict(frase="El precio de un cuerpo fuerte",
+         frase2="Es el trabajo de todas las semanas",
+         antes="Lo que se admira.",
+         despues="Lo que nadie ve.",
+         img_antes="caballeros_perfil.jpg",
+         img_despues="armadura_dorada.jpg"),
+]
+
+
+TANDAS = [("US19C", LAMINAS), ("US19D", LAMINAS_B), ("US19E", LAMINAS_C),
+          ("US19F", LAMINAS_D), ("US19G", LAMINAS_E)]
 
 
 def main():
-    global W, H, MITAD
+    global W, H, MITAD, CONTADOR
     # Se vacia antes de generar: si no, al cambiar una frase queda el PNG
     # viejo al lado del nuevo y acabas subiendo la tanda equivocada.
     carpetas = [f + "_" + c for (f, _, _) in FORMATOS for c in ("maqueta", "final")]
@@ -308,13 +384,15 @@ def main():
     for nombre_f, ancho, alto in FORMATOS:
       W, H = ancho, alto
       MITAD = H // 2
+      CONTADOR = (nombre_f != "feed")
       print("  " + nombre_f + "  " + str(W) + "x" + str(H))
       for prefijo, laminas in TANDAS:
        for i, p in enumerate(laminas, 1):
         for sufijo, maq in (("maqueta", True), ("final", False)):
             carpeta = nombre_f + "_" + sufijo
             im = lamina(i, p["frase"], p["antes"], p["despues"], maq,
-                        p.get("img_antes"), p.get("img_despues"))
+                        p.get("img_antes"), p.get("img_despues"),
+                        p.get("frase2"))
             nom = prefijo + "_%02d_%s.png" % (i, p["frase"].lower()
                                          .replace(" ", "-").replace(".", "")
                                          .replace("á", "a").replace("é", "e")
@@ -323,7 +401,7 @@ def main():
                                          .replace("ñ", "n"))
             ruta = os.path.join(SALIDA, carpeta, nom)
             im.save(ruta, "PNG")
-       print("    " + prefijo + ": 5 laminas")
+       print("    " + prefijo + ": " + str(len(laminas)) + " laminas")
 
     print("")
     print("  Todo en " + SALIDA)
