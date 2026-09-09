@@ -42,6 +42,7 @@ BASE = os.path.dirname(os.path.abspath(__file__))
 FUENTES = os.path.join(BASE, "fuentes")
 IMG = os.path.abspath(os.path.join(BASE, "..", "..", "img"))
 SALIDA = os.path.join(BASE, "salida_tipografia")
+LOGO = os.path.join(IMG, "logo.png")
 
 FORMATOS = [("historia", 1080, 1920), ("feed", 1080, 1350)]
 W, H = 1080, 1920
@@ -338,10 +339,40 @@ def foto_en(im, ruta, y, alto):
     im.paste(f, (M, y))
 
 
-def marca(d):
+def insignia(destino, x, y, lado):
+    """Pega el logo de la casa. Devuelve el ancho que ocupo, 0 si no esta.
+
+    El archivo esta en modo paleta: sin convert("RGBA") se pierde la
+    transparencia y sale un cuadro blanco alrededor del circulo. Y si
+    faltara, se devuelve 0 y la firma queda como estaba: una pieza a medio
+    dibujar es peor que una sin insignia.
+    """
+    if not os.path.exists(LOGO):
+        return 0
+    lg = Image.open(LOGO).convert("RGBA").resize((lado, lado), Image.LANCZOS)
+    if destino.mode == "RGBA":
+        destino.alpha_composite(lg, (int(x), int(y)))
+    else:
+        destino.paste(lg, (int(x), int(y)), lg)
+    return lado
+
+
+def marca(capa, d):
+    """Aqui la firma va centrada, asi que se centra el conjunto entero.
+
+    Medir el texto ANTES de dibujarlo es lo unico que permite calcular
+    donde empieza el par: con el ancla «ma» de siempre, el logo quedaria
+    pegado a la izquierda y el nombre en el centro, descolgados.
+    """
     ft = serifa(30)
-    d.text((W / 2, H - 78), "ULTRA-SPORT 19", font=ft,
-           fill=(120, 116, 110, 255), anchor="ma")
+    lado = 72
+    hueco = 16
+    ancho_txt = d.textlength("ULTRA-SPORT 19", font=ft)
+    total = lado + hueco + ancho_txt if os.path.exists(LOGO) else ancho_txt
+    x0 = (W - total) / 2
+    ancho = insignia(capa, x0, H - 78 - 22, lado)
+    d.text((x0 + ancho + (hueco if ancho else 0), H - 78), "ULTRA-SPORT 19",
+           font=ft, fill=(120, 116, 110, 255), anchor="la")
 
 
 def alto_de(d, texto, tam):
@@ -411,7 +442,7 @@ def pieza(p, semilla):
         bloque(im, d, p["uno"], y, tam, AMARILLO, semilla, resalta=True)
         bloque(im, d, p["dos"], y + a1 + hueco, tam, AZUL, semilla + 1)
 
-    marca(d)
+    marca(capa, d)
     return Image.alpha_composite(im.convert("RGBA"), capa).convert("RGB")
 
 

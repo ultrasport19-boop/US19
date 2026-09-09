@@ -71,3 +71,24 @@ el título llega a inicios de 2027. Hasta entonces, ni «diagnóstico» ni
 ni como «se vienen cosas nuevas»—, que lo pidió expresamente.
 
 Tampoco cifras sin confirmar ni promesas de resultado.
+
+## El logo va en todas las piezas
+
+Regla de Diego del 9-sep-2026: **el logo de Ultra-Sport va en toda historia y todo
+vídeo** que se genere de aquí en adelante. Sale de `img/logo.png`, el mismo archivo
+que sirve la web, y lo pegan `carrusel.py`, `citas.py`, `tipografia.py`,
+`historias.py` y `video_promo.py`. `piezas.py` no dibuja: son los textos.
+
+El PNG está en modo paleta. Sin `convert("RGBA")` se pierde la transparencia y sale
+un cuadro blanco alrededor del círculo.
+
+## ⚠️ No regenerar encima de `img/redes/`
+
+Las imágenes de `img/redes/` **ya están publicadas y ya las apuntan 431 filas de
+Notion** por URL externa. Estos generadores producen ahora piezas **con logo**, o
+sea distintas de las colgadas.
+
+Reconvertir la salida encima de esos JPG cambiaría, en silencio, publicaciones que
+Diego ya aprobó y que salen solas hasta diciembre de 2027. **La regla del logo es
+para lo que venga.** Si alguna vez hay que rehacer una tanda ya publicada, se hace
+a propósito y se le enseña antes.

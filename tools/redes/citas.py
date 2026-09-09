@@ -41,6 +41,8 @@ from PIL import Image, ImageDraw, ImageFont
 BASE = os.path.dirname(os.path.abspath(__file__))
 FUENTES = os.path.join(BASE, "fuentes")
 ILUS = os.path.join(BASE, "fuentes_img")
+IMG = os.path.abspath(os.path.join(BASE, "..", "..", "img"))
+LOGO = os.path.join(IMG, "logo.png")
 SALIDA = os.path.join(BASE, "salida_citas")
 
 FORMATOS = [("feed", 1080, 1350), ("historia", 1080, 1920)]
@@ -218,9 +220,32 @@ def velo(d, hasta):
         d.line([(0, y), (W, y)], fill=(0, 0, 0, a))
 
 
-def marca(d):
+def insignia(destino, x, y, lado):
+    """Pega el logo de la casa. Devuelve el ancho que ocupo, 0 si no esta.
+
+    El archivo esta en modo paleta: sin convert("RGBA") se pierde la
+    transparencia y sale un cuadro blanco alrededor del circulo. Y si
+    faltara, se devuelve 0 y la firma queda como estaba: una pieza a medio
+    dibujar es peor que una sin insignia.
+    """
+    if not os.path.exists(LOGO):
+        return 0
+    lg = Image.open(LOGO).convert("RGBA").resize((lado, lado), Image.LANCZOS)
+    if destino.mode == "RGBA":
+        destino.alpha_composite(lg, (int(x), int(y)))
+    else:
+        destino.paste(lg, (int(x), int(y)), lg)
+    return lado
+
+
+def marca(capa, d):
     ft = f("Anton.ttf", 40)
     x, y = M, H - 84
+    # Cabe holgado: el velo de abajo empieza en H-220, asi que el logo cae
+    # entero sobre zona oscurecida y no compite con la ilustracion.
+    ancho = insignia(capa, M, y - 78, 96)
+    if ancho:
+        x = M + ancho + 20
     d.text((x, y), "ULTRA-SPORT ", font=ft, fill=BLANCO + (235,), anchor="ls")
     x += d.textlength("ULTRA-SPORT ", font=ft)
     d.text((x, y), "19", font=ft, fill=ORO + (255,), anchor="ls")
@@ -264,7 +289,7 @@ def carta(lineas, ruta_img, encaje="llenar"):
     d.text((M, y + 16), "— Ultra-Sport 19", font=fa,
            fill=(255, 255, 255, 210), anchor="la")
 
-    marca(d)
+    marca(capa, d)
     return Image.alpha_composite(im, capa).convert("RGB")
 
 

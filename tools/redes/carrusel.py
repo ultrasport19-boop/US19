@@ -46,6 +46,7 @@ FOTOS = IMG
 # Las ilustraciones del carrusel: NO se versionan (van en .gitignore).
 # El repo de las paginas es publico y este material es de terceros.
 ILUS = os.path.join(BASE, "fuentes_img")
+LOGO = os.path.join(IMG, "logo.png")
 
 # Dos formatos con el mismo diseno:
 #   feed 1080x1350 (4:5) — el unico vertical que acepta el feed de Instagram
@@ -111,10 +112,33 @@ def frase_en(d, texto, y_centro, ancho, tam_inicial=86):
     return tam
 
 
-def marca(d, y):
+def insignia(destino, x, y, lado):
+    """Pega el logo de la casa. Devuelve el ancho que ocupo, 0 si no esta.
+
+    El archivo esta en modo paleta: sin convert("RGBA") se pierde la
+    transparencia y sale un cuadro blanco alrededor del circulo. Y si
+    faltara, se devuelve 0 y la firma queda como estaba: una pieza a medio
+    dibujar es peor que una sin insignia.
+    """
+    if not os.path.exists(LOGO):
+        return 0
+    lg = Image.open(LOGO).convert("RGBA").resize((lado, lado), Image.LANCZOS)
+    if destino.mode == "RGBA":
+        destino.alpha_composite(lg, (int(x), int(y)))
+    else:
+        destino.paste(lg, (int(x), int(y)), lg)
+    return lado
+
+
+def marca(im, d, y):
     fnt = f("Anton.ttf", 34)
     txt = "ULTRA-SPORT "
     x = M
+    # El logo a la izquierda del nombre, apoyado en la misma linea. Se
+    # coloca antes de escribir para que el texto arranque despues de el.
+    ancho = insignia(im, M, y - 22, 76)
+    if ancho:
+        x = M + ancho + 18
     d.text((x, y), txt, font=fnt, fill=BLANCO, anchor="la")
     x += d.textlength(txt, font=fnt)
     # El «19» va en el color de acento: en rojo sobre rojo desaparecia y la
@@ -195,7 +219,7 @@ def lamina(idx, frase, antes, despues, maqueta, img_antes=None,
     frase_en(d, frase, MITAD // 2, W - 2 * M)
     frase_en(d, frase2 or frase, MITAD + MITAD // 2, W - 2 * M)
 
-    marca(d, H - 62)
+    marca(im, d, H - 62)
     # El «N/5» solo dice la verdad cuando las cinco laminas se ven
     # seguidas, que es lo que pasa en historias. En el feed cada una se
     # publica SOLA —MODULO_POST sube files[0], una imagen por fila, no
