@@ -182,6 +182,34 @@ comprobar('seguridad · los enlaces que abren pestaña llevan rel="noopener"',
   sinNoopener.length === 0, sinNoopener.slice(0, 2).map(t => t.slice(0, 80)).join(' | '));
 aviso(imgs.length + ' imágenes · ' + externos.length + ' enlaces externos, ' + conBlank.length + ' en pestaña nueva');
 
+/* --- El telefono: uno solo, y el del bot -----------------------------
+   El 9-sep-2026 la pagina publicaba DOS numeros: los 18 botones de accion
+   llevaban al asistente y el JSON-LD —lo que lee Google— mas la seccion
+   Contacto llevaban al movil PERSONAL de Diego.
+
+   No daba ningun error. Simplemente, quien pulsaba el telefono en la ficha
+   de Google le escribia a Diego: sin ficha, sin portero, sin registro. Esa
+   persona no entraba al sistema y nadie se enteraba. */
+
+const telsWa = [...new Set((src.match(/wa\.me\/(\d{9,15})/g) || []).map(t => t.split("/")[1]))];
+const telLd  = gym && gym.telephone ? String(gym.telephone).replace(/[^0-9]/g, "") : "";
+
+comprobar('telefono · la pagina lleva a algun WhatsApp', telsWa.length > 0);
+igual('telefono · TODOS los enlaces de WhatsApp van al mismo numero',
+  telsWa.length, 1);
+if (telsWa.length > 1) {
+  falla('telefono · los numeros distintos que aparecen', telsWa.join(" y ") +
+    '. El que no sea el del asistente recibe gente que no entra al sistema');
+}
+
+comprobar('telefono · el JSON-LD declara un telefono', !!telLd,
+  'sin el, Google no muestra numero en la ficha del negocio');
+if (telLd && telsWa.length) {
+  igual('telefono · el que ve Google es el mismo de los botones',
+    telLd, telsWa[0]);
+}
+if (telLd) aviso('telefono · uno solo en toda la pagina, y es el del asistente');
+
 /* --- salida ---------------------------------------------------------- */
 
 console.log('\nUS19 · web pública');
