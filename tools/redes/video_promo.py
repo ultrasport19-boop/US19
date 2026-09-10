@@ -161,6 +161,21 @@ GUIONES = {
         CIERRE,
     ],
 
+    # 6 · Sin matricula. Es la unica pieza que ataca el miedo a quedar
+    # amarrado, y dice lo mismo que la seccion «El plan y el dinero» de la
+    # ficha de ingreso: no hace falta congelar un plan si dejar de venir no
+    # cuesta nada. Los tres datos estan comprobados —«sin matricula» y
+    # «desde $15.000» salen de la web, y las mediciones de quien se va
+    # siguen en Notion porque Inactivo no borra nada—.
+    "sinmatricula": [
+        (0.2, 4.0, "", "SIN MATRÍCULA\nSIN AMARRE", ""),
+        (4.0, 8.4, "LO QUE PAGAS", "SOLO EL MES\nQUE ENTRENAS",
+         "Desde $15.000, y si paras no te cobramos"),
+        (8.4, 12.6, "Y SI VUELVES", "RETOMAS DONDE\nLO DEJASTE",
+         "Tu ficha y tus mediciones quedan guardadas"),
+        CIERRE,
+    ],
+
     # 5 · La sala vacia como argumento, para quien viene de un gimnasio lleno.
     "sinmasificar": [
         (0.2, 4.0, "", "SIN ESPERAR\nMÁQUINA", ""),
