@@ -14,7 +14,7 @@
  *   · Si el horario del JSON-LD y el de la página dejan de coincidir,
  *     Google enseña uno y el cliente lee otro.
  *   · Y si alguien quita «No constituye diagnóstico médico», la página
- *     pasa de describir a afirmar — con Diego todavía de interno.
+ *     pasa de describir a afirmar, que es justo lo que no puede hacer.
  *
  * Nada de lo que hay aquí inventa datos: cada cifra se compara contra lo
  * que la propia página dice en su texto visible.
@@ -209,6 +209,54 @@ if (telLd && telsWa.length) {
     telLd, telsWa[0]);
 }
 if (telLd) aviso('telefono · uno solo en toda la pagina, y es el del asistente');
+
+/* --- Los archivos que la pagina pide y no estan ----------------------
+   `img/comunidad-1.jpg` se pedia y no existia, y no se veia roto porque
+   un `onerror` borra la figura entera: la seccion «Nuestra comunidad»
+   simplemente no aparecia en la pagina publicada. Es el fallo tipico de
+   esta suite: no se ve mirando la web.
+
+   Se distinguen dos casos a proposito. Sin red de seguridad, un archivo
+   que falta deja un icono roto delante del cliente y eso es FALLO. Con
+   `onerror`, es un hueco que hay que saber pero que no puede bloquear un
+   commit por una foto que todavia no se ha sacado.
+
+   Ojo con las rutas absolutas: `/US19/img/...` SI existe, porque GitHub
+   Pages sirve este repositorio bajo `/US19/`. Resolverlas contra el disco
+   sin quitar ese prefijo las da por rotas a todas. */
+{
+  const paginas = fs.readdirSync(raiz).filter(f => f.endsWith('.html'));
+  const rotos = [], huecos = [];
+  paginas.forEach(function (pag) {
+    const html = fs.readFileSync(path.join(raiz, pag), 'utf8');
+    const re = /(?:src|href|content)="([^"]+\.(?:jpg|jpeg|png|webp|svg|gif|ico|mp4|pdf))"/g;
+    let m;
+    while ((m = re.exec(html)) !== null) {
+      const u = m[1];
+      if (/^(https?:)?\/\//.test(u) || u.indexOf('data:') === 0) continue;
+      let rel = u;
+      if (rel.indexOf('/US19/') === 0) rel = rel.slice(6);   // lo que sirve Pages
+      else if (rel.charAt(0) === '/') rel = rel.slice(1);
+      if (fs.existsSync(path.join(raiz, rel))) continue;
+      /* ¿lleva red de seguridad? Se mira la etiqueta entera, desde el «<»
+         anterior hasta el «>» siguiente. */
+      const ini = html.lastIndexOf('<', m.index);
+      const fin = html.indexOf('>', m.index);
+      const etiqueta = html.slice(ini, fin + 1);
+      (etiqueta.indexOf('onerror') >= 0 ? huecos : rotos).push(pag + ' → ' + u);
+    }
+  });
+
+  comprobar('recursos · ningun archivo roto queda a la vista del cliente',
+    rotos.length === 0,
+    rotos.join('  ·  ') + ' (sin onerror: se ve el icono roto)');
+
+  if (huecos.length)
+    aviso('recursos · ' + huecos.length + ' archivo(s) que faltan pero degradan solos: '
+      + huecos.join(', ') + ' — la seccion no se dibuja');
+  else
+    aviso('recursos · todos los archivos que la web pide existen');
+}
 
 /* --- salida ---------------------------------------------------------- */
 
