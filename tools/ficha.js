@@ -281,16 +281,27 @@ if (!fs.existsSync(RUTA_BOT)) {
 
 /* --- salida ---------------------------------------------------------- */
 
-console.log('\nUS19 · ficha de ingreso');
-console.log('archivo: ' + ruta + '\n');
-avisos.forEach(a => console.log('  · ' + a));
-console.log('');
-if (fallos.length) {
-  console.log('FALLOS (' + fallos.length + '):');
-  fallos.forEach(f => console.log('  ✗ ' + f));
-  console.log('\ncomprobaciones OK: ' + ok + '  ·  FALLIDAS: ' + fallos.length);
-  process.exit(1);
-}
+/* --- Las condiciones del plan y el dinero ---------------------------
+   Diego lo pidio el 10-sep-2026: que todo el que entra sepa desde el
+   primer dia que no se congelan planes ni se devuelven sesiones sin usar.
+
+   Lo que se vigila aqui no es que ESTE la clausula: es que siga estando la
+   EXCEPCION. Una clausula absoluta de «no se devuelve nunca» es justo lo
+   que el SERNAC ha hecho cambiar en contratos de gimnasios, y una clausula
+   nula no protege: deja el contrato como si no existiera. La frase que la
+   hace valida es la que dice que si el que falla es el gimnasio, si se
+   devuelve. Si alguien la borra por parecer mas dura, el descargo entero
+   se debilita. */
+comprobar('plan · la ficha dice que no se congelan planes',
+  /no congela planes/i.test(src));
+comprobar('plan · y que las sesiones sin usar no se devuelven',
+  /no se devuelven ni se acumulan/i.test(src));
+comprobar('plan · PERO mantiene la excepcion de cuando falla el gimnasio',
+  /si el que no cumple es el gimnasio/i.test(src),
+  'sin esa frase la clausula seria abusiva y por tanto nula: no protegeria nada');
+comprobar('plan · y dice que ese derecho no se esta renunciando',
+  /no\s+lo\s+estás\s+renunciando\s+al\s+firmar/i.test(src),
+  'el HTML parte las frases largas en varias lineas: la expresion tiene que tolerar el salto');
 
 /* --- Vocabulario prohibido en una pagina publica ---------------------
    Regla de Diego del 8-sep-2026: nada de kinesiologia en contenido
@@ -311,5 +322,16 @@ if (fallos.length) {
     'nombrar la disciplina, aunque sea para negarla, sigue siendo nombrarla; y esta pagina la firma cada socio nuevo');
 });
 
+
+console.log('\nUS19 · ficha de ingreso');
+console.log('archivo: ' + ruta + '\n');
+avisos.forEach(a => console.log('  · ' + a));
+console.log('');
+if (fallos.length) {
+  console.log('FALLOS (' + fallos.length + '):');
+  fallos.forEach(f => console.log('  ✗ ' + f));
+  console.log('\ncomprobaciones OK: ' + ok + '  ·  FALLIDAS: ' + fallos.length);
+  process.exit(1);
+}
 console.log('comprobaciones OK: ' + ok + '  ·  sin fallos');
 process.exit(0);
