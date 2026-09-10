@@ -65,10 +65,14 @@ recolocar el bloque de contacto. No es marcar una opción en Notion.
 
 ## Lo que no se pone aquí
 
-Nada clínico. Diego es interno de kinesiología: defiende en diciembre de 2026 y
-el título llega a inicios de 2027. Hasta entonces, ni «diagnóstico» ni
-«tratamiento» ni «rehabilitación», y **nada sobre kinesiología** —ni insinuada,
-ni como «se vienen cosas nuevas»—, que lo pidió expresamente.
+Nada clínico. Hasta inicios de 2027 no se puede comunicar en términos clínicos:
+ni «diagnóstico» ni «déficit» ni «riesgo de lesión» ni «tratamiento» ni
+«rehabilitación». Y **nada sobre el área de salud** —ni insinuada, ni como «se
+vienen cosas nuevas»—, que lo pidió expresamente el 8-sep-2026.
+
+Este README está en un repositorio **público**, así que tampoco se explica aquí
+el motivo: la regla se cumple, no se justifica en voz alta. El porqué vive en
+las notas privadas.
 
 Tampoco cifras sin confirmar ni promesas de resultado.
 
