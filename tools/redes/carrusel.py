@@ -112,6 +112,53 @@ def frase_en(d, texto, y_centro, ancho, tam_inicial=86):
     return tam
 
 
+def etiqueta_dia(d, texto, y_centro, derecha):
+    """Escribe «DIA UNO» / «UN DIA» con la primera palabra en dorado.
+
+    No va centrada como `frase_en`: arriba pegada a la derecha y abajo a la
+    izquierda. Ese desplazamiento es lo que deja libre la diagonal donde
+    entra la ilustracion, y es lo que hace que las dos mitades se lean como
+    una sola escena partida en vez de como dos carteles.
+
+    La primera palabra en dorado y el resto en blanco: sin ese corte las dos
+    etiquetas son casi la misma palabra al reves y el ojo no las distingue
+    al deslizar.
+    """
+    tam = 96
+    while tam > 48:
+        fnt = f("Anton.ttf", tam)
+        if d.textlength(texto, font=fnt) <= W - 2 * M:
+            break
+        tam -= 4
+    fnt = f("Anton.ttf", tam)
+    uno, resto = texto.split(" ", 1)
+    w_uno = d.textlength(uno + " ", font=fnt)
+    w_tot = d.textlength(texto, font=fnt)
+    x0 = (W - M - w_tot) if derecha else M
+    for dx, dy, col in ((3, 3, (0, 0, 0, 150)), (0, 0, None)):
+        d.text((x0 + dx, y_centro + dy), uno, font=fnt,
+               fill=col or DORADO, anchor="lm")
+        d.text((x0 + w_uno + dx, y_centro + dy), resto, font=fnt,
+               fill=col or BLANCO, anchor="lm")
+    return tam
+
+
+def pie_dia(d, texto, y, derecha):
+    """La linea chica bajo la etiqueta: lo que pasa en esa mitad.
+
+    Existe para que la pieza diga algo TAMBIEN sin ilustracion. Las cinco
+    laminas llevan la misma etiqueta grande; si no fuera por esta linea, en
+    la version tipografica las cinco serian el mismo cartel repetido.
+    """
+    fnt = f("Barlow-SemiBold.ttf", 34)
+    lineas = partir(d, texto, fnt, W - 2 * M)
+    for i, ln in enumerate(lineas):
+        w = d.textlength(ln, font=fnt)
+        x = (W - M - w) if derecha else M
+        d.text((x + 2, y + i * 44 + 2), ln, font=fnt, fill=(0, 0, 0, 140), anchor="la")
+        d.text((x, y + i * 44), ln, font=fnt, fill=(255, 255, 255, 235), anchor="la")
+
+
 def insignia(destino, x, y, lado):
     """Pega el logo de la casa. Devuelve el ancho que ocupo, 0 si no esta.
 
@@ -182,8 +229,31 @@ def montar(im, ruta, y0, y1, velo):
     return True
 
 
+def cierre(linea1, linea2):
+    """La ultima lamina: sin partir, sin ilustracion, solo la frase.
+
+    En la referencia es la que remata el carrusel, y es la unica que se
+    sostiene sola. Por eso tambien es la que se puede publicar suelta el dia
+    que no haya ilustracion para las otras cinco.
+    """
+    im = Image.new("RGB", (W, H), ROJO)
+    d = ImageDraw.Draw(im, "RGBA")
+    f1 = f("Anton.ttf", 62)
+    f2 = f("Anton.ttf", 104)
+    y = H // 2 - 60
+    for texto, fnt, col in ((linea1, f1, DORADO), (linea2, f2, BLANCO)):
+        x = (W - d.textlength(texto, font=fnt)) / 2
+        d.text((x + 3, y + 3), texto, font=fnt, fill=(0, 0, 0, 150), anchor="la")
+        d.text((x, y), texto, font=fnt, fill=col, anchor="la")
+        y += int(fnt.size * 1.16)
+    marca(im, d, H - 62)
+    return im
+
+
 def lamina(idx, frase, antes, despues, maqueta, img_antes=None,
-           img_despues=None, frase2=None):
+           img_despues=None, frase2=None, modo=None, total=5):
+    if modo == "cierre":
+        return cierre(antes, despues)
     im = Image.new("RGB", (W, H), ROJO)
     d = ImageDraw.Draw(im, "RGBA")
 
@@ -216,8 +286,17 @@ def lamina(idx, frase, antes, despues, maqueta, img_antes=None,
     # trajo de @vulcanuzxz el 9-sep-2026, y usa exactamente esta misma
     # geometria. Sin `frase2` se repite la frase arriba y abajo, que es
     # el chiste del formato original.
-    frase_en(d, frase, MITAD // 2, W - 2 * M)
-    frase_en(d, frase2 or frase, MITAD + MITAD // 2, W - 2 * M)
+    if modo == "dia":
+        # Etiqueta fija arriba y abajo, y debajo lo que pasa en esa mitad.
+        # CON TILDE. Anton la tiene -el pie ya escribia «vacía» bien-, y
+        # «DIA UNO» sin tilde en una pieza de la marca es una falta.
+        etiqueta_dia(d, "DÍA UNO", MITAD // 2 - 24, True)
+        pie_dia(d, antes, MITAD // 2 + 34, True)
+        etiqueta_dia(d, "UN DÍA", MITAD + MITAD // 2 - 24, False)
+        pie_dia(d, despues, MITAD + MITAD // 2 + 34, False)
+    else:
+        frase_en(d, frase, MITAD // 2, W - 2 * M)
+        frase_en(d, frase2 or frase, MITAD + MITAD // 2, W - 2 * M)
 
     marca(im, d, H - 62)
     # El «N/5» solo dice la verdad cuando las cinco laminas se ven
@@ -227,7 +306,7 @@ def lamina(idx, frase, antes, despues, maqueta, img_antes=None,
     # nadie va a poder deslizar.
     if CONTADOR:
         fp = f("Barlow-Bold.ttf", 26)
-        pie = str(idx) + "/5"
+        pie = str(idx) + "/" + str(total)
         d.text((W - M, H - 56), pie, font=fp, fill=(255, 255, 255, 170), anchor="ra")
 
     return im
@@ -387,8 +466,48 @@ LAMINAS_E = [
 ]
 
 
+# =========================================================================
+#  Tanda «DIA UNO / UN DIA» — el formato que Diego trajo el 10-sep-2026.
+#
+#  Se diferencia de las anteriores en que la etiqueta grande NO cambia: las
+#  cinco laminas dicen «DIA UNO» arriba y «UN DIA» abajo. Lo que cambia es
+#  la escena, y por eso `antes` y `despues` aqui NO son notas para el
+#  ilustrador: se imprimen en la pieza.
+#
+#  La referencia usaba personajes de anime que son de otros. Aqui las cinco
+#  escenas son de esta sala: la barra, las series, el hueco en la semana,
+#  entrar por la puerta y la medicion. Sin promesas de resultado, sin cifras
+#  y sin una palabra del area de salud.
+LAMINAS_H = [
+    dict(modo="dia", frase="La barra",
+         antes="La barra vacía y ya pesa.",
+         despues="La barra cargada, y sube."),
+
+    dict(modo="dia", frase="El reloj",
+         antes="Contar los minutos que faltan.",
+         despues="Contar las series que quedan."),
+
+    dict(modo="dia", frase="La semana",
+         antes="Buscar una excusa.",
+         despues="Buscar el hueco en la semana."),
+
+    dict(modo="dia", frase="La puerta",
+         antes="Entrar sin saber dónde ponerse.",
+         despues="Entrar y que te saluden por tu nombre."),
+
+    dict(modo="dia", frase="La medicion",
+         antes="La primera evaluación, a ciegas.",
+         despues="La sexta, y comparando con la tuya."),
+
+    # El remate. `antes` y `despues` son las dos lineas de la frase.
+    dict(modo="cierre", frase="Empezar",
+         antes="Lo único que importa",
+         despues="es empezar."),
+]
+
+
 TANDAS = [("US19C", LAMINAS), ("US19D", LAMINAS_B), ("US19E", LAMINAS_C),
-          ("US19F", LAMINAS_D), ("US19G", LAMINAS_E)]
+          ("US19F", LAMINAS_D), ("US19G", LAMINAS_E), ("US19H", LAMINAS_H)]
 
 
 def main():
@@ -416,7 +535,7 @@ def main():
             carpeta = nombre_f + "_" + sufijo
             im = lamina(i, p["frase"], p["antes"], p["despues"], maq,
                         p.get("img_antes"), p.get("img_despues"),
-                        p.get("frase2"))
+                        p.get("frase2"), p.get("modo"), len(laminas))
             nom = prefijo + "_%02d_%s.png" % (i, p["frase"].lower()
                                          .replace(" ", "-").replace(".", "")
                                          .replace("á", "a").replace("é", "e")
