@@ -27,7 +27,27 @@ const path = require('path');
 
 const ruta = process.argv[2] || path.join(__dirname, '..', 'index.html');
 const src = fs.readFileSync(ruta, 'utf8');
-const raiz = path.dirname(ruta);
+
+/* DOS COSAS DISTINTAS, y confundirlas costo el lote de mutantes entero.
+
+   `src` es el contenido BAJO PRUEBA. `sitio` es el repositorio DE VERDAD.
+   Normalmente coinciden, pero tools/mutantes.js ejecuta esta suite contra
+   una COPIA de index.html en una carpeta temporal, y a esa copia no la
+   acompanan ni las imagenes, ni el video, ni ficha/ ni tienda/.
+
+   Mientras `raiz` fue `path.dirname(ruta)`, la comprobacion de recursos
+   resolvia las 13 imagenes contra la carpeta temporal, las daba TODAS por
+   rotas y el corredor se plantaba con «la suite ya falla SIN mutar». O sea
+   que desde el 9-sep-2026 (commit d8b38fa, el que anadio esa comprobacion)
+   estas comprobaciones eran las unicas del ecosistema que nadie verificaba,
+   y no se noto porque `node tools/web.js` a secas seguia dando verde.
+   La comparacion del telefono con ficha/ y tienda/ se degradaba igual, pero
+   en silencio: salia por el `aviso` de «no encuentro», no por un fallo.
+
+   Resolver contra el sitio real NO afloja nada: si un mutante cambia una
+   ruta por otra que no existe, se sigue buscando donde de verdad tiene que
+   estar y se sigue cazando. */
+const sitio = path.join(__dirname, '..');
 
 let ok = 0;
 const fallos = [], avisos = [];
@@ -131,7 +151,7 @@ igual('marcado · el script no pide ningún id que ya no esté en la página', s
 const numeros = [...new Set((src.match(/wa\.me\/(\d{9,})/g) || []).map(t => t.split('/')[1]))];
 comprobar('contacto · la página enlaza a WhatsApp', numeros.length > 0);
 ['ficha/index.html', 'tienda/index.html'].forEach(rel => {
-  const p = path.join(raiz, rel);
+  const p = path.join(sitio, rel);
   if (!fs.existsSync(p)) { aviso('no encuentro ' + rel + ': no comparo el número con esa página'); return; }
   const otra = fs.readFileSync(p, 'utf8');
   const suyos = [...new Set((otra.match(/\b(569\d{8})\b/g) || []))];
@@ -225,10 +245,14 @@ if (telLd) aviso('telefono · uno solo en toda la pagina, y es el del asistente'
    Pages sirve este repositorio bajo `/US19/`. Resolverlas contra el disco
    sin quitar ese prefijo las da por rotas a todas. */
 {
-  const paginas = fs.readdirSync(raiz).filter(f => f.endsWith('.html'));
+  const paginas = fs.readdirSync(sitio).filter(f => f.endsWith('.html'));
   const rotos = [], huecos = [];
   paginas.forEach(function (pag) {
-    const html = fs.readFileSync(path.join(raiz, pag), 'utf8');
+    /* La pagina bajo prueba se lee de `src`, no del disco: es la unica que
+       puede venir mutada, y leerla del repositorio devolveria el original. */
+    const html = (pag === path.basename(ruta))
+      ? src
+      : fs.readFileSync(path.join(sitio, pag), 'utf8');
     const re = /(?:src|href|content)="([^"]+\.(?:jpg|jpeg|png|webp|svg|gif|ico|mp4|pdf))"/g;
     let m;
     while ((m = re.exec(html)) !== null) {
@@ -237,7 +261,7 @@ if (telLd) aviso('telefono · uno solo en toda la pagina, y es el del asistente'
       let rel = u;
       if (rel.indexOf('/US19/') === 0) rel = rel.slice(6);   // lo que sirve Pages
       else if (rel.charAt(0) === '/') rel = rel.slice(1);
-      if (fs.existsSync(path.join(raiz, rel))) continue;
+      if (fs.existsSync(path.join(sitio, rel))) continue;
       /* ¿lleva red de seguridad? Se mira la etiqueta entera, desde el «<»
          anterior hasta el «>» siguiente. */
       const ini = html.lastIndexOf('<', m.index);
