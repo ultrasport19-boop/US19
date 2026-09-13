@@ -1,0 +1,14 @@
+---
+description: Reglas críticas del sitio público Ultra-Sport19 (GitHub Pages)
+alwaysApply: true
+---
+
+# US19 — Reglas duras (sitio público)
+
+- Este repo es público y se sirve tal cual en GitHub Pages. Cero tokens, cero `US19_CLAVE_APP`, cero URL del webhook de Meta.
+- La tienda solo puede llamar el despliegue de catálogo (`?tipo=tienda`) que ya está en `tienda/index.html`. Ese endpoint es público a propósito.
+- No ejecutar `clasp`, `clasp push`, `clasp deploy` ni `desplegar_produccion.ps1`. Este repo no despliega el asistente.
+- Hasta el título en 2027, nada de kinesiología ni lenguaje clínico en páginas públicas. Solo valen las negaciones ya revisadas.
+- Preservar EOL de `.gitattributes`: home/tienda/privacidad/404 en CRLF; ficha y `tools/` en LF.
+- `Disponibilidad` es stock real. Notion manda sobre precio y stock.
+- Antes de crear utilidades, buscar en `tools/`. Verificar con `node tools/web.js`, `node tools/tienda.js`, `node tools/ficha.js` y `node tools/secretos.js`.
