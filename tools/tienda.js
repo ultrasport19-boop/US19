@@ -543,7 +543,7 @@ async function principal() {
   igual('tallas · «S / M / L» → la lista', opciones(tarj[5]), 'S,M,L');
   igual('tallas · «Dato a confirmar» → las del catalogo', opciones(tarj[6]), 'S,M,L,XL,XXL');
   comprobar('talla · el boton nace desactivado', /data-enc="1" disabled>Elige talla/.test(tarj[1]), tarj[1].slice(-160));
-  comprobar('extras · NO aparecen antes de elegir talla (el precio queda limpio)', P2.els.grid.innerHTML.indexOf('Estampado oficial') < 0);
+  comprobar('extras · NO aparecen antes de elegir talla (el precio queda limpio)', P2.els.grid.innerHTML.indexOf('Estampado con tu nombre') < 0);
   comprobar('extras · ningún valor de extra junto al precio de la tarjeta', P2.els.grid.innerHTML.indexOf('2.000') < 0 && P2.els.grid.innerHTML.indexOf('3.500') < 0);
 
   // Sin catalogo nuevo (sin precioRef ni extras) no se inventa ni oferta ni extras
@@ -562,7 +562,7 @@ async function principal() {
   igual('talla · al elegirla se activa el boton', t0.btn.disabled, false);
   /* Al elegir talla la tarjeta se repinta (outerHTML): ahí aparecen los extras. */
   comprobar('extras · aparecen recién después de la talla, con el texto pedido',
-    String(t0.card.outerHTML || '').indexOf('Estampado oficial con tu nombre y número: +$2.000. Como el del estadio, pero con tu apellido.') >= 0,
+    String(t0.card.outerHTML || '').indexOf('Estampado con tu nombre y número: +$2.000. Como el del estadio, pero con tu apellido.') >= 0,
     String(t0.card.outerHTML || '(no se repintó)').slice(0, 200));
   comprobar('extras · las cuatro opciones con su valor del config',
     /Sin personalización[\s\S]*Nombre \+ número \(\+\$2\.000\)[\s\S]*Parche \(\+\$2\.000\)[\s\S]*Pack Jugador \(\+\$3\.500\)/.test(String(t0.card.outerHTML || '')));
@@ -812,6 +812,15 @@ async function principal() {
   const R0 = nuevoEntorno([CATALOGO(0)]);
   await esperar();
   igual('rendimiento · sin prendas el buscador queda deshabilitado', R0.els.buscar.disabled, true);
+
+  /* o2) RÉPLICAS (14-sep-2026) ------------------------------------------
+     Son réplicas de buena confección, sin licencia de los clubes. La página
+     lo dice y nunca las llama oficiales, originales ni auténticas. */
+  const sinNoOficial = src.replace(/no oficial(es)?/gi, '').replace(/Diario Oficial/g, '');
+  comprobar('réplica · la página nunca dice «oficial», «original» ni «auténtica» (salvo «no oficiales»)', !/oficial|original|aut[eé]ntic/i.test(sinNoOficial),
+    (sinNoOficial.match(/.{0,40}(oficial|original|aut[eé]ntic).{0,40}/i) || [''])[0]);
+  comprobar('réplica · el aviso de por encargo dice que son réplicas, no oficiales', /id="plazo"[^>]*>[\s\S]*?réplicas de buena confección, no oficiales[\s\S]*?<\/p>/.test(src));
+  comprobar('réplica · y las condiciones lo repiten (sin licencia de los clubes)', /réplicas de buena\s+confección, no oficiales ni con licencia de los clubes/.test(src));
 
   /* p) SEO Y COMPARTIR (14-sep-2026) ------------------------------------ */
   const ogImg = (src.match(/<meta property="og:image" content="([^"]+)"/) || [])[1] || '';

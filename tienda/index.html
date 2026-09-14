@@ -228,7 +228,7 @@
   <!-- Los apartados salen de la columna «Categoria» de Notion: los pinta el
        script. Una categoria nueva trae su pestaña sola. -->
   <div class="secciones" id="secciones" role="tablist" aria-label="Apartados"><button type="button" role="tab" aria-selected="true" aria-disabled="true" disabled>Cargando…</button></div>
-  <p class="plazo" id="plazo" hidden><b>Por encargo: llega en <span id="plazo-txt">2 a 3 semanas</span>.</b> Eliges tu talla y la pedimos al proveedor. No se agota: se puede pedir cuantas veces quieras.</p>
+  <p class="plazo" id="plazo" hidden><b>Por encargo: llega en <span id="plazo-txt">2 a 3 semanas</span>.</b> Eliges tu talla y la pedimos al proveedor. No se agota: se puede pedir cuantas veces quieras. Son réplicas de buena confección, no oficiales.</p>
   <p class="plazo unica" id="unica" hidden><b>Pieza única.</b> Cada prenda es única: cuando alguien la aparta, desaparece de aquí.</p>
   <div class="busca" id="busca">
     <label for="buscar">Buscar equipo, país o temporada</label>
@@ -264,7 +264,8 @@
 
     <h3>Dos formas de vender</h3>
     <ul>
-      <li><b>Por encargo</b> (camisetas de fútbol): prendas <b>nuevas</b>, versión aficionado. Eliges la talla, la
+      <li><b>Por encargo</b> (camisetas de fútbol): prendas <b>nuevas</b>, versión aficionado, <b>réplicas de buena
+      confección, no oficiales ni con licencia de los clubes</b>. Eliges la talla, la
       pedimos al proveedor y <b>llega en 2 a 3 semanas</b> desde que confirmamos tu pago. No se agota: se puede
       pedir cuantas veces quieras.</li>
       <li><b>Fardo</b> (ropa importada de segunda mano): prendas <b>usadas</b>, pieza única. Publicamos el estado real
@@ -731,7 +732,7 @@
     if (t && EXTRAS){
       var op = function(v, txt){ return '<option value="' + v + '"' + (x.tipo === v ? ' selected' : '') + '>' + txt + '</option>'; };
       extras = '<div class="extras">' +
-        '<p class="extra-copy">Estampado oficial con tu nombre y número: +' + clp(EXTRAS.nombre_numero) + '. Como el del estadio, pero con tu apellido.</p>' +
+        '<p class="extra-copy">Estampado con tu nombre y número: +' + clp(EXTRAS.nombre_numero) + '. Como el del estadio, pero con tu apellido.</p>' +
         '<select class="extra-sel" data-para="' + esc(p.id) + '" data-campo="tipo" aria-label="Personalización de ' + esc(p.nombre) + '">' +
           op('', 'Sin personalización') +
           op('nombre_numero', 'Nombre + número (+' + clp(EXTRAS.nombre_numero) + ')') +

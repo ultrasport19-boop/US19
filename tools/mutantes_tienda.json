@@ -129,6 +129,16 @@
       "a": "    if (ev.key === 'ArrowRight') j = i;"
     },
     {
+      "nombre": "el estampado vuelve a decir «oficial»",
+      "de": "'<p class=\"extra-copy\">Estampado con tu nombre y número: +'",
+      "a": "'<p class=\"extra-copy\">Estampado oficial con tu nombre y número: +'"
+    },
+    {
+      "nombre": "el aviso de por encargo deja de decir que son réplicas",
+      "de": " No se agota: se puede pedir cuantas veces quieras. Son réplicas de buena confección, no oficiales.</p>",
+      "a": " No se agota: se puede pedir cuantas veces quieras.</p>"
+    },
+    {
       "nombre": "la vista previa vuelve a la foto del gimnasio",
       "de": "<meta property=\"og:image\" content=\"https://ultrasport19-boop.github.io/US19/img/og-tienda.jpg\">",
       "a": "<meta property=\"og:image\" content=\"https://ultrasport19-boop.github.io/US19/img/og-image.jpg\">"
