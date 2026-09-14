@@ -536,9 +536,25 @@ async function principal() {
   await esperar();
   const u0 = tarjetaEnc('enc-0'); u0.select.value = 'XL'; T1.cambiar(u0.select); T1.click(u0.toque);
   T1.els.pedir._ev.click();
-  igual('encargo · una sola camiseta: el mensaje exacto',
-    decodeURIComponent((T1.irA[T1.irA.length - 1] || '').split('text=')[1] || ''),
-    'Hola! Quiero encargar: Camiseta 0 — Equipo 0 25/26 Local\nTalla: XL — $23.000. (Por encargo, 2 a 3 semanas)');
+  const txt1 = decodeURIComponent((T1.irA[T1.irA.length - 1] || '').split('text=')[1] || '');
+  igual('encargo · una sola camiseta: el mensaje exacto', txt1,
+    'Hola! Quiero encargar: Camiseta 0\nTalla: XL — $23.000\n(Por encargo, llega en 2 a 3 semanas)');
+  comprobar('encargo · solo el título: no le pega equipo, temporada ni modelo',
+    txt1.indexOf('Equipo 0') < 0 && txt1.indexOf('25/26') < 0 && txt1.indexOf('Local') < 0, txt1);
+
+  // Fardo: el mensaje de siempre, con talla solo si la fila la tiene
+  const FT = nuevoEntorno([CATALOGO(2, { prendas: [PRENDA(0), PRENDA(1, { talla: '' })] })]);
+  await esperar();
+  FT.click(botonDe('id-0').target); FT.click(botonDe('id-1').target);
+  FT.els.pedir._ev.click();
+  const txtF = decodeURIComponent((FT.irA[FT.irA.length - 1] || '').split('text=')[1] || '');
+  comprobar('fardo · con talla la lleva entre paréntesis', txtF.indexOf('- Polera 0 (M) $9.990 #id-0') >= 0, txtF);
+  comprobar('fardo · sin talla no pone paréntesis vacíos', txtF.indexOf('- Polera 1 $9.990 #id-1') >= 0, txtF);
+
+  /* El aviso de «próximamente» empieza escondido: visible mientras carga le
+     decía «el primer fardo viene en camino» a todo el que entraba. */
+  comprobar('aviso · empieza escondido en el marcado', /<section class="pronto" id="pronto" hidden>/.test(src));
+  comprobar('aviso · ya no habla del «primer fardo»', !/primer fardo/i.test(src));
 
   // Carro mixto: el fardo sigue apartandose con su #id; el encargo va aparte y sin id
   const X = nuevoEntorno([CAT_ENC([PRENDA(0), ENC(0)])]);

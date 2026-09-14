@@ -194,17 +194,15 @@
   <p class="sub">Ropa deportiva en Pencahue. <b>Entrega inmediata</b>: prendas únicas que ya están aquí; cuando alguien la aparta, desaparece.
   <b>Por encargo</b>: camisetas que pedimos al proveedor con tu talla.</p>
 
-  <!-- Mientras no haya ropa cargada. Ya NO hay que acordarse de borrarla:
-       el script la esconde solo en cuanto el catálogo trae prendas. Se deja
-       visible en el HTML a propósito, porque si el catálogo no carga es lo
-       correcto que se vea. -->
-  <section class="pronto" id="pronto">
+  <!-- Solo si el catálogo llega VACÍO: el script la muestra y la esconde.
+       14-sep-2026 · Empieza escondida: con 1.252 camisetas publicadas, dejarla
+       visible mientras carga le anunciaba a todo el que entraba que la ropa venía en camino. -->
+  <section class="pronto" id="pronto" hidden>
     <span class="eti">Próximamente</span>
-    <h2>El primer fardo viene en camino</h2>
-    <p>Lo que ves acá abajo es el comienzo. En cuanto llegue, esto se llena de prendas —cada una
-    única, con su talla, su estado y su precio. Escríbenos y te avisamos apenas estén cargadas,
-    antes de que se publiquen.</p>
-    <a id="avisame" href="#">Avísame cuando llegue</a>
+    <h2>Estamos cargando prendas nuevas</h2>
+    <p>En cuanto estén publicadas aparecen aquí, con su foto, su talla y su precio.
+    Escríbenos y te avisamos apenas estén.</p>
+    <a id="avisame" href="#">Avísame</a>
   </section>
 
   <div class="secciones" id="secciones" role="tablist" aria-label="Cómo comprar" hidden>
@@ -604,11 +602,6 @@
     $('barra').className = ks.length ? 'barra visible' : 'barra';
   }
 
-  function lineaEncargo(e){
-    var extra = [e.equipo, e.temporada, e.modelo].filter(Boolean).join(' ');
-    return e.nombre + (extra ? ' — ' + extra : '');
-  }
-
   function mensaje(){
     var ks = Object.keys(carro), bloques = [];
     var fardo = ks.filter(function(k){ return !carro[k].encargo; });
@@ -627,21 +620,24 @@
       bloques.push(L.join('\n'));
     }
     /* Los encargos van SIN #id a proposito: el id es lo que hace que el bot
-       aparte una prenda, y un encargo no se aparta nunca. */
+       aparte una prenda, y un encargo no se aparta nunca. Solo el titulo de
+       la fila («Prenda»): ya trae equipo, temporada y modelo, y sumarlos lo
+       repetia («… 26/27 edición especial — Real Madrid 26/27 Edición especial»). */
     if (enc.length === 1){
       var e1 = carro[enc[0]];
-      bloques.push('Hola! Quiero encargar: ' + lineaEncargo(e1) + '\nTalla: ' + e1.tallaElegida + ' — ' + clp(e1.precio) +
-        '. (Por encargo, ' + PLAZO + ')');
+      bloques.push('Hola! Quiero encargar: ' + e1.nombre + '\nTalla: ' + e1.tallaElegida + ' — ' + clp(e1.precio) +
+        '\n(Por encargo, llega en ' + PLAZO + ')');
     } else if (enc.length > 1){
       var te = 0, E = ['Hola! Quiero encargar:', ''];
       enc.forEach(function(k){
         var e = carro[k];
         te += Number(e.precio) || 0;
-        E.push('- ' + lineaEncargo(e));
+        E.push('- ' + e.nombre);
         E.push('  Talla: ' + e.tallaElegida + ' — ' + clp(e.precio));
       });
       E.push('');
-      E.push('(Por encargo, ' + PLAZO + ') Total: ' + clp(te));
+      E.push('(Por encargo, llega en ' + PLAZO + ')');
+      E.push('Total: ' + clp(te));
       bloques.push(E.join('\n'));
     }
     return bloques.join('\n\n');
@@ -822,8 +818,8 @@
   /* Apps Script en frio tarda segundos y a veces no contesta. Sin plazo, la
      pagina se quedaba en «Cargando el catálogo…» para siempre.
      14-sep-2026 · Con 1.252 camisetas Notion tarda ~12 s en entregar el
-     catalogo cuando la cache de 5 min expiro: el plazo de 9 s lo cortaba
-     siempre. 20 s por intento. */
+     catalogo cuando la cache del bot vence (ahora cada 45 min): el plazo
+     de 9 s lo cortaba siempre. 20 s por intento. */
   function pedirCatalogo(ms){
     if (typeof AbortController !== 'function' || typeof fetch !== 'function'){
       return fetch(API).then(function(r){ return r.json(); });
