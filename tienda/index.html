@@ -12,22 +12,28 @@
 <meta name="theme-color" content="#0b0b0c">
 
 <!-- Vista previa al pegar el enlace en WhatsApp o Instagram. Sin esto
-     sale una tarjeta blanca con la URL cruda. ⚠ og-image.jpg es la del
-     gimnasio: cambiar por una foto de ropa (1200x630) al cargar el fardo. -->
+     sale una tarjeta blanca con la URL cruda. og-tienda.jpg (1200x630) son
+     seis portadas reales del catalogo con el logo: se regenera con
+     tools/og_tienda.py cuando cambie el surtido. -->
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Ultra-Sport 19">
 <meta property="og:locale" content="es_CL">
 <meta property="og:url" content="https://ultrasport19-boop.github.io/US19/tienda/">
 <meta property="og:title" content="Tienda · Ultra-Sport 19">
 <meta property="og:description" content="Camisetas de fútbol por encargo con tu talla y tu nombre, y ropa deportiva de fardo. Pides por WhatsApp. Pencahue, Maule.">
-<meta property="og:image" content="https://ultrasport19-boop.github.io/US19/img/og-image.jpg">
+<meta property="og:image" content="https://ultrasport19-boop.github.io/US19/img/og-tienda.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Ultra-Sport 19, Pencahue.">
+<meta property="og:image:alt" content="Seis camisetas de fútbol del catálogo por encargo de Ultra-Sport 19, Pencahue.">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Tienda · Ultra-Sport 19">
 <meta name="twitter:description" content="Camisetas de fútbol por encargo y ropa deportiva de fardo. Pides por WhatsApp. Pencahue, Maule.">
-<meta name="twitter:image" content="https://ultrasport19-boop.github.io/US19/img/og-image.jpg">
+<meta name="twitter:image" content="https://ultrasport19-boop.github.io/US19/img/og-tienda.jpg">
+<!-- Datos estructurados: solo lo que la pagina ya dice (contacto, comuna,
+     formas de pago). Nada de horarios ni de stock: no se inventan. -->
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Store","name":"Tienda Ultra-Sport 19","url":"https://ultrasport19-boop.github.io/US19/tienda/","image":"https://ultrasport19-boop.github.io/US19/img/og-tienda.jpg","description":"Camisetas de fútbol por encargo (eliges tu talla, llegan en 2 a 3 semanas) y ropa deportiva de fardo, pieza única. Pides por WhatsApp.","telephone":"+56965902238","email":"prime@ultrasport19.com","address":{"@type":"PostalAddress","addressLocality":"Pencahue","addressRegion":"Región del Maule","addressCountry":"CL"},"currenciesAccepted":"CLP","paymentAccepted":"Transferencia, Efectivo","parentOrganization":{"@type":"Organization","name":"Ultra-Sport 19","url":"https://ultrasport19-boop.github.io/US19/"}}
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://script.google.com">
@@ -86,11 +92,13 @@
   .chip{
     font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:.86rem;letter-spacing:.08em;text-transform:uppercase;
     background:transparent;color:var(--tinta-2);border:1px solid var(--linea-fuerte);border-radius:999px;
-    padding:6px 14px;cursor:pointer;
+    padding:6px 16px;cursor:pointer;min-height:44px;   /* 44 px: el dedo, no el raton */
   }
   .chip[aria-pressed="true"]{background:var(--tinta);color:var(--papel);border-color:var(--tinta)}
+  /* Foco visible para quien navega con teclado; no cambia nada al tocar. */
+  a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--rojo);outline-offset:2px}
   .minis{display:flex;gap:5px;padding:7px 10px 0;flex-wrap:wrap}
-  .mini{width:34px;height:44px;padding:0;border:1px solid var(--linea);border-radius:3px;overflow:hidden;background:var(--linea);cursor:pointer;flex:0 0 auto}
+  .mini{width:42px;height:56px;padding:0;border:1px solid var(--linea);border-radius:3px;overflow:hidden;background:var(--linea);cursor:pointer;flex:0 0 auto}
   .mini img{width:100%;height:100%;object-fit:cover;display:block}
   .mini[aria-pressed="true"]{border-color:var(--rojo);border-width:2px}
   .filtros.tallas{margin:8px 0 0}
@@ -588,7 +596,7 @@
   function pintarSecciones(){
     var t = tabs();
     $('secciones').innerHTML = t.lista.map(function(k){
-      return '<button type="button" role="tab" data-sec="' + esc(k) + '" aria-selected="' + (k === tab) + '">' +
+      return '<button type="button" role="tab" data-sec="' + esc(k) + '" aria-selected="' + (k === tab) + '" tabindex="' + (k === tab ? '0' : '-1') + '">' +
         esc(k) + ' <span>(' + t.cuenta[k] + ')</span></button>';
     }).join('');
     $('secciones').hidden = false;
@@ -859,6 +867,24 @@
     if (!tarj || !pr) return;
     try { tarj.outerHTML = tarjetaEncargo(pr); } catch(e){}
   }
+
+  /* Pestanas con teclado (flechas, Inicio, Fin), como pide el patron tablist:
+     una sola parada de tabulador y las flechas cambian de apartado. */
+  document.addEventListener('keydown', function(ev){
+    var pest = ev.target && ev.target.closest ? ev.target.closest('[data-sec]') : null;
+    if (!pest) return;
+    var lista = tabs().lista, i = lista.indexOf(tab), j = -1;
+    if (ev.key === 'ArrowRight') j = (i + 1) % lista.length;
+    else if (ev.key === 'ArrowLeft') j = (i - 1 + lista.length) % lista.length;
+    else if (ev.key === 'Home') j = 0;
+    else if (ev.key === 'End') j = lista.length - 1;
+    if (j < 0 || j === i) return;
+    if (ev.preventDefault) ev.preventDefault();
+    tab = lista[j];
+    escribirHash(); pintarSecciones(); pintarFiltros(); pintar();
+    var botones = $('secciones').querySelectorAll('[data-sec]');
+    for (var b = 0; b < botones.length; b++) if (botones[b].getAttribute('data-sec') === tab && botones[b].focus) botones[b].focus();
+  });
 
   document.addEventListener('click', function(ev){
     var mini = ev.target.closest ? ev.target.closest('.mini') : null;

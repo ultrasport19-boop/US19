@@ -117,6 +117,31 @@
       "nombre": "la busqueda de un apartado se ve en los demas",
       "de": "    if (b){ b.disabled = !prendas.length; b.value = st().qTxt; }",
       "a": "    if (b){ b.disabled = !prendas.length; b.value = b.value; }"
+    },
+    {
+      "nombre": "todas las pestañas quedan en el orden del tabulador (se pierde el tabindex rotatorio)",
+      "de": "' + (k === tab) + '\" tabindex=\"' + (k === tab ? '0' : '-1') + '\">' +",
+      "a": "' + (k === tab) + '\" tabindex=\"0\">' +"
+    },
+    {
+      "nombre": "la flecha derecha no cambia de apartado",
+      "de": "    if (ev.key === 'ArrowRight') j = (i + 1) % lista.length;",
+      "a": "    if (ev.key === 'ArrowRight') j = i;"
+    },
+    {
+      "nombre": "la vista previa vuelve a la foto del gimnasio",
+      "de": "<meta property=\"og:image\" content=\"https://ultrasport19-boop.github.io/US19/img/og-tienda.jpg\">",
+      "a": "<meta property=\"og:image\" content=\"https://ultrasport19-boop.github.io/US19/img/og-image.jpg\">"
+    },
+    {
+      "nombre": "los datos estructurados dicen otro tipo de negocio",
+      "de": "{\"@context\":\"https://schema.org\",\"@type\":\"Store\",",
+      "a": "{\"@context\":\"https://schema.org\",\"@type\":\"Thing\","
+    },
+    {
+      "nombre": "el foco del teclado deja de verse",
+      "de": "  a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--rojo);outline-offset:2px}",
+      "a": "  a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:none}"
     }
   ]
 }

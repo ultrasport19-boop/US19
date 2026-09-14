@@ -4,7 +4,7 @@
         xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
   <url>
     <loc>https://ultrasport19-boop.github.io/US19/</loc>
-    <lastmod>2026-09-06</lastmod>
+    <lastmod>2026-09-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>
     <image:image>
@@ -35,8 +35,12 @@
   </url>
   <url>
     <loc>https://ultrasport19-boop.github.io/US19/tienda/</loc>
-    <lastmod>2026-09-06</lastmod>
+    <lastmod>2026-09-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://ultrasport19-boop.github.io/US19/img/og-tienda.jpg</image:loc>
+      <image:title>Camisetas de fútbol por encargo, tienda de Ultra-Sport 19</image:title>
+    </image:image>
   </url>
 </urlset>

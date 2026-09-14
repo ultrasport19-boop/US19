@@ -214,6 +214,7 @@ function nuevoEntorno(respuestas, opciones) {
   let handlerVis = null;
   let handlerChange = null;
   let handlerInput = null;
+  let handlerKey = null;
   let nPeticiones = 0;
   const irA = [];
 
@@ -224,6 +225,7 @@ function nuevoEntorno(respuestas, opciones) {
       if (ev === 'visibilitychange') handlerVis = fn;
       if (ev === 'change') handlerChange = fn;
       if (ev === 'input') handlerInput = fn;
+      if (ev === 'keydown') handlerKey = fn;
     },
     visibilityState: 'visible',
   };
@@ -268,6 +270,7 @@ function nuevoEntorno(respuestas, opciones) {
     click(target) { if (handlerClick) handlerClick({ target }); },
     cambiar(target) { if (handlerChange) handlerChange({ target }); },
     escribir(target) { if (handlerInput) handlerInput({ target }); },
+    tecla(target, key) { const ev = { target, key, prevenido: false, preventDefault() { ev.prevenido = true; } }; if (handlerKey) handlerKey(ev); return ev; },
     volverAlaPestana() { if (handlerVis) handlerVis(); },
   };
 }
@@ -809,6 +812,53 @@ async function principal() {
   const R0 = nuevoEntorno([CATALOGO(0)]);
   await esperar();
   igual('rendimiento · sin prendas el buscador queda deshabilitado', R0.els.buscar.disabled, true);
+
+  /* p) SEO Y COMPARTIR (14-sep-2026) ------------------------------------ */
+  const ogImg = (src.match(/<meta property="og:image" content="([^"]+)"/) || [])[1] || '';
+  /* Del repo (__dirname), no de al lado de la pagina: los mutantes prueban
+     una copia en otra carpeta y ahi no hay img/ ni sitemap.xml. */
+  const rutaOg = path.join(__dirname, '..', 'img', 'og-tienda.jpg');
+  comprobar('seo · la vista previa es el collage de la tienda, no la foto del gimnasio', /\/img\/og-tienda\.jpg$/.test(ogImg), ogImg);
+  comprobar('seo · og-tienda.jpg existe en el repo y pesa menos de 300 KB', fs.existsSync(rutaOg) && fs.statSync(rutaOg).size < 300 * 1024);
+  comprobar('seo · twitter:image es la misma imagen', (src.match(/<meta name="twitter:image" content="([^"]+)"/) || [])[1] === ogImg);
+  const mLd = /<script type="application\/ld\+json">\s*([\s\S]*?)\s*<\/script>/.exec(src);
+  let ld = null; try { ld = mLd ? JSON.parse(mLd[1]) : null; } catch (e) { ld = null; }
+  comprobar('seo · hay datos estructurados y son JSON valido', !!ld);
+  comprobar('seo · los datos estructurados son un Store con la misma URL canonica', !!ld && ld['@type'] === 'Store' && ld.url === (src.match(/<link rel="canonical" href="([^"]+)"/) || [])[1]);
+  comprobar('seo · el telefono de los datos estructurados es el mismo wa.me de la pagina', !!ld && String(ld.telephone).replace(/\D/g, '') === (src.match(/wa\.me\/(\d+)/) || [])[1]);
+  comprobar('seo · los datos estructurados no inventan horarios ni stock', !!ld && !ld.openingHours && !ld.openingHoursSpecification && !/inventory|stock|aggregateRating|review/i.test(mLd ? mLd[1] : ''));
+  const rutaSm = path.join(__dirname, '..', 'sitemap.xml');
+  const sitemap = fs.existsSync(rutaSm) ? fs.readFileSync(rutaSm, 'utf8') : '';
+  const lmT = (sitemap.match(/tienda\/<\/loc>\s*<lastmod>(\d{4}-\d{2}-\d{2})/) || [])[1] || '';
+  comprobar('seo · el sitemap tiene la tienda con lastmod del 14-sep-2026 o posterior', lmT >= '2026-09-14', lmT || '(sin lastmod)');
+  comprobar('seo · el sitemap enlaza el collage como imagen de la tienda', /og-tienda\.jpg/.test(sitemap));
+
+  /* q) ACCESIBILIDAD (14-sep-2026) --------------------------------------- */
+  comprobar('a11y · hay foco visible para teclado (focus-visible con contorno)', /:focus-visible[^{]*\{outline:\s*3px solid/.test(src));
+  const cssChip = (src.match(/\.chip\{([\s\S]*?)\}/) || [])[1] || '';
+  comprobar('a11y · los chips miden al menos 44 px de alto (dedo, no raton)', /min-height:\s*44px/.test(cssChip), cssChip.slice(0, 120));
+  const cssMini = (src.match(/\.mini\{([^}]*)\}/) || [])[1] || '';
+  comprobar('a11y · las miniaturas de foto miden al menos 40 px de ancho', Number((cssMini.match(/width:\s*(\d+)px/) || [])[1]) >= 40, cssMini.slice(0, 80));
+  const AK = nuevoEntorno([CAT_ENC([PRENDA(0), PRENDA(1), ENC(0), ENC(1)])]);
+  await esperar();
+  const tabsA = AK.els.secciones.innerHTML;
+  comprobar('a11y · la pestaña activa es la unica parada del tabulador (tabindex 0; las demas -1)',
+    (tabsA.match(/tabindex="0"/g) || []).length === 1 && (tabsA.match(/tabindex="-1"/g) || []).length === 1 && /aria-selected="true" tabindex="0"/.test(tabsA), tabsA.slice(0, 200));
+  const tecla = (E, key) => E.tecla({ closest: sel => (sel === '[data-sec]' ? { getAttribute: () => 'Fardo' } : null) }, key);
+  igual('a11y · abre en Fardo', pestanas(AK)[0], 'Fardo');
+  let evK = tecla(AK, 'ArrowRight');
+  comprobar('a11y · flecha derecha pasa al apartado siguiente y lo marca', /data-sec="Camiseta de fútbol" aria-selected="true" tabindex="0"/.test(AK.els.secciones.innerHTML) && evK.prevenido, AK.els.secciones.innerHTML.slice(0, 200));
+  igual('a11y · y las tarjetas son las del apartado nuevo (2 camisetas)', tarjetas(AK), 2);
+  tecla(AK, 'ArrowRight');
+  comprobar('a11y · la flecha da la vuelta (del ultimo al primero)', /data-sec="Fardo" aria-selected="true" tabindex="0"/.test(AK.els.secciones.innerHTML));
+  tecla(AK, 'End');
+  comprobar('a11y · Fin va al ultimo apartado', /data-sec="Camiseta de fútbol" aria-selected="true"/.test(AK.els.secciones.innerHTML));
+  tecla(AK, 'Home');
+  comprobar('a11y · Inicio vuelve al primero', /data-sec="Fardo" aria-selected="true"/.test(AK.els.secciones.innerHTML));
+  evK = tecla(AK, 'Enter');
+  comprobar('a11y · otras teclas no hacen nada ni se bloquean', /data-sec="Fardo" aria-selected="true"/.test(AK.els.secciones.innerHTML) && !evK.prevenido);
+  const evFuera = AK.tecla({ closest: () => null }, 'ArrowRight');
+  comprobar('a11y · las flechas fuera de las pestañas no cambian de apartado', /data-sec="Fardo" aria-selected="true"/.test(AK.els.secciones.innerHTML) && !evFuera.prevenido);
 
   avisos.push('el catalogo de prueba usa maxPedido=3 para no montar 13 clics');
 }
