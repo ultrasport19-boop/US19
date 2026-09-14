@@ -157,6 +157,29 @@
   .pie{margin-top:40px;padding-top:16px;border-top:1px solid var(--linea);font-size:.85rem;color:var(--tinta-3)}
   a{color:var(--rojo-txt)}
   @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+  /* 14-sep-2026 · Dos modalidades: entrega inmediata (fardo) y por encargo. */
+  .secciones{display:flex;gap:0;margin:22px 0 0;border-bottom:2px solid var(--linea-fuerte)}
+  .secciones button{
+    flex:1 1 0;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1rem;letter-spacing:.08em;text-transform:uppercase;
+    background:transparent;color:var(--tinta-2);border:none;border-bottom:4px solid transparent;margin-bottom:-2px;
+    padding:12px 8px;cursor:pointer;min-height:48px;
+  }
+  .secciones button[aria-selected="true"]{color:var(--tinta);border-bottom-color:var(--rojo)}
+  .secciones button span{font-weight:500;color:var(--tinta-3);letter-spacing:0}
+  .plazo{margin:14px 0 0;padding:11px 14px;border-left:5px solid var(--verde);background:var(--papel-2);font-size:.95rem}
+  .busca{margin:14px 0 0}
+  .busca label{display:block;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;color:var(--tinta-2);margin-bottom:5px}
+  /* 16px: con menos, Safari del iPhone hace zoom al tocar el buscador. */
+  .busca input{width:100%;font:inherit;font-size:16px;padding:11px 13px;border:1px solid var(--linea-fuerte);border-radius:5px;background:var(--papel);color:var(--tinta)}
+  .card.enc .foto{aspect-ratio:1/1;background:#fff}
+  .card.enc .foto img{object-fit:contain}
+  .card .oferta{position:absolute;top:9px;left:9px;background:var(--rojo);color:#fff;font-family:'Anton',sans-serif;font-size:.85rem;padding:3px 9px;border-radius:3px;letter-spacing:.06em;text-transform:uppercase}
+  .card .plazo-c{color:var(--verde);text-transform:none;letter-spacing:0;font-family:'Barlow',sans-serif;font-size:.85rem}
+  .talla-sel{font:inherit;font-size:16px;margin-top:8px;padding:9px 10px;border:1px solid var(--linea-fuerte);border-radius:4px;background:var(--papel);color:var(--tinta);width:100%}
+  .card button[disabled]{opacity:.55;cursor:not-allowed}
+  .mas{display:block;margin:22px auto 0;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1rem;letter-spacing:.1em;text-transform:uppercase;
+    background:transparent;color:var(--tinta);border:2px solid var(--tinta);border-radius:5px;padding:12px 26px;cursor:pointer;min-height:48px}
 </style>
 </head>
 <body>
@@ -168,7 +191,8 @@
   </header>
 
   <h1>Tienda</h1>
-  <p class="sub">Ropa deportiva seleccionada pieza por pieza. Cada prenda es única: cuando alguien la aparta, desaparece de aquí.</p>
+  <p class="sub">Ropa deportiva en Pencahue. <b>Entrega inmediata</b>: prendas únicas que ya están aquí; cuando alguien la aparta, desaparece.
+  <b>Por encargo</b>: camisetas que pedimos al proveedor con tu talla.</p>
 
   <!-- Mientras no haya ropa cargada. Ya NO hay que acordarse de borrarla:
        el script la esconde solo en cuanto el catálogo trae prendas. Se deja
@@ -183,6 +207,16 @@
     <a id="avisame" href="#">Avísame cuando llegue</a>
   </section>
 
+  <div class="secciones" id="secciones" role="tablist" aria-label="Cómo comprar" hidden>
+    <button type="button" role="tab" id="tab-inmediata" data-sec="inmediata" aria-selected="true">Entrega inmediata <span id="n-inmediata"></span></button>
+    <button type="button" role="tab" id="tab-encargo" data-sec="encargo" aria-selected="false">Por encargo <span id="n-encargo"></span></button>
+  </div>
+  <p class="plazo" id="plazo" hidden><b>Llega en <span id="plazo-txt">2 a 3 semanas</span>.</b> Eliges tu talla y lo pedimos al proveedor. No se agota: se puede encargar las veces que quieras.</p>
+  <div class="busca" id="busca" hidden>
+    <label for="buscar">Buscar equipo</label>
+    <input type="search" id="buscar" placeholder="Ej: Colo-Colo, Real Madrid, Chile" autocomplete="off" enterkeyhint="search">
+  </div>
+
   <div class="filtros" id="filtros" role="group" aria-label="Filtrar por categoría"></div>
   <div class="filtros tallas" id="tallas" role="group" aria-label="Filtrar por talla"></div>
   <div class="filtros tallas" id="orden" role="group" aria-label="Ordenar"></div>
@@ -194,6 +228,7 @@
   <!-- role="list" explícito: con list-style:none Safari deja de anunciarla
        como lista y el lector no dice cuántas prendas hay. -->
   <ul class="grid" id="grid" role="list"></ul>
+  <button type="button" class="mas" id="mas" hidden>Ver más</button>
 
   <div class="vacio" id="vacio" hidden>
     <strong>Todavía no hay prendas publicadas</strong>
@@ -209,6 +244,10 @@
       <li><b>Talca:</b> coordinamos la entrega por WhatsApp.</li>
       <li><b>Otras comunas:</b> se envía. El costo del envío lo paga el comprador y se acuerda antes.</li>
     </ul>
+
+    <h3>Por encargo</h3>
+    <p>Las camisetas <b>por encargo</b> se piden al proveedor con la talla que eliges y llegan en 2 a 3 semanas.
+    No se agotan ni se apartan: al pedir, te escribimos por WhatsApp para coordinar el pago y la entrega.</p>
 
     <h3>Pago</h3>
     <p>Transferencia o efectivo. Nada se paga por esta página: cuando reservas, te escribimos y coordinamos.
@@ -256,11 +295,20 @@
 
   var $ = function(id){ return document.getElementById(id); };
   var prendas = [], filtro = '', filtroTalla = '', orden = '', carro = {}, ultimaCarga = 0;
+  /* 14-sep-2026 · Dos modalidades. «inmediata» es la pieza unica de fardo de
+     siempre (se aparta al pedirla); «encargo» se pide al proveedor con la talla
+     que elige el comprador y nunca se aparta. */
+  var seccion = '', busqueda = '', mostrados = 0, claves = {}, tallaElegida = {};
+  var PAGINA = 60;
   /* Lo manda el propio catalogo (TIENDA_CFG.MAX_POR_PEDIDO). El 12 es solo
      el valor de respaldo por si el endpoint no lo trae: antes estaba escrito
      a mano en los dos sitios y bastaba cambiar uno para que dejaran de
      coincidir en silencio. */
   var MAX_PEDIDO = 12;
+  /* Precio de referencia, plazo y tallas por defecto de los encargos: los
+     manda el catalogo (TIENDA_CFG). Sin precio de referencia no hay OFERTA:
+     la pagina no escribe precios a mano. */
+  var PRECIO_REF = 0, PLAZO = '2 a 3 semanas', TALLAS_DEF = ['S', 'M', 'L', 'XL', 'XXL'];
 
   /* El carro sobrevive a una recarga o a un viaje a WhatsApp y de vuelta.
      Caduca a las 24 h: mas alla, lo que eligio ya no existe. */
@@ -303,6 +351,43 @@
     return String(s == null ? '' : s)
       .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
   }
+  /* Para buscar: sin acentos ni mayusculas. «Atletico» encuentra «Atlético». */
+  function norm(s){
+    var t = String(s == null ? '' : s);
+    if (t.normalize) t = t.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    /* «Colo-Colo», «Colo Colo» y «colocolo.» son lo mismo para quien busca:
+       guiones y signos cuentan como espacio. */
+    return t.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+  }
+  function esEncargo(p){ return !!(p && p.encargo); }
+
+  /* «Tallas disponibles» viene del proveedor como texto libre: «S-4XL»,
+     «S a XXL», «S/M/L». Se entiende el rango o la lista; si no se entiende
+     nada, o viene vacia, valen las tallas por defecto del catalogo. */
+  var ORDEN_TALLAS = ['XXS','XS','S','M','L','XL','XXL','3XL','4XL','5XL','6XL'];
+  function canonTalla(t){
+    t = String(t || '').toUpperCase().replace(/\s+/g, '');
+    if (t === '2XL') return 'XXL';
+    if (t === 'XXXL') return '3XL';
+    if (t === 'XXXXL') return '4XL';
+    if (t === 'XXXXXL') return '5XL';
+    return t;
+  }
+  function tallasDe(p){
+    var txt = String((p && p.tallas) || '').trim();
+    if (!txt) return TALLAS_DEF.slice();
+    var r = /^([a-z0-9]+)\s*(?:-|–|—|a|al|hasta)\s*([a-z0-9]+)$/i.exec(txt);
+    if (r){
+      var i = ORDEN_TALLAS.indexOf(canonTalla(r[1])), j = ORDEN_TALLAS.indexOf(canonTalla(r[2]));
+      if (i !== -1 && j !== -1 && i <= j) return ORDEN_TALLAS.slice(i, j + 1);
+    }
+    var lista = [];
+    txt.split(/[\s,\/;|]+/).forEach(function(x){
+      var c = canonTalla(x);
+      if (ORDEN_TALLAS.indexOf(c) !== -1 && lista.indexOf(c) === -1) lista.push(c);
+    });
+    return lista.length ? lista : TALLAS_DEF.slice();
+  }
 
   /* --- Filtros en la direccion ---------------------------------------
      Para poder mandar por WhatsApp «mira las poleras talla M» y que el
@@ -317,10 +402,12 @@
       if (k === 'cat') filtro = v;
       else if (k === 'talla') filtroTalla = v;
       else if (k === 'orden') orden = v;
+      else if (k === 'sec' && (v === 'encargo' || v === 'inmediata')) seccion = v;
     });
   }
   function escribirHash(){
     var p = [];
+    if (seccion) p.push('sec=' + encodeURIComponent(seccion));
     if (filtro) p.push('cat=' + encodeURIComponent(filtro));
     if (filtroTalla) p.push('talla=' + encodeURIComponent(filtroTalla));
     if (orden) p.push('orden=' + encodeURIComponent(orden));
@@ -328,20 +415,43 @@
     try { history.replaceState(null, '', nuevo === ' ' ? location.pathname + location.search : nuevo); } catch(e){}
   }
 
+  function deSeccion(){
+    return prendas.filter(function(p){ return seccion === 'encargo' ? esEncargo(p) : !esEncargo(p); });
+  }
+
+  function pintarSecciones(){
+    var nE = 0, nI = 0;
+    prendas.forEach(function(p){ if (esEncargo(p)) nE++; else nI++; });
+    $('n-inmediata').textContent = '(' + nI + ')';
+    $('n-encargo').textContent = '(' + nE + ')';
+    $('tab-inmediata').setAttribute('aria-selected', String(seccion === 'inmediata'));
+    $('tab-encargo').setAttribute('aria-selected', String(seccion === 'encargo'));
+    $('secciones').hidden = !prendas.length;
+    $('plazo').hidden = seccion !== 'encargo';
+    $('plazo-txt').textContent = PLAZO;
+    $('busca').hidden = !prendas.length;
+  }
+
   function pintarFiltros(){
+    var base = deSeccion();
+    /* Categoria y talla fija son cosas de la ropa de fardo. En los encargos
+       la talla la elige el comprador en cada tarjeta. */
     var cats = [];
-    prendas.forEach(function(p){ if (p.categoria && cats.indexOf(p.categoria) === -1) cats.push(p.categoria); });
+    if (seccion !== 'encargo') base.forEach(function(p){ if (p.categoria && cats.indexOf(p.categoria) === -1) cats.push(p.categoria); });
     cats.sort();
-    var html = '<button class="chip" type="button" data-cat="" aria-pressed="' + (filtro === '') + '">Todo</button>';
-    cats.forEach(function(c){
-      html += '<button class="chip" type="button" data-cat="' + esc(c) + '" aria-pressed="' + (filtro === c) + '">' + esc(c) + '</button>';
-    });
-    $('filtros').innerHTML = html;
+    if (seccion === 'encargo' || !base.length){ $('filtros').innerHTML = ''; }
+    else {
+      var html = '<button class="chip" type="button" data-cat="" aria-pressed="' + (filtro === '') + '">Todo</button>';
+      cats.forEach(function(c){
+        html += '<button class="chip" type="button" data-cat="' + esc(c) + '" aria-pressed="' + (filtro === c) + '">' + esc(c) + '</button>';
+      });
+      $('filtros').innerHTML = html;
+    }
 
     /* Asi se compra ropa usada: primero la talla, despues que sea. Solo
        aparece si hay tallas distintas que elegir. */
     var tallas = [];
-    prendas.forEach(function(p){ if (p.talla && tallas.indexOf(p.talla) === -1) tallas.push(p.talla); });
+    if (seccion !== 'encargo') base.forEach(function(p){ if (p.talla && tallas.indexOf(p.talla) === -1) tallas.push(p.talla); });
     var ordenTallas = ['XS','S','M','L','XL','XXL'];
     tallas.sort(function(a,b){
       var ia = ordenTallas.indexOf(String(a).toUpperCase()), ib = ordenTallas.indexOf(String(b).toUpperCase());
@@ -363,7 +473,7 @@
        prendas se ven todas de un vistazo y el control estorba. */
     var o = $('orden');
     if (!o) return;
-    if (prendas.length < 8){ o.innerHTML = ''; return; }
+    if (base.length < 8){ o.innerHTML = ''; return; }
     o.innerHTML =
       '<button class="chip" type="button" data-orden="" aria-pressed="' + (orden === '') + '">Lo último</button>' +
       '<button class="chip" type="button" data-orden="barato" aria-pressed="' + (orden === 'barato') + '">Más barato</button>' +
@@ -371,9 +481,12 @@
   }
 
   function visibles(){
-    var lista = prendas.filter(function(p){
-      if (filtro && p.categoria !== filtro) return false;
-      if (filtroTalla && p.talla !== filtroTalla) return false;
+    var lista = deSeccion().filter(function(p){
+      if (seccion !== 'encargo'){
+        if (filtro && p.categoria !== filtro) return false;
+        if (filtroTalla && p.talla !== filtroTalla) return false;
+      }
+      if (busqueda && (claves[p.id] || '').indexOf(busqueda) < 0) return false;
       return true;
     });
     /* Sin orden elegido manda el que trae el catalogo: lo ultimo cargado
@@ -389,65 +502,154 @@
     $('grid').innerHTML = h;
   }
 
+  function claveCarro(id){ return seccion === 'encargo' ? id + '|' + (tallaElegida[id] || '') : id; }
+
+  function tarjetaFardo(p){
+    var puesto = !!carro[p.id];
+    var meta = [p.categoria, p.estado].filter(Boolean).join(' · ');
+    return '<li class="card' + (puesto ? ' puesto' : '') + '">' +
+      '<div class="foto">' +
+        /* Las URL de Notion caducan a la hora: si la foto no carga, el
+           recuadro «sin foto» se entiende, el hueco gris no. */
+        (p.foto ? '<img src="' + esc(p.foto) + '" alt="' + esc(p.nombre) + '" width="600" height="800" loading="lazy" decoding="async"' +
+                  ' onerror="this.parentNode.insertAdjacentHTML(\'afterbegin\',\'<div class=&quot;vacia&quot;>sin foto</div>\');this.remove();">'
+                : '<div class="vacia">sin foto</div>') +
+        (p.talla ? '<span class="talla">' + esc(p.talla) + '</span>' : '') +
+      '</div>' +
+      /* La segunda y la tercera foto son las que muestran el desgaste o
+         la etiqueta. Sin ellas «lo declarado» se queda en el texto. */
+      (p.fotos && p.fotos.length > 1
+        ? '<div class="minis">' + p.fotos.map(function(f, i){
+            return '<button class="mini" type="button" data-mini="' + i + '" data-para="' + esc(p.id) + '"' +
+                   ' aria-pressed="' + (i === 0) + '" aria-label="Foto ' + (i + 1) + ' de ' + esc(p.nombre) + '">' +
+                   '<img src="' + esc(f) + '" alt="" width="34" height="44" loading="lazy" decoding="async"></button>';
+          }).join('') + '</div>'
+        : '') +
+      '<div class="cuerpo">' +
+        '<h3>' + esc(p.nombre) + '</h3>' +
+        (meta ? '<span class="meta">' + esc(meta) + '</span>' : '') +
+        (p.notas ? '<span class="meta notas">' + esc(p.notas) + '</span>' : '') +
+        '<span class="precio">' + clp(p.precio) + '</span>' +
+        '<button type="button" data-id="' + esc(p.id) + '">' + (puesto ? 'Quitar' : 'Lo quiero') + '</button>' +
+      '</div>' +
+    '</li>';
+  }
+
+  /* Por encargo: la talla es obligatoria. El boton no se activa hasta que
+     hay talla, y el carro guarda una linea por camiseta Y talla: la misma
+     camiseta en M y en L son dos encargos. */
+  function tarjetaEncargo(p){
+    var t = tallaElegida[p.id] || '';
+    var puesto = !!(t && carro[p.id + '|' + t]);
+    var oferta = PRECIO_REF > 0 && Number(p.precio) > 0 && Number(p.precio) < PRECIO_REF;
+    var meta = [p.equipo, p.temporada, p.modelo].filter(Boolean).join(' · ');
+    var opciones = '<option value="">Elige talla</option>' + tallasDe(p).map(function(x){
+      return '<option value="' + esc(x) + '"' + (x === t ? ' selected' : '') + '>' + esc(x) + '</option>';
+    }).join('');
+    return '<li class="card enc' + (puesto ? ' puesto' : '') + '">' +
+      '<div class="foto">' +
+        (p.foto ? '<img src="' + esc(p.foto) + '" alt="' + esc(p.nombre) + '" width="1000" height="1000" loading="lazy" decoding="async"' +
+                  ' onerror="this.parentNode.insertAdjacentHTML(\'afterbegin\',\'<div class=&quot;vacia&quot;>sin foto</div>\');this.remove();">'
+                : '<div class="vacia">sin foto</div>') +
+        (oferta ? '<span class="oferta">Oferta</span>' : '') +
+      '</div>' +
+      '<div class="cuerpo">' +
+        '<h3>' + esc(p.nombre) + '</h3>' +
+        (meta ? '<span class="meta">' + esc(meta) + '</span>' : '') +
+        '<span class="meta plazo-c">Por encargo · llega en ' + esc(PLAZO) + '</span>' +
+        '<span class="precio">' + clp(Number(p.precio)) + '</span>' +
+        '<select class="talla-sel" data-para="' + esc(p.id) + '" aria-label="Talla de ' + esc(p.nombre) + '">' + opciones + '</select>' +
+        '<button type="button" data-id="' + esc(p.id) + '" data-enc="1"' + (t ? '' : ' disabled') + '>' +
+          (puesto ? 'Quitar (' + esc(t) + ')' : (t ? 'Lo quiero' : 'Elige talla')) + '</button>' +
+      '</div>' +
+    '</li>';
+  }
+
   function pintar(){
     var lista = visibles();
-    if (!lista.length && prendas.length){
-      $('conteo').textContent = 'Nada con ese filtro. De ' + prendas.length + ' prendas disponibles, prueba con otra categoría o talla.';
+    var total = deSeccion().length;
+    var palabra = seccion === 'encargo' ? ['camiseta por encargo', 'camisetas por encargo'] : ['prenda disponible', 'prendas disponibles'];
+    if (!total && prendas.length){
+      $('conteo').textContent = seccion === 'encargo'
+        ? 'Por ahora no hay camisetas por encargo publicadas.'
+        : 'Por ahora no hay prendas de entrega inmediata. Mira las camisetas por encargo.';
+    } else if (!lista.length && total){
+      $('conteo').textContent = busqueda
+        ? 'Nada con esa búsqueda. Prueba con otro nombre de equipo o país.'
+        : 'Nada con ese filtro. De ' + total + ' ' + palabra[1] + ', prueba con otra categoría o talla.';
     } else {
-      $('conteo').textContent = (lista.length === 1 ? '1 prenda disponible' : (lista.length + ' prendas disponibles')) +
-        (lista.length !== prendas.length ? ' de ' + prendas.length : '');
+      $('conteo').textContent = (lista.length === 1 ? '1 ' + palabra[0] : (lista.length + ' ' + palabra[1])) +
+        (lista.length !== total ? ' de ' + total : '');
     }
-    $('grid').innerHTML = lista.map(function(p){
-      var puesto = !!carro[p.id];
-      var meta = [p.categoria, p.estado].filter(Boolean).join(' · ');
-      return '<li class="card' + (puesto ? ' puesto' : '') + '">' +
-        '<div class="foto">' +
-          /* Las URL de Notion caducan a la hora: si la foto no carga, el
-             recuadro «sin foto» se entiende, el hueco gris no. */
-          (p.foto ? '<img src="' + esc(p.foto) + '" alt="' + esc(p.nombre) + '" loading="lazy" decoding="async"' +
-                    ' onerror="this.parentNode.insertAdjacentHTML(\'afterbegin\',\'<div class=&quot;vacia&quot;>sin foto</div>\');this.remove();">'
-                  : '<div class="vacia">sin foto</div>') +
-          (p.talla ? '<span class="talla">' + esc(p.talla) + '</span>' : '') +
-        '</div>' +
-        /* La segunda y la tercera foto son las que muestran el desgaste o
-           la etiqueta. Sin ellas «lo declarado» se queda en el texto. */
-        (p.fotos && p.fotos.length > 1
-          ? '<div class="minis">' + p.fotos.map(function(f, i){
-              return '<button class="mini" type="button" data-mini="' + i + '" data-para="' + esc(p.id) + '"' +
-                     ' aria-pressed="' + (i === 0) + '" aria-label="Foto ' + (i + 1) + ' de ' + esc(p.nombre) + '">' +
-                     '<img src="' + esc(f) + '" alt="" loading="lazy" decoding="async"></button>';
-            }).join('') + '</div>'
-          : '') +
-        '<div class="cuerpo">' +
-          '<h3>' + esc(p.nombre) + '</h3>' +
-          (meta ? '<span class="meta">' + esc(meta) + '</span>' : '') +
-          (p.notas ? '<span class="meta notas">' + esc(p.notas) + '</span>' : '') +
-          '<span class="precio">' + clp(p.precio) + '</span>' +
-          '<button type="button" data-id="' + esc(p.id) + '">' + (puesto ? 'Quitar' : 'Lo quiero') + '</button>' +
-        '</div>' +
-      '</li>';
+    if (mostrados < PAGINA) mostrados = PAGINA;
+    /* Se pintan de a 60: mil tarjetas de una vez congelan un telefono barato
+       y descargan fotos que nadie va a ver. El buscador y los filtros miran
+       el catalogo ENTERO, no solo lo pintado. */
+    $('grid').innerHTML = lista.slice(0, mostrados).map(function(p){
+      return esEncargo(p) ? tarjetaEncargo(p) : tarjetaFardo(p);
     }).join('');
+    var quedan = lista.length - Math.min(mostrados, lista.length);
+    $('mas').hidden = quedan <= 0;
+    $('mas').textContent = 'Ver más (' + quedan + ')';
     barra();
   }
 
   function barra(){
-    var ids = Object.keys(carro);
-    var t = 0; ids.forEach(function(id){ t += Number(carro[id].precio) || 0; });
-    $('resumen').textContent = ids.length === 1 ? '1 prenda' : (ids.length + ' prendas');
+    var ks = Object.keys(carro);
+    var t = 0, hayFardo = false;
+    ks.forEach(function(k){ t += Number(carro[k].precio) || 0; if (!carro[k].encargo) hayFardo = true; });
+    $('resumen').textContent = ks.length === 1 ? '1 prenda' : (ks.length + ' prendas');
     $('total').textContent = clp(t);
-    $('barra').className = ids.length ? 'barra visible' : 'barra';
+    $('pedir').textContent = hayFardo || !ks.length ? 'Reservar por WhatsApp' : 'Pedir por WhatsApp';
+    $('barra').className = ks.length ? 'barra visible' : 'barra';
+  }
+
+  function lineaEncargo(e){
+    var extra = [e.equipo, e.temporada, e.modelo].filter(Boolean).join(' ');
+    return e.nombre + (extra ? ' — ' + extra : '');
   }
 
   function mensaje(){
-    var ids = Object.keys(carro), t = 0, L = ['PEDIDO US19', ''];
-    ids.forEach(function(id){
-      var p = carro[id];
-      t += Number(p.precio) || 0;
-      L.push('- ' + p.nombre + (p.talla ? ' (' + p.talla + ')' : '') + ' ' + clp(p.precio) + ' #' + id);
-    });
-    L.push('');
-    L.push('Total: ' + clp(t));
-    return L.join('\n');
+    var ks = Object.keys(carro), bloques = [];
+    var fardo = ks.filter(function(k){ return !carro[k].encargo; });
+    var enc = ks.filter(function(k){ return carro[k].encargo; });
+    /* La ropa de fardo va igual que siempre: «PEDIDO US19» y un #id por
+       prenda, que es lo que el bot usa para apartarla. */
+    if (fardo.length){
+      var t = 0, L = ['PEDIDO US19', ''];
+      fardo.forEach(function(id){
+        var p = carro[id];
+        t += Number(p.precio) || 0;
+        L.push('- ' + p.nombre + (p.talla ? ' (' + p.talla + ')' : '') + ' ' + clp(p.precio) + ' #' + id);
+      });
+      L.push('');
+      L.push('Total: ' + clp(t));
+      bloques.push(L.join('\n'));
+    }
+    /* Los encargos van SIN #id a proposito: el id es lo que hace que el bot
+       aparte una prenda, y un encargo no se aparta nunca. */
+    if (enc.length === 1){
+      var e1 = carro[enc[0]];
+      bloques.push('Hola! Quiero encargar: ' + lineaEncargo(e1) + '\nTalla: ' + e1.tallaElegida + ' — ' + clp(e1.precio) +
+        '. (Por encargo, ' + PLAZO + ')');
+    } else if (enc.length > 1){
+      var te = 0, E = ['Hola! Quiero encargar:', ''];
+      enc.forEach(function(k){
+        var e = carro[k];
+        te += Number(e.precio) || 0;
+        E.push('- ' + lineaEncargo(e));
+        E.push('  Talla: ' + e.tallaElegida + ' — ' + clp(e.precio));
+      });
+      E.push('');
+      E.push('(Por encargo, ' + PLAZO + ') Total: ' + clp(te));
+      bloques.push(E.join('\n'));
+    }
+    return bloques.join('\n\n');
+  }
+
+  function buscarPrenda(id){
+    for (var i = 0; i < prendas.length; i++) if (prendas[i].id === id) return prendas[i];
+    return null;
   }
 
   document.addEventListener('click', function(ev){
@@ -474,18 +676,32 @@
       for (var k = 0; k < todas.length; k++) todas[k].setAttribute('aria-pressed', String(todas[k] === mini));
       return;
     }
+    var tab = ev.target.closest ? ev.target.closest('[data-sec]') : null;
+    if (tab){
+      seccion = tab.getAttribute('data-sec') === 'encargo' ? 'encargo' : 'inmediata';
+      mostrados = PAGINA;
+      escribirHash(); pintarSecciones(); pintarFiltros(); pintar(); return;
+    }
     var chip = ev.target.closest ? ev.target.closest('.chip') : null;
     if (chip){
       if (chip.hasAttribute('data-talla')) filtroTalla = chip.getAttribute('data-talla') || '';
       else if (chip.hasAttribute('data-orden')) orden = chip.getAttribute('data-orden') || '';
       else filtro = chip.getAttribute('data-cat') || '';
+      mostrados = PAGINA;
       escribirHash(); pintarFiltros(); pintar(); return;
     }
     var btn = ev.target.closest ? ev.target.closest('.card button') : null;
     if (btn){
       var id = btn.getAttribute('data-id');
       if (!id) return;
-      if (carro[id]) delete carro[id];
+      var enc = btn.getAttribute('data-enc') === '1';
+      var talla = enc ? (tallaElegida[id] || '') : '';
+      if (enc && !talla){
+        nota('Elige tu <b>talla</b> antes de pedir la camiseta.', true);
+        return;
+      }
+      var clave = enc ? id + '|' + talla : id;
+      if (carro[clave]) delete carro[clave];
       else {
         /* El bot solo aparta MAX_PEDIDO por pedido y descartaba el resto sin
            decir nada: alguien elegia 15 y recibia 12 sin explicacion. */
@@ -493,7 +709,9 @@
           nota('Puedes reservar hasta <b>' + MAX_PEDIDO + ' prendas por pedido</b>. Manda este y enseguida armamos otro, o escríbenos y lo vemos juntos.', true);
           return;
         }
-        for (var i = 0; i < prendas.length; i++) if (prendas[i].id === id) { carro[id] = prendas[i]; break; }
+        var pr = buscarPrenda(id);
+        if (!pr) return;
+        carro[clave] = enc ? Object.assign({}, pr, { tallaElegida: talla }) : pr;
         nota('');
       }
       guardarCarro();
@@ -503,15 +721,49 @@
          que el comprador acababa de elegir en otra tarjeta. */
       var tarj = btn.closest('.card');
       if (tarj){
-        var puesto = !!carro[id];
-        tarj.className = 'card' + (puesto ? ' puesto' : '');
-        btn.textContent = puesto ? 'Quitar' : 'Lo quiero';
+        var puesto = !!carro[clave];
+        tarj.className = 'card' + (enc ? ' enc' : '') + (puesto ? ' puesto' : '');
+        btn.textContent = puesto ? (enc ? 'Quitar (' + talla + ')' : 'Quitar') : 'Lo quiero';
       } else {
         pintar();
       }
       barra();
     }
   });
+
+  /* Elegir talla en una tarjeta de encargo: activa el boton y dice si esa
+     camiseta en esa talla ya esta en el pedido. */
+  document.addEventListener('change', function(ev){
+    var s = ev.target;
+    if (!s || !s.getAttribute || s.getAttribute('data-para') === null || !s.closest) return;
+    var id = s.getAttribute('data-para');
+    tallaElegida[id] = s.value || '';
+    var tarj = s.closest('.card');
+    var b = tarj ? tarj.querySelector('button[data-id]') : null;
+    if (!b) return;
+    var t = tallaElegida[id];
+    var puesto = !!(t && carro[id + '|' + t]);
+    b.disabled = !t;
+    b.textContent = puesto ? 'Quitar (' + t + ')' : (t ? 'Lo quiero' : 'Elige talla');
+    tarj.className = 'card enc' + (puesto ? ' puesto' : '');
+    if (t) nota('');
+  });
+
+  /* Buscador: filtra en el telefono, sin volver a pedir nada, sobre TODO el
+     catalogo de la seccion. Espera 200 ms a que se deje de escribir. */
+  var relojBusca = null;
+  function buscar(valor){
+    busqueda = norm(valor);
+    mostrados = PAGINA;
+    pintar();
+  }
+  $('buscar').addEventListener('input', function(ev){
+    var v = ev && ev.target ? ev.target.value : '';
+    if (relojBusca) clearTimeout(relojBusca);
+    relojBusca = setTimeout(function(){ buscar(v); }, 200);
+  });
+
+  $('mas').addEventListener('click', function(){ mostrados += PAGINA; pintar(); });
 
   $('vaciar').addEventListener('click', function(){ carro = {}; guardarCarro(); pintar(); });
 
@@ -549,9 +801,13 @@
   function reconciliar(){
     var vivos = {}, perdidas = [];
     prendas.forEach(function(p){ vivos[p.id] = p; });
-    Object.keys(carro).forEach(function(id){
-      if (vivos[id]) carro[id] = vivos[id];
-      else { perdidas.push(carro[id] && carro[id].nombre ? carro[id].nombre : 'una prenda'); delete carro[id]; }
+    Object.keys(carro).forEach(function(k){
+      var e = carro[k];
+      var id = (e && e.id) || k;
+      if (vivos[id]){
+        /* El precio y los datos se refrescan; la talla que eligio, no. */
+        carro[k] = e && e.encargo ? Object.assign({}, vivos[id], { tallaElegida: e.tallaElegida }) : vivos[id];
+      } else { perdidas.push(e && e.nombre ? e.nombre : 'una prenda'); delete carro[k]; }
     });
     guardarCarro();
     return perdidas;
@@ -564,7 +820,10 @@
   }
 
   /* Apps Script en frio tarda segundos y a veces no contesta. Sin plazo, la
-     pagina se quedaba en «Cargando el catálogo…» para siempre. */
+     pagina se quedaba en «Cargando el catálogo…» para siempre.
+     14-sep-2026 · Con 1.252 camisetas Notion tarda ~12 s en entregar el
+     catalogo cuando la cache de 5 min expiro: el plazo de 9 s lo cortaba
+     siempre. 20 s por intento. */
   function pedirCatalogo(ms){
     if (typeof AbortController !== 'function' || typeof fetch !== 'function'){
       return fetch(API).then(function(r){ return r.json(); });
@@ -580,6 +839,18 @@
     prendas = (d && Array.isArray(d.prendas)) ? d.prendas : [];
     if (d && d.wsp) WSP = String(d.wsp);
     if (d && Number(d.maxPedido) > 0) MAX_PEDIDO = Number(d.maxPedido);
+    if (d && Number(d.precioRef) > 0) PRECIO_REF = Number(d.precioRef);
+    if (d && d.plazoEncargo) PLAZO = String(d.plazoEncargo);
+    if (d && Array.isArray(d.tallasEncargo) && d.tallasEncargo.length) TALLAS_DEF = d.tallasEncargo.map(String);
+
+    claves = {};
+    prendas.forEach(function(p){ claves[p.id] = norm([p.nombre, p.equipo, p.temporada, p.modelo].join(' ')); });
+    var hayE = false, hayI = false;
+    prendas.forEach(function(p){ if (esEncargo(p)) hayE = true; else hayI = true; });
+    /* Sin seccion elegida (ni en el enlace), se abre la que tiene algo. */
+    if (!seccion || (seccion === 'inmediata' && !hayI && hayE) || (seccion === 'encargo' && !hayE && hayI)){
+      seccion = hayI || !hayE ? 'inmediata' : 'encargo';
+    }
 
     /* El aviso de «próximamente» es de cuando no habia nada que vender. Con
        ropa cargada, dejarlo puesto hace parecer vacia una tienda llena, y
@@ -588,11 +859,13 @@
     if (pronto) pronto.hidden = prendas.length > 0;
 
     if (d && d.error && !prendas.length){ noSePudo(); return; }
+    pintarSecciones();
     if (!prendas.length){
       $('conteo').textContent = '';
       $('vacio').hidden = false;
       $('grid').innerHTML = '';
       $('filtros').innerHTML = ''; $('tallas').innerHTML = '';
+      $('mas').hidden = true;
       var oo = $('orden'); if (oo) oo.innerHTML = '';
       return;
     }
@@ -618,7 +891,7 @@
   }
 
   function cargar(esRecarga){
-    return pedirCatalogo(9000)
+    return pedirCatalogo(20000)
       .then(function(d){
         ultimaCarga = Date.now();
         if (d && Array.isArray(d.prendas) && !d.respaldo && !d.error) guardarCatalogo(d);
@@ -628,7 +901,7 @@
         /* Un solo reintento, y a los dos segundos: casi siempre es el
            arranque en frio de Apps Script, no una caida. */
         return new Promise(function(ok){ setTimeout(ok, 2000); }).then(function(){
-          return pedirCatalogo(9000).then(function(d){
+          return pedirCatalogo(20000).then(function(d){
             ultimaCarga = Date.now();
             if (d && Array.isArray(d.prendas) && !d.respaldo && !d.error) guardarCatalogo(d);
             aplicar(d, false);

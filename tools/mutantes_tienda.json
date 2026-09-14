@@ -27,6 +27,41 @@
       "nombre": "el mensaje de WhatsApp se queda sin el id de la prenda",
       "de": "      L.push('- ' + p.nombre + (p.talla ? ' (' + p.talla + ')' : '') + ' ' + clp(p.precio) + ' #' + id);",
       "a": "      L.push('- ' + p.nombre + (p.talla ? ' (' + p.talla + ')' : '') + ' ' + clp(p.precio));"
+    },
+    {
+      "nombre": "el encargo viaja con #id y el bot lo apartaria como pieza unica",
+      "de": "        E.push('  Talla: ' + e.tallaElegida + ' — ' + clp(e.precio));",
+      "a": "        E.push('  Talla: ' + e.tallaElegida + ' — ' + clp(e.precio) + ' #' + e.id);"
+    },
+    {
+      "nombre": "se puede encargar sin elegir talla",
+      "de": "      if (enc && !talla){",
+      "a": "      if (false && enc && !talla){"
+    },
+    {
+      "nombre": "el precio de referencia de la OFERTA queda escrito a mano en la pagina",
+      "de": "  var PRECIO_REF = 0, PLAZO",
+      "a": "  var PRECIO_REF = 23000, PLAZO"
+    },
+    {
+      "nombre": "el buscador deja de ignorar los acentos",
+      "de": "    if (t.normalize) t = t.normalize('NFD')",
+      "a": "    if (false) t = t.normalize('NFD')"
+    },
+    {
+      "nombre": "se pintan todas las camisetas de una vez",
+      "de": "  var PAGINA = 60;",
+      "a": "  var PAGINA = 100000;"
+    },
+    {
+      "nombre": "el rango de tallas del proveedor se ignora",
+      "de": "      if (i !== -1 && j !== -1 && i <= j) return ORDEN_TALLAS.slice(i, j + 1);",
+      "a": "      if (false) return ORDEN_TALLAS.slice(i, j + 1);"
+    },
+    {
+      "nombre": "la ropa de fardo se cuela en la seccion de encargos",
+      "de": "    return prendas.filter(function(p){ return seccion === 'encargo' ? esEncargo(p) : !esEncargo(p); });",
+      "a": "    return prendas.filter(function(p){ return true; });"
     }
   ]
 }
