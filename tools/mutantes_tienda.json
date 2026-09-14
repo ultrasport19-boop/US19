@@ -104,6 +104,16 @@
       "a": "    if (EXTRAS){"
     },
     {
+      "nombre": "el carro guarda la prenda tal como llega, con lo que sea que mande el bot",
+      "de": "    prendas = (d && Array.isArray(d.prendas)) ? d.prendas.map(limpia).filter(function(p){ return p.id; }) : [];",
+      "a": "    prendas = (d && Array.isArray(d.prendas)) ? d.prendas : [];"
+    },
+    {
+      "nombre": "la tarjeta pinta un campo interno si el bot lo manda",
+      "de": "    var meta = [p.equipo, p.temporada, p.modelo].filter(Boolean).join(' · ');",
+      "a": "    var meta = [p.equipo, p.temporada, p.modelo, p.costo, p.vendidaA].filter(Boolean).join(' · ');"
+    },
+    {
       "nombre": "la busqueda de un apartado se ve en los demas",
       "de": "    if (b) b.value = st().qTxt;",
       "a": "    if (b) b.value = b.value;"

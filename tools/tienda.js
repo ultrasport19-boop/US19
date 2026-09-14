@@ -690,6 +690,25 @@ async function principal() {
   await new Promise(r => setTimeout(r, 260));
   igual('buscador · «Colo-Colo» con guion encuentra «Colo Colo»', tarjetas(W), 1);
 
+  /* Sinonimos y busqueda por palabras: lo que un hincha escribe contra lo
+     que dice Notion. */
+  const S = nuevoEntorno([CAT_ENC([
+    ENC(0, { nombre: 'Camiseta Paris Saint-Germain 26/27 visita', equipo: 'Paris Saint-Germain' }),
+    ENC(1, { nombre: 'Camiseta Manchester United 25/26 local', equipo: 'Manchester United' }),
+    ENC(2, { nombre: 'Camiseta Real Madrid 26/27 edición especial', equipo: 'Real Madrid White' }),
+    ENC(3, { nombre: 'Camiseta Universidad de Chile 26/27 local', equipo: 'Universidad de Chile' }),
+    ENC(4, { nombre: 'Camiseta Atlético de Madrid 26/27 local', equipo: 'Atletico Madrid' }),
+  ])]);
+  await esperar();
+  const busca = async (t) => { S.els.buscar._ev.input({ target: { value: t } }); await new Promise(r => setTimeout(r, 260)); return S.els.grid.innerHTML; };
+  comprobar('buscador · «psg» encuentra Paris Saint-Germain', (await busca('psg')).indexOf('Paris Saint') >= 0 && tarjetas(S) === 1);
+  comprobar('buscador · «man utd» encuentra Manchester United', (await busca('man utd')).indexOf('Manchester United') >= 0 && tarjetas(S) === 1);
+  comprobar('buscador · «la u» encuentra Universidad de Chile', (await busca('la u')).indexOf('Universidad de Chile') >= 0 && tarjetas(S) === 1);
+  comprobar('buscador · «madrid edicion» busca por palabras aunque no vayan juntas',
+    (await busca('madrid edicion')).indexOf('Real Madrid 26/27 edición especial') >= 0 && tarjetas(S) === 1);
+  comprobar('buscador · «madrid» trae el Real y el Atlético', (await busca('madrid'), tarjetas(S)) === 2);
+  comprobar('buscador · sin sinónimo sigue siendo búsqueda normal', (await busca('visita'), tarjetas(S)) === 1);
+
   // El carro recuerda talla y extra aunque se recargue el catalogo
   const carroEnc = JSON.stringify({ t: Date.now(), c: { 'enc-0|M|nombre_numero|PEREZ|9|': Object.assign(ENC(0), {
     tallaElegida: 'M', precio: 1, extra: { tipo: 'nombre_numero', nombre: 'PEREZ', numero: '9', parche: '' } }) } });
@@ -730,6 +749,41 @@ async function principal() {
     !/\bboleta electr|\bfactura electr|\boriginal(es)?\b/i.test(cond));
   comprobar('condiciones · no fija la forma de pago (decisión pendiente de Diego)',
     !/100\s?% al pedir|50\s?\/\s?50|mitad al pedir/i.test(cond));
+
+  /* n) REGLAS DURAS: NADA INTERNO SALE (14-sep-2026) ------------------------
+     El Costo ($11.280 por camiseta), la URL del proveedor, el fardo de
+     origen y «Vendida a» son confidenciales. El bloque de arriba de la
+     linea divisoria se reenvia al distribuidor: no puede llevar precios.
+     Si el bot algun dia mandara esos campos, la pagina NO debe pintarlos
+     ni guardarlos: aqui se le mete un catalogo envenenado y se mira. */
+  const VENENO = { costo: 11280, urlProveedor: 'https://x.yupoo.com/albums/9', fardo: 'F-07', vendidaA: 'Juan +569', 'Costo': 11280, 'URL proveedor': 'https://x.yupoo.com/albums/9', 'Vendida a': 'Juan +569' };
+  const E1 = nuevoEntorno([CAT_ENC([ENC(0, VENENO), ENC(1, VENENO), ENC(2, VENENO), PRENDA(9, VENENO)])]);
+  await esperar();
+  const html1 = E1.els.grid.innerHTML + E1.els.secciones.innerHTML + E1.els.conteo.textContent;
+  comprobar('fuga · un catalogo con Costo, URL proveedor, Fardo y Vendida a no los pinta',
+    !/11\.?280|yupoo|F-07|Juan \+569|Costo|proveedor|Vendida/i.test(html1), html1.slice(0, 200));
+  irPestana(E1, 'Camiseta de fútbol');
+  elegir(E1, tarjetaEnc('enc-0'), { talla: 'L', tipo: 'pack_jugador', nombre: 'Valenzuela', numero: 10, parche: 'Liga' });
+  elegir(E1, tarjetaEnc('enc-1'), { talla: 'M', tipo: 'nombre_numero', nombre: 'Di Maria', numero: 11 });
+  elegir(E1, tarjetaEnc('enc-2'), { talla: 'S' });
+  E1.els.pedir._ev.click();
+  const txtV = textoWa(E1);
+  const [bloqueV, cierreV] = txtV.split('---------------------------');
+  comprobar('fuga · el bloque reenviable no lleva Costo, URL del proveedor, fardo ni comprador',
+    !!cierreV && !/11\.?280|yupoo|F-07|Juan \+569|Costo|proveedor|Vendida/i.test(bloqueV), bloqueV);
+  comprobar('fuga · el bloque reenviable no lleva NINGUN precio unitario ($, 25.000, 23000, 20.000)',
+    !/\$|\b(25\.?000|23\.?000|20\.?000|2\.?000|3\.?500)\b/.test(bloqueV), bloqueV);
+  comprobar('fuga · el total va solo DESPUES de la linea, una vez', (cierreV.match(/\$/g) || []).length === 1 && /^\nTotal \(3 prendas\): \$/.test(cierreV), cierreV);
+  comprobar('fuga · el carro guardado en el telefono tampoco guarda lo interno',
+    !/11280|yupoo|F-07|Juan \+569/i.test(E1.store['us19_tienda_carro_v1'] || ''));
+  /* «Costo» con mayuscula es la columna interna; «sin costo» en la entrega
+     es castellano corriente y puede quedarse. */
+  const sinComentarios = src.replace(/<!--[\s\S]*?-->/g, '').replace(/\/\*[\s\S]*?\*\//g, '');
+  comprobar('fuga · el HTML publico no menciona Costo, URL proveedor, Vendida a ni yupoo',
+    !/\bCosto\b|url proveedor|vendida a|yupoo|11\.?280/.test(sinComentarios) && !/vendida a|yupoo/i.test(sinComentarios),
+    (sinComentarios.match(/.{0,40}(\bCosto\b|url proveedor|vendida a|yupoo|11\.?280).{0,40}/i) || [''])[0]);
+  comprobar('fuga · el catalogo de la pagina no pide ningun campo interno al bot',
+    !/\bp\.(costo|fardo|vendida|urlProveedor|proveedor)\b/.test(codigo));
 
   avisos.push('el catalogo de prueba usa maxPedido=3 para no montar 13 clics');
 }

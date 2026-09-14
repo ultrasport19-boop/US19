@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Tienda · Ultra-Sport 19</title>
-<meta name="description" content="Ropa deportiva en Ultra-Sport 19, Pencahue. Prendas únicas, se reservan por WhatsApp.">
+<meta name="description" content="Camisetas de fútbol por encargo (eliges tu talla, llegan en 2 a 3 semanas) y ropa deportiva de fardo, pieza única. Pides por WhatsApp. Ultra-Sport 19, Pencahue, Maule.">
 <link rel="canonical" href="https://ultrasport19-boop.github.io/US19/tienda/">
 
 <link rel="icon" type="image/png" sizes="32x32" href="../img/favicon-32.png">
@@ -19,14 +19,14 @@
 <meta property="og:locale" content="es_CL">
 <meta property="og:url" content="https://ultrasport19-boop.github.io/US19/tienda/">
 <meta property="og:title" content="Tienda · Ultra-Sport 19">
-<meta property="og:description" content="Ropa deportiva en Pencahue. Cada prenda es única: la eliges, te la apartamos y coordinamos por WhatsApp.">
+<meta property="og:description" content="Camisetas de fútbol por encargo con tu talla y tu nombre, y ropa deportiva de fardo. Pides por WhatsApp. Pencahue, Maule.">
 <meta property="og:image" content="https://ultrasport19-boop.github.io/US19/img/og-image.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Ultra-Sport 19, Pencahue.">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Tienda · Ultra-Sport 19">
-<meta name="twitter:description" content="Ropa deportiva en Pencahue. Cada prenda es única.">
+<meta name="twitter:description" content="Camisetas de fútbol por encargo y ropa deportiva de fardo. Pides por WhatsApp. Pencahue, Maule.">
 <meta name="twitter:image" content="https://ultrasport19-boop.github.io/US19/img/og-image.jpg">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Barlow+Condensed:wght@500;600;700&display=swap">
 <style>
@@ -200,7 +200,8 @@
   </header>
 
   <h1>Tienda</h1>
-  <p class="sub">Ropa deportiva en Pencahue. Elige un apartado.</p>
+  <p class="sub">Camisetas de fútbol por encargo —eliges la talla, llegan en 2 a 3 semanas— y ropa deportiva de fardo, pieza única.
+  Eliges, pides por WhatsApp y coordinamos el pago y la entrega.</p>
 
   <!-- Solo si el catálogo llega VACÍO: el script la muestra y la esconde.
        14-sep-2026 · Empieza escondida: con 1.252 camisetas publicadas, dejarla
@@ -219,8 +220,8 @@
   <p class="plazo" id="plazo" hidden><b>Por encargo: llega en <span id="plazo-txt">2 a 3 semanas</span>.</b> Eliges tu talla y la pedimos al proveedor. No se agota: se puede pedir cuantas veces quieras.</p>
   <p class="plazo unica" id="unica" hidden><b>Pieza única.</b> Cada prenda es única: cuando alguien la aparta, desaparece de aquí.</p>
   <div class="busca" id="busca" hidden>
-    <label for="buscar">Buscar equipo</label>
-    <input type="search" id="buscar" placeholder="Ej: Colo-Colo, Real Madrid, Chile" autocomplete="off" enterkeyhint="search">
+    <label for="buscar">Buscar equipo, país o temporada</label>
+    <input type="search" id="buscar" placeholder="Ej: Colo-Colo, Real Madrid, PSG, Chile 26/27" autocomplete="off" enterkeyhint="search">
   </div>
 
   <div class="filtros" id="filtros" role="group" aria-label="Filtrar por categoría"></div>
@@ -238,7 +239,7 @@
 
   <div class="vacio" id="vacio" hidden>
     <strong>Todavía no hay prendas publicadas</strong>
-    Estamos preparando el próximo fardo. Escríbenos por WhatsApp y te avisamos cuando llegue.
+    Escríbenos por WhatsApp y te avisamos cuando haya.
   </div>
 
   <!-- Condiciones de venta. Ley 19.496 (Chile). Lo que depende de una
@@ -396,6 +397,60 @@
     return t.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
   }
   function esEncargo(p){ return !!(p && p.encargo); }
+
+  /* Lo que la gente escribe y lo que dice Notion no siempre coinciden:
+     «PSG» contra «Paris Saint-Germain», «Man Utd» contra «Manchester
+     United», «la U» contra «Universidad de Chile». Cada grupo vale por
+     cualquiera de sus formas. Solo equipos que existen en el catalogo o que
+     un hincha chileno escribe de verdad. */
+  var SINONIMOS = [
+    ['psg', 'paris saint germain', 'paris'],
+    ['man utd', 'man united', 'manchester united', 'united'],
+    ['man city', 'manchester city'],
+    ['barca', 'barcelona', 'fc barcelona'],
+    ['u de chile', 'universidad de chile', 'la u', 'u chile'],
+    ['colo colo', 'colocolo', 'cacique'],
+    ['atleti', 'atletico', 'atletico de madrid', 'atletico madrid'],
+    ['inter', 'inter de milan', 'internazionale', 'inter milan'],
+    ['juve', 'juventus'],
+    ['real madrid', 'madrid'],
+    ['river', 'river plate'],
+    ['boca', 'boca juniors'],
+    ['bayern', 'bayern munich', 'bayern munchen'],
+    ['dortmund', 'borussia dortmund', 'bvb'],
+    ['sporting', 'sporting lisboa', 'sporting lisbon', 'sporting cp'],
+    ['porto', 'fc porto'],
+    ['roma', 'as roma'],
+    ['tottenham', 'tottenham hotspur', 'spurs'],
+    ['brasil', 'brazil'],
+    ['chile', 'seleccion chilena', 'la roja'],
+    ['argentina', 'seleccion argentina', 'afa'],
+    ['seleccion', 'nacional'],
+  ];
+  /* Formas alternativas de una busqueda: ella misma y, si coincide entera
+     con un sinonimo, todas las del grupo. */
+  function alternativas(q){
+    var out = [q];
+    for (var i = 0; i < SINONIMOS.length; i++){
+      if (SINONIMOS[i].indexOf(q) !== -1){
+        for (var j = 0; j < SINONIMOS[i].length; j++) if (out.indexOf(SINONIMOS[i][j]) === -1) out.push(SINONIMOS[i][j]);
+      }
+    }
+    return out;
+  }
+  /* Una prenda coincide si TODAS las palabras de alguna alternativa estan
+     en su clave: «madrid edicion» encuentra «Real Madrid 26/27 edición
+     especial» aunque no vayan juntas. */
+  function coincide(clave, alts){
+    for (var a = 0; a < alts.length; a++){
+      var palabras = alts[a].split(' '), ok = true;
+      for (var w = 0; w < palabras.length; w++){
+        if (palabras[w] && clave.indexOf(palabras[w]) < 0){ ok = false; break; }
+      }
+      if (ok) return true;
+    }
+    return false;
+  }
 
   /* «Tallas disponibles» viene del proveedor como texto libre: «S-4XL»,
      «S a XXL», «S/M/L». Se entiende el rango o la lista; si no se entiende
@@ -596,7 +651,7 @@
     var lista = deTab().filter(function(p){
       if (s.cat && p.categoria !== s.cat) return false;
       if (s.talla && p.talla !== s.talla) return false;
-      if (s.q && (claves[p.id] || '').indexOf(s.q) < 0) return false;
+      if (s.q && !coincide(claves[p.id] || '', s.alts || [s.q])) return false;
       return true;
     });
     /* Sin orden elegido manda el que trae el catalogo: lo ultimo cargado
@@ -932,7 +987,7 @@
     if (relojBusca) clearTimeout(relojBusca);
     relojBusca = setTimeout(function(){
       var s = st();
-      s.qTxt = v; s.q = norm(v); s.n = PAGINA;
+      s.qTxt = v; s.q = norm(v); s.alts = s.q ? alternativas(s.q) : []; s.n = PAGINA;
       pintar();
     }, 200);
   });
@@ -1009,8 +1064,20 @@
             function(e){ clearTimeout(reloj); throw e; });
   }
 
+  /* Solo estos campos entran a la pagina, al carro y al localStorage. Si el
+     bot algun dia mandara algo interno (Costo, URL del proveedor, Vendida a),
+     aqui se queda fuera: la pagina es publica y el telefono del comprador
+     tambien. */
+  var CAMPOS = ['id', 'nombre', 'categoria', 'talla', 'estado', 'precio', 'notas', 'foto', 'fotos', 'encargo', 'equipo', 'temporada', 'modelo', 'tallas'];
+  function limpia(p){
+    var o = {};
+    if (!p || typeof p !== 'object') return o;
+    for (var i = 0; i < CAMPOS.length; i++) if (p[CAMPOS[i]] !== undefined) o[CAMPOS[i]] = p[CAMPOS[i]];
+    return o;
+  }
+
   function aplicar(d, deCopia){
-    prendas = (d && Array.isArray(d.prendas)) ? d.prendas : [];
+    prendas = (d && Array.isArray(d.prendas)) ? d.prendas.map(limpia).filter(function(p){ return p.id; }) : [];
     if (d && d.wsp) WSP = String(d.wsp);
     if (d && Number(d.maxPedido) > 0) MAX_PEDIDO = Number(d.maxPedido);
     if (d && Number(d.precioRef) > 0) PRECIO_REF = Number(d.precioRef);
