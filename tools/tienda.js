@@ -77,7 +77,10 @@ if (huerfanos.length) {
 }
 pasa();
 const sinUsar = [...idsPagina].filter(id => !idsPedidos.has(id));
-if (sinUsar.length) aviso('ids en la pagina que el script no usa: ' + sinUsar.join(', '));
+/* Un id sin usar no es un fallo (un ancla de enlace, por ejemplo), pero se
+   dice. Hasta el 14-sep esto llamaba a un `aviso()` que no existía y la
+   suite entera reventaba con el primer id decorativo. */
+if (sinUsar.length) avisos.push('ids en la pagina que el script no usa: ' + sinUsar.join(', '));
 
 /* La pagina y el bot tienen que hablar del mismo tope. Antes estaba
    escrito a mano en los dos sitios. */
@@ -704,6 +707,29 @@ async function principal() {
   const sinTemporizadores = codigo.replace(/setTimeout\([^)]*\)/g, '');
   comprobar('extras · ningún valor escrito a mano en la página', !/\b(2000|3500|23000)\b/.test(sinTemporizadores),
     (sinTemporizadores.match(/.{0,40}\b(2000|3500|23000)\b.{0,20}/) || [''])[0]);
+
+  /* m) CONDICIONES DE VENTA (14-sep-2026, Ley 19.496) ---------------------
+     Diego cobra por adelantado productos que llegan en tres semanas, sin
+     empresa constituida. Lo que la pagina promete tiene que ser verdad y
+     tiene que seguir ahi: estas comprobaciones lo atan. */
+  const cond = (src.split('id="condiciones"')[1] || '').split('</section>')[0];
+  comprobar('condiciones · la seccion existe y tiene ancla', cond.length > 500, 'no encuentro <section ... id="condiciones">');
+  comprobar('condiciones · separa encargo (nuevo) de fardo (usado)',
+    /<b>Por encargo<\/b>[\s\S]*<b>nuevas<\/b>/.test(cond) && /<b>Fardo<\/b>[\s\S]*<b>usadas<\/b>/.test(cond));
+  comprobar('condiciones · plazo del encargo declarado', cond.indexOf('llega en 2 a 3 semanas') >= 0);
+  comprobar('condiciones · atraso o no envío → devolución del 100 %', cond.indexOf('100 % de lo que pagaste') >= 0);
+  comprobar('condiciones · el comprobante no es boleta ni factura (Diego no está formalizado)', cond.indexOf('no es boleta ni factura') >= 0);
+  comprobar('condiciones · el retracto se excluye y se dice que no cubre atrasos ni fallas',
+    cond.indexOf('derecho a retracto') >= 0 && /no<\/b> cubre atrasos ni fallas/.test(cond));
+  comprobar('condiciones · garantía legal para fallas y para «no es lo que pediste»',
+    cond.indexOf('garantía legal') >= 0 && cond.indexOf('falla de') >= 0);
+  comprobar('condiciones · reclamo con correo real, WhatsApp y SERNAC',
+    cond.indexOf('prime@ultrasport19.com') >= 0 && cond.indexOf('wa.me/56965902238') >= 0 && cond.indexOf('SERNAC') >= 0);
+  comprobar('condiciones · enlaza la política de privacidad', cond.indexOf('../privacidad.html') >= 0);
+  comprobar('condiciones · no promete ni boleta ni factura ni «original»',
+    !/\bboleta electr|\bfactura electr|\boriginal(es)?\b/i.test(cond));
+  comprobar('condiciones · no fija la forma de pago (decisión pendiente de Diego)',
+    !/100\s?% al pedir|50\s?\/\s?50|mitad al pedir/i.test(cond));
 
   avisos.push('el catalogo de prueba usa maxPedido=3 para no montar 13 clics');
 }
