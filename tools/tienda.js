@@ -116,15 +116,17 @@ if (!fs.existsSync(RUTA_BOT)) {
 
   /* Se corta desde la funcion que interesa: `out.push({` aparece en varios
      sitios del Código.js y el primero no tiene por que ser este. */
-  const iLeer = bot.indexOf('function US19_TIENDA_leer_');
-  comprobar('contrato · el bot sigue teniendo US19_TIENDA_leer_', iLeer >= 0,
+  /* 14-sep-2026: la prenda la arma US19_TIENDA_prenda_ (la lectura en serie y
+     la paralela la comparten); antes era el out.push de US19_TIENDA_leer_. */
+  const iLeer = bot.indexOf('function US19_TIENDA_prenda_');
+  comprobar('contrato · el bot sigue teniendo US19_TIENDA_prenda_', iLeer >= 0,
     'es la funcion que arma cada prenda del catalogo');
   const trozoLeer = iLeer >= 0 ? bot.slice(iLeer) : '';
 
-  /* Lo que el bot manda por prenda: el objeto del `out.push({...})`. */
-  const mPrenda = /out\.push\(\{([\s\S]*?)\n\s*\}\);/.exec(trozoLeer);
+  /* Lo que el bot manda por prenda: el objeto del `return {...};`. */
+  const mPrenda = /\n\s*return \{([\s\S]*?)\n\s*\};/.exec(trozoLeer);
   comprobar('contrato · encuentro el objeto que el bot manda por prenda',
-    !!mPrenda, 'busco el out.push({...}) de US19_TIENDA_leer_ — ¿se reescribio?');
+    !!mPrenda, 'busco el return {...} de US19_TIENDA_prenda_ — ¿se reescribio?');
 
   /* Y lo que manda envolviendo: el JSON.stringify del catalogo, mas los
      dos campos que solo aparecen cuando algo va mal. */
@@ -784,6 +786,29 @@ async function principal() {
     (sinComentarios.match(/.{0,40}(\bCosto\b|url proveedor|vendida a|yupoo|11\.?280).{0,40}/i) || [''])[0]);
   comprobar('fuga · el catalogo de la pagina no pide ningun campo interno al bot',
     !/\bp\.(costo|fardo|vendida|urlProveedor|proveedor)\b/.test(codigo));
+
+  /* o) RENDIMIENTO EN CELULAR (14-sep-2026) --------------------------------
+     Medido en 3G lento antes de tocar nada: CLS 2,07 porque «Cómo comprar»
+     estaba en pantalla con la rejilla vacía y bajaba al llegar las tarjetas.
+     Lo que lo arregla tiene que seguir en el HTML, no solo en el script. */
+  comprobar('rendimiento · el esqueleto viene en el HTML (seis siluetas antes de que corra nada)',
+    (src.match(/<li class="card esq"/g) || []).length >= 6);
+  comprobar('rendimiento · el bloque de pestañas y el buscador existen desde el primer pintado',
+    /id="secciones"[^>]*>\s*<button/.test(src) && /id="buscar"[^>]*\bdisabled\b/.test(src));
+  comprobar('rendimiento · preconexión a las fuentes y al catálogo',
+    /rel="preconnect" href="https:\/\/fonts\.gstatic\.com" crossorigin/.test(src) && /rel="preconnect" href="https:\/\/script\.google\.com"/.test(src));
+  comprobar('rendimiento · las fuentes no piden la itálica que la página no usa',
+    !/ital,wght/.test(src));
+  const R1 = nuevoEntorno([CAT_ENC([ENC(0), ENC(1), ENC(2), ENC(3)])]);
+  await esperar();
+  const tarjR = R1.els.grid.innerHTML.split('<li class="card').slice(1);
+  comprobar('rendimiento · las dos primeras fotos van con prioridad alta y sin carga diferida',
+    /fetchpriority="high"/.test(tarjR[0]) && !/loading="lazy"/.test(tarjR[0]) && /fetchpriority="high"/.test(tarjR[1]));
+  comprobar('rendimiento · de la tercera en adelante, carga diferida', /loading="lazy"/.test(tarjR[2]) && !/fetchpriority/.test(tarjR[2]));
+  igual('rendimiento · con prendas el buscador se habilita', R1.els.buscar.disabled, false);
+  const R0 = nuevoEntorno([CATALOGO(0)]);
+  await esperar();
+  igual('rendimiento · sin prendas el buscador queda deshabilitado', R0.els.buscar.disabled, true);
 
   avisos.push('el catalogo de prueba usa maxPedido=3 para no montar 13 clics');
 }

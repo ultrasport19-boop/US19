@@ -28,7 +28,10 @@
 <meta name="twitter:title" content="Tienda · Ultra-Sport 19">
 <meta name="twitter:description" content="Camisetas de fútbol por encargo y ropa deportiva de fardo. Pides por WhatsApp. Pencahue, Maule.">
 <meta name="twitter:image" content="https://ultrasport19-boop.github.io/US19/img/og-image.jpg">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Barlow+Condensed:wght@500;600;700&display=swap">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://script.google.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700&display=swap">
 <style>
   :root{
     /* Contraste medido, no a ojo. En claro fallaban cuatro colores el
@@ -216,12 +219,12 @@
 
   <!-- Los apartados salen de la columna «Categoria» de Notion: los pinta el
        script. Una categoria nueva trae su pestaña sola. -->
-  <div class="secciones" id="secciones" role="tablist" aria-label="Apartados" hidden></div>
+  <div class="secciones" id="secciones" role="tablist" aria-label="Apartados"><button type="button" role="tab" aria-selected="true" aria-disabled="true" disabled>Cargando…</button></div>
   <p class="plazo" id="plazo" hidden><b>Por encargo: llega en <span id="plazo-txt">2 a 3 semanas</span>.</b> Eliges tu talla y la pedimos al proveedor. No se agota: se puede pedir cuantas veces quieras.</p>
   <p class="plazo unica" id="unica" hidden><b>Pieza única.</b> Cada prenda es única: cuando alguien la aparta, desaparece de aquí.</p>
-  <div class="busca" id="busca" hidden>
+  <div class="busca" id="busca">
     <label for="buscar">Buscar equipo, país o temporada</label>
-    <input type="search" id="buscar" placeholder="Ej: Colo-Colo, Real Madrid, PSG, Chile 26/27" autocomplete="off" enterkeyhint="search">
+    <input type="search" id="buscar" placeholder="Ej: Colo-Colo, Real Madrid, PSG, Chile 26/27" autocomplete="off" enterkeyhint="search" disabled>
   </div>
 
   <div class="filtros" id="filtros" role="group" aria-label="Filtrar por categoría"></div>
@@ -234,7 +237,10 @@
 
   <!-- role="list" explícito: con list-style:none Safari deja de anunciarla
        como lista y el lector no dice cuántas prendas hay. -->
-  <ul class="grid" id="grid" role="list"></ul>
+  <!-- Seis siluetas desde el HTML, no desde el script: asi el primer pintado
+       ya tiene el alto de la rejilla y «Cómo comprar» no salta cuando llegan
+       las tarjetas (CLS 2,07 medido en 3G el 14-sep-2026). -->
+  <ul class="grid" id="grid" role="list"><li class="card esq" aria-hidden="true"><div class="foto"></div><div class="cuerpo"><span class="lin"></span><span class="lin corta"></span></div></li><li class="card esq" aria-hidden="true"><div class="foto"></div><div class="cuerpo"><span class="lin"></span><span class="lin corta"></span></div></li><li class="card esq" aria-hidden="true"><div class="foto"></div><div class="cuerpo"><span class="lin"></span><span class="lin corta"></span></div></li><li class="card esq" aria-hidden="true"><div class="foto"></div><div class="cuerpo"><span class="lin"></span><span class="lin corta"></span></div></li><li class="card esq" aria-hidden="true"><div class="foto"></div><div class="cuerpo"><span class="lin"></span><span class="lin corta"></span></div></li><li class="card esq" aria-hidden="true"><div class="foto"></div><div class="cuerpo"><span class="lin"></span><span class="lin corta"></span></div></li></ul>
   <button type="button" class="mas" id="mas" hidden>Ver más</button>
 
   <div class="vacio" id="vacio" hidden>
@@ -585,16 +591,15 @@
       return '<button type="button" role="tab" data-sec="' + esc(k) + '" aria-selected="' + (k === tab) + '">' +
         esc(k) + ' <span>(' + t.cuenta[k] + ')</span></button>';
     }).join('');
-    $('secciones').hidden = !t.lista.length;
+    $('secciones').hidden = false;
     var base = deTab();
     var hayE = base.some(esEncargo), hayF = base.some(function(p){ return !esEncargo(p); });
     /* Por encargo: el plazo y que no se agota. Fardo: que es pieza unica. */
     $('plazo').hidden = !hayE;
     $('plazo-txt').textContent = PLAZO;
     $('unica').hidden = !hayF;
-    $('busca').hidden = !prendas.length;
     var b = $('buscar');
-    if (b) b.value = st().qTxt;
+    if (b){ b.disabled = !prendas.length; b.value = st().qTxt; }
   }
 
   function pintarFiltros(){
@@ -784,8 +789,11 @@
     /* Se pintan de a 60: mil tarjetas de una vez congelan un telefono barato
        y descargan fotos que nadie va a ver. El buscador y los filtros miran
        el apartado ENTERO, no solo lo pintado. */
-    $('grid').innerHTML = lista.slice(0, s.n).map(function(p){
-      return esEncargo(p) ? tarjetaEncargo(p) : tarjetaFardo(p);
+    $('grid').innerHTML = lista.slice(0, s.n).map(function(p, i){
+      var t = esEncargo(p) ? tarjetaEncargo(p) : tarjetaFardo(p);
+      /* Las dos primeras fotos son lo mas grande que se ve: prioridad alta y
+         sin carga diferida. El resto espera al scroll. */
+      return i < 2 ? t.replace(' loading="lazy" decoding="async"', ' fetchpriority="high" decoding="async"') : t;
     }).join('');
     var quedan = lista.length - Math.min(s.n, lista.length);
     $('mas').hidden = quedan <= 0;
@@ -1117,6 +1125,7 @@
       $('grid').innerHTML = '';
       $('filtros').innerHTML = ''; $('tallas').innerHTML = '';
       $('mas').hidden = true;
+      $('secciones').innerHTML = '';
       var oo = $('orden'); if (oo) oo.innerHTML = '';
       return;
     }
@@ -1176,7 +1185,7 @@
   /* Primero lo que ya tenemos, para que la tienda aparezca de inmediato;
      el catalogo de verdad la reemplaza en cuanto llega. */
   var copia = cargarCatalogo();
-  if (copia) aplicar(copia, true); else esqueleto(6);
+  if (copia) aplicar(copia, true);   // sin copia, el esqueleto ya viene en el HTML
   cargar(false);
 
   /* Notion firma las URL de las fotos por una hora. Una pestana que lleva

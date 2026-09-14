@@ -115,8 +115,8 @@
     },
     {
       "nombre": "la busqueda de un apartado se ve en los demas",
-      "de": "    if (b) b.value = st().qTxt;",
-      "a": "    if (b) b.value = b.value;"
+      "de": "    if (b){ b.disabled = !prendas.length; b.value = st().qTxt; }",
+      "a": "    if (b){ b.disabled = !prendas.length; b.value = b.value; }"
     }
   ]
 }
