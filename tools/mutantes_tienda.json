@@ -10,8 +10,8 @@
     },
     {
       "nombre": "la pagina lee un campo de prenda que el catalogo no manda",
-      "de": "      if (filtroTalla && p.talla !== filtroTalla) return false;",
-      "a": "      if (filtroTalla && p.tallaEU !== filtroTalla) return false;"
+      "de": "      if (s.talla && p.talla !== s.talla) return false;",
+      "a": "      if (s.talla && p.tallaEU !== s.talla) return false;"
     },
     {
       "nombre": "la pagina deja de enterarse de que el catalogo viene del respaldo",
@@ -25,18 +25,23 @@
     },
     {
       "nombre": "el mensaje de WhatsApp se queda sin el id de la prenda",
-      "de": "      L.push('- ' + p.nombre + (p.talla ? ' (' + p.talla + ')' : '') + ' ' + clp(p.precio) + ' #' + id);",
-      "a": "      L.push('- ' + p.nombre + (p.talla ? ' (' + p.talla + ')' : '') + ' ' + clp(p.precio));"
+      "de": "      partes.push('#' + e.id);",
+      "a": "      partes.push('');"
     },
     {
-      "nombre": "el encargo viaja con #id y el bot lo apartaria como pieza unica",
-      "de": "        E.push('  Talla: ' + e.tallaElegida + ' — ' + clp(e.precio));",
-      "a": "        E.push('  Talla: ' + e.tallaElegida + ' — ' + clp(e.precio) + ' #' + e.id);"
+      "nombre": "el precio unitario se cuela en la linea que va al distribuidor",
+      "de": "      if (talla) partes.push('Talla ' + talla);",
+      "a": "      partes.push(clp(e.precio)); if (talla) partes.push('Talla ' + talla);"
+    },
+    {
+      "nombre": "sin la linea divisoria no hay donde cortar antes del total",
+      "de": "    L.push(DIVISORIA);",
+      "a": "    L.push('');"
     },
     {
       "nombre": "se puede encargar sin elegir talla",
-      "de": "      if (enc && !talla){",
-      "a": "      if (false && enc && !talla){"
+      "de": "      if (enc && !x.talla){",
+      "a": "      if (false && enc && !x.talla){"
     },
     {
       "nombre": "el precio de referencia de la OFERTA queda escrito a mano en la pagina",
@@ -59,9 +64,49 @@
       "a": "      if (false) return ORDEN_TALLAS.slice(i, j + 1);"
     },
     {
-      "nombre": "la ropa de fardo se cuela en la seccion de encargos",
-      "de": "    return prendas.filter(function(p){ return seccion === 'encargo' ? esEncargo(p) : !esEncargo(p); });",
-      "a": "    return prendas.filter(function(p){ return true; });"
+      "nombre": "un apartado muestra las prendas de todos",
+      "de": "  function deTab(){ return prendas.filter(function(p){ return tabDe(p) === tab; }); }",
+      "a": "  function deTab(){ return prendas; }"
+    },
+    {
+      "nombre": "las categorias de fardo dejan de ir juntas en «Fardo»",
+      "de": "      if (CATS_FARDO.indexOf(c) !== -1) return 'Fardo';",
+      "a": "      if (false) return 'Fardo';"
+    },
+    {
+      "nombre": "la promo del estampado se activa con 2 prendas",
+      "de": "  function gratisAplica(n){ return GRATIS_DESDE > 0 && n >= GRATIS_DESDE; }",
+      "a": "  function gratisAplica(n){ return GRATIS_DESDE > 0 && n >= GRATIS_DESDE - 1; }"
+    },
+    {
+      "nombre": "con la promo el pack jugador tambien regala el parche",
+      "de": "    if (x.tipo === 'pack_jugador') return gratis ? Number(EXTRAS.parche) || 0 : Number(EXTRAS.pack_jugador) || 0;",
+      "a": "    if (x.tipo === 'pack_jugador') return gratis ? 0 : Number(EXTRAS.pack_jugador) || 0;"
+    },
+    {
+      "nombre": "el nombre a estampar acepta cualquier cosa",
+      "de": "    return n.length >= 1 && n.length <= 12 && /^[A-ZÁÉÍÓÚÜÑ]+(?: [A-ZÁÉÍÓÚÜÑ]+)*$/.test(n);",
+      "a": "    return n.length >= 0;"
+    },
+    {
+      "nombre": "el numero 0 se deja pasar",
+      "de": "    return n >= 1 && n <= 99;",
+      "a": "    return n >= 0 && n <= 99;"
+    },
+    {
+      "nombre": "un estampado incompleto entra al pedido",
+      "de": "        if (falta){ nota('Para el estampado falta ' + falta + '.', true); return; }",
+      "a": "        if (false){ nota('Para el estampado falta ' + falta + '.', true); return; }"
+    },
+    {
+      "nombre": "los extras se ofrecen antes de elegir talla, junto al precio",
+      "de": "    if (t && EXTRAS){",
+      "a": "    if (EXTRAS){"
+    },
+    {
+      "nombre": "la busqueda de un apartado se ve en los demas",
+      "de": "    if (b) b.value = st().qTxt;",
+      "a": "    if (b) b.value = b.value;"
     }
   ]
 }

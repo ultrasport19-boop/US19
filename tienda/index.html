@@ -178,6 +178,15 @@
   .card .plazo-c{color:var(--verde);text-transform:none;letter-spacing:0;font-family:'Barlow',sans-serif;font-size:.85rem}
   .talla-sel{font:inherit;font-size:16px;margin-top:8px;padding:9px 10px;border:1px solid var(--linea-fuerte);border-radius:4px;background:var(--papel);color:var(--tinta);width:100%}
   .card button[disabled]{opacity:.55;cursor:not-allowed}
+  .plazo.unica{border-left-color:var(--rojo)}
+  .extras{margin-top:10px;padding-top:10px;border-top:1px dashed var(--linea-fuerte);display:flex;flex-direction:column;gap:7px}
+  .extra-copy{margin:0;font-size:.85rem;color:var(--tinta-2);line-height:1.35}
+  .extra-sel{font:inherit;font-size:16px;padding:9px 10px;border:1px solid var(--linea-fuerte);border-radius:4px;background:var(--papel);color:var(--tinta);width:100%}
+  .estampa{display:flex;gap:7px}
+  .estampa input{font:inherit;font-size:16px;padding:9px 10px;border:1px solid var(--linea-fuerte);border-radius:4px;background:var(--papel);color:var(--tinta);min-width:0}
+  .estampa input[data-campo="nombre"]{flex:1 1 auto;text-transform:uppercase}
+  .estampa input[data-campo="numero"]{flex:0 0 4.2em;text-align:center}
+  .barra .promo{flex-basis:100%;text-align:center;font-family:'Barlow Condensed',sans-serif;font-size:.95rem;letter-spacing:.06em;color:#9fe0b8}
   .mas{display:block;margin:22px auto 0;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1rem;letter-spacing:.1em;text-transform:uppercase;
     background:transparent;color:var(--tinta);border:2px solid var(--tinta);border-radius:5px;padding:12px 26px;cursor:pointer;min-height:48px}
 </style>
@@ -191,8 +200,7 @@
   </header>
 
   <h1>Tienda</h1>
-  <p class="sub">Ropa deportiva en Pencahue. <b>Entrega inmediata</b>: prendas únicas que ya están aquí; cuando alguien la aparta, desaparece.
-  <b>Por encargo</b>: camisetas que pedimos al proveedor con tu talla.</p>
+  <p class="sub">Ropa deportiva en Pencahue. Elige un apartado.</p>
 
   <!-- Solo si el catálogo llega VACÍO: el script la muestra y la esconde.
        14-sep-2026 · Empieza escondida: con 1.252 camisetas publicadas, dejarla
@@ -205,11 +213,11 @@
     <a id="avisame" href="#">Avísame</a>
   </section>
 
-  <div class="secciones" id="secciones" role="tablist" aria-label="Cómo comprar" hidden>
-    <button type="button" role="tab" id="tab-inmediata" data-sec="inmediata" aria-selected="true">Entrega inmediata <span id="n-inmediata"></span></button>
-    <button type="button" role="tab" id="tab-encargo" data-sec="encargo" aria-selected="false">Por encargo <span id="n-encargo"></span></button>
-  </div>
-  <p class="plazo" id="plazo" hidden><b>Llega en <span id="plazo-txt">2 a 3 semanas</span>.</b> Eliges tu talla y lo pedimos al proveedor. No se agota: se puede encargar las veces que quieras.</p>
+  <!-- Los apartados salen de la columna «Categoria» de Notion: los pinta el
+       script. Una categoria nueva trae su pestaña sola. -->
+  <div class="secciones" id="secciones" role="tablist" aria-label="Apartados" hidden></div>
+  <p class="plazo" id="plazo" hidden><b>Por encargo: llega en <span id="plazo-txt">2 a 3 semanas</span>.</b> Eliges tu talla y la pedimos al proveedor. No se agota: se puede pedir cuantas veces quieras.</p>
+  <p class="plazo unica" id="unica" hidden><b>Pieza única.</b> Cada prenda es única: cuando alguien la aparta, desaparece de aquí.</p>
   <div class="busca" id="busca" hidden>
     <label for="buscar">Buscar equipo</label>
     <input type="search" id="buscar" placeholder="Ej: Colo-Colo, Real Madrid, Chile" autocomplete="off" enterkeyhint="search">
@@ -278,6 +286,7 @@
 </div>
 
 <div class="barra" id="barra">
+  <span class="promo" id="promo" hidden></span>
   <span class="resumen" id="resumen">0 prendas</span>
   <span class="total" id="total">$0</span>
   <button type="button" id="pedir">Reservar por WhatsApp</button>
@@ -292,21 +301,25 @@
   var WSP = '56965902238';
 
   var $ = function(id){ return document.getElementById(id); };
-  var prendas = [], filtro = '', filtroTalla = '', orden = '', carro = {}, ultimaCarga = 0;
-  /* 14-sep-2026 · Dos modalidades. «inmediata» es la pieza unica de fardo de
-     siempre (se aparta al pedirla); «encargo» se pide al proveedor con la talla
-     que elige el comprador y nunca se aparta. */
-  var seccion = '', busqueda = '', mostrados = 0, claves = {}, tallaElegida = {};
+  var prendas = [], carro = {}, ultimaCarga = 0;
+  /* 14-sep-2026 · Apartados por la columna «Categoria» de Notion: las de
+     fardo (TIENDA_CFG.CATS_FARDO) van juntas en «Fardo»; cualquier otra
+     categoria —Camiseta de fútbol, NBA, la que se agregue— tiene su propio
+     apartado sin tocar codigo. Cada apartado guarda su busqueda, sus filtros
+     y cuantas tarjetas lleva pintadas. */
+  var tab = '', porTab = {}, claves = {}, elec = {};
   var PAGINA = 60;
   /* Lo manda el propio catalogo (TIENDA_CFG.MAX_POR_PEDIDO). El 12 es solo
      el valor de respaldo por si el endpoint no lo trae: antes estaba escrito
      a mano en los dos sitios y bastaba cambiar uno para que dejaran de
      coincidir en silencio. */
   var MAX_PEDIDO = 12;
-  /* Precio de referencia, plazo y tallas por defecto de los encargos: los
-     manda el catalogo (TIENDA_CFG). Sin precio de referencia no hay OFERTA:
-     la pagina no escribe precios a mano. */
+  /* Precio de referencia, plazo, tallas, categorias de fardo, extras y promo
+     los manda el catalogo (TIENDA_CFG). La pagina no escribe precios a mano:
+     sin precio de referencia no hay OFERTA, y sin extras no se ofrecen. */
   var PRECIO_REF = 0, PLAZO = '2 a 3 semanas', TALLAS_DEF = ['S', 'M', 'L', 'XL', 'XXL'];
+  var CATS_FARDO = null, EXTRAS = null, GRATIS_DESDE = 0, PARCHES = [];
+  var DIVISORIA = '---------------------------';
 
   /* El carro sobrevive a una recarga o a un viaje a WhatsApp y de vuelta.
      Caduca a las 24 h: mas alla, lo que eligio ya no existe. */
@@ -387,61 +400,136 @@
     return lista.length ? lista : TALLAS_DEF.slice();
   }
 
+  /* --- Extras de personalizacion (solo por encargo) --------------------
+     Se ofrecen DESPUES de elegir la talla, nunca junto al precio: el precio
+     de la tarjeta es el de Notion, limpio. */
+  var CON_ESTAMPADO = { nombre_numero: true, pack_jugador: true };
+  var CON_PARCHE = { parche: true, pack_jugador: true };
+  function nombreEstampado(s){
+    return String(s || '').toUpperCase().replace(/\s+/g, ' ').trim();
+  }
+  /* Solo letras (con tildes y Ñ) y un espacio entre palabras: «DI MARIA»,
+     «NÚÑEZ». Hasta 12, que es lo que cabe en la espalda. */
+  function nombreValido(s){
+    var n = nombreEstampado(s);
+    return n.length >= 1 && n.length <= 12 && /^[A-ZÁÉÍÓÚÜÑ]+(?: [A-ZÁÉÍÓÚÜÑ]+)*$/.test(n);
+  }
+  function numeroValido(s){
+    var t = String(s == null ? '' : s).trim();
+    if (!/^\d{1,2}$/.test(t)) return false;
+    var n = Number(t);
+    return n >= 1 && n <= 99;
+  }
+  /* Lo que falta para poder agregar: '' si esta todo. */
+  function faltaEnExtra(x){
+    if (!x || !x.tipo) return '';
+    if (CON_ESTAMPADO[x.tipo]){
+      if (!nombreValido(x.nombre)) return 'el <b>nombre a estampar</b> (solo letras, hasta 12)';
+      if (!numeroValido(x.numero)) return 'el <b>número</b> (del 1 al 99)';
+    }
+    if (CON_PARCHE[x.tipo] && PARCHES.length && PARCHES.indexOf(x.parche) === -1) return 'qué <b>parche</b> quieres';
+    return '';
+  }
+  function gratisAplica(n){ return GRATIS_DESDE > 0 && n >= GRATIS_DESDE; }
+  /* Desde GRATIS_DESDE prendas en el pedido el estampado va de regalo: el
+     pack queda en el valor del parche y el parche suelto se sigue cobrando. */
+  function valorExtra(x, gratis){
+    if (!x || !x.tipo || !EXTRAS) return 0;
+    if (x.tipo === 'pack_jugador') return gratis ? Number(EXTRAS.parche) || 0 : Number(EXTRAS.pack_jugador) || 0;
+    if (x.tipo === 'nombre_numero') return gratis ? 0 : Number(EXTRAS.nombre_numero) || 0;
+    if (x.tipo === 'parche') return Number(EXTRAS.parche) || 0;
+    return 0;
+  }
+  function textoExtra(x){
+    var partes = [];
+    if (x && CON_ESTAMPADO[x.tipo]) partes.push('Estampado: ' + nombreEstampado(x.nombre) + ' ' + Number(x.numero));
+    else partes.push('Sin estampado');
+    if (x && CON_PARCHE[x.tipo]) partes.push('Parche: ' + (x.parche || ''));
+    return partes.join(' — ');
+  }
+
+  /* --- Apartados -------------------------------------------------------- */
+  function tabDe(p){
+    var c = p.categoria || '';
+    if (CATS_FARDO){
+      if (CATS_FARDO.indexOf(c) !== -1) return 'Fardo';
+      if (c) return c;
+      return esEncargo(p) ? 'Otros' : 'Fardo';
+    }
+    /* Catalogo sin la lista de categorias (version vieja del bot): se separa
+       por modalidad, que es lo que siempre separo la pieza unica. */
+    return esEncargo(p) ? (c || 'Otros') : 'Fardo';
+  }
+  function tabs(){
+    var cuenta = {};
+    prendas.forEach(function(p){ var t = tabDe(p); cuenta[t] = (cuenta[t] || 0) + 1; });
+    var lista = Object.keys(cuenta).sort(function(a, b){
+      if (a === 'Fardo') return -1;
+      if (b === 'Fardo') return 1;
+      return a.localeCompare(b, 'es');
+    });
+    return { lista: lista, cuenta: cuenta };
+  }
+  function st(){
+    if (!porTab[tab]) porTab[tab] = { q: '', qTxt: '', n: PAGINA, cat: '', talla: '', orden: '' };
+    return porTab[tab];
+  }
+  function deTab(){ return prendas.filter(function(p){ return tabDe(p) === tab; }); }
+
   /* --- Filtros en la direccion ---------------------------------------
      Para poder mandar por WhatsApp «mira las poleras talla M» y que el
      enlace abra ya filtrado. Tambien hace que el boton Atras del telefono
      deshaga el filtro en vez de salirse de la tienda. */
+  var hashIni = {};
   function leerHash(){
     var h = String(location.hash || '').replace(/^#/, '');
     if (!h) return;
     h.split('&').forEach(function(par){
       var i = par.indexOf('='); if (i < 0) return;
-      var k = par.slice(0, i), v = decodeURIComponent(par.slice(i + 1));
-      if (k === 'cat') filtro = v;
-      else if (k === 'talla') filtroTalla = v;
-      else if (k === 'orden') orden = v;
-      else if (k === 'sec' && (v === 'encargo' || v === 'inmediata')) seccion = v;
+      hashIni[par.slice(0, i)] = decodeURIComponent(par.slice(i + 1));
     });
   }
   function escribirHash(){
-    var p = [];
-    if (seccion) p.push('sec=' + encodeURIComponent(seccion));
-    if (filtro) p.push('cat=' + encodeURIComponent(filtro));
-    if (filtroTalla) p.push('talla=' + encodeURIComponent(filtroTalla));
-    if (orden) p.push('orden=' + encodeURIComponent(orden));
+    var s = st(), p = [];
+    if (tab) p.push('sec=' + encodeURIComponent(tab));
+    if (s.cat) p.push('cat=' + encodeURIComponent(s.cat));
+    if (s.talla) p.push('talla=' + encodeURIComponent(s.talla));
+    if (s.orden) p.push('orden=' + encodeURIComponent(s.orden));
     var nuevo = p.length ? '#' + p.join('&') : ' ';
     try { history.replaceState(null, '', nuevo === ' ' ? location.pathname + location.search : nuevo); } catch(e){}
   }
 
-  function deSeccion(){
-    return prendas.filter(function(p){ return seccion === 'encargo' ? esEncargo(p) : !esEncargo(p); });
-  }
-
   function pintarSecciones(){
-    var nE = 0, nI = 0;
-    prendas.forEach(function(p){ if (esEncargo(p)) nE++; else nI++; });
-    $('n-inmediata').textContent = '(' + nI + ')';
-    $('n-encargo').textContent = '(' + nE + ')';
-    $('tab-inmediata').setAttribute('aria-selected', String(seccion === 'inmediata'));
-    $('tab-encargo').setAttribute('aria-selected', String(seccion === 'encargo'));
-    $('secciones').hidden = !prendas.length;
-    $('plazo').hidden = seccion !== 'encargo';
+    var t = tabs();
+    $('secciones').innerHTML = t.lista.map(function(k){
+      return '<button type="button" role="tab" data-sec="' + esc(k) + '" aria-selected="' + (k === tab) + '">' +
+        esc(k) + ' <span>(' + t.cuenta[k] + ')</span></button>';
+    }).join('');
+    $('secciones').hidden = !t.lista.length;
+    var base = deTab();
+    var hayE = base.some(esEncargo), hayF = base.some(function(p){ return !esEncargo(p); });
+    /* Por encargo: el plazo y que no se agota. Fardo: que es pieza unica. */
+    $('plazo').hidden = !hayE;
     $('plazo-txt').textContent = PLAZO;
+    $('unica').hidden = !hayF;
     $('busca').hidden = !prendas.length;
+    var b = $('buscar');
+    if (b) b.value = st().qTxt;
   }
 
   function pintarFiltros(){
-    var base = deSeccion();
-    /* Categoria y talla fija son cosas de la ropa de fardo. En los encargos
-       la talla la elige el comprador en cada tarjeta. */
+    var base = deTab(), s = st();
+    /* Dentro de «Fardo», las categorias de ropa (Polera, Short…) siguen
+       sirviendo para achicar. En los demas apartados la categoria ES el
+       apartado. */
     var cats = [];
-    if (seccion !== 'encargo') base.forEach(function(p){ if (p.categoria && cats.indexOf(p.categoria) === -1) cats.push(p.categoria); });
+    if (tab === 'Fardo') base.forEach(function(p){ if (p.categoria && cats.indexOf(p.categoria) === -1) cats.push(p.categoria); });
     cats.sort();
-    if (seccion === 'encargo' || !base.length){ $('filtros').innerHTML = ''; }
+    if (tab !== 'Fardo' || !base.length){ $('filtros').innerHTML = ''; }
     else {
-      var html = '<button class="chip" type="button" data-cat="" aria-pressed="' + (filtro === '') + '">Todo</button>';
+      var html = '<button class="chip" type="button" data-cat="" aria-pressed="' + (s.cat === '') + '">Todo</button>';
       cats.forEach(function(c){
-        html += '<button class="chip" type="button" data-cat="' + esc(c) + '" aria-pressed="' + (filtro === c) + '">' + esc(c) + '</button>';
+        html += '<button class="chip" type="button" data-cat="' + esc(c) + '" aria-pressed="' + (s.cat === c) + '">' + esc(c) + '</button>';
       });
       $('filtros').innerHTML = html;
     }
@@ -449,7 +537,7 @@
     /* Asi se compra ropa usada: primero la talla, despues que sea. Solo
        aparece si hay tallas distintas que elegir. */
     var tallas = [];
-    if (seccion !== 'encargo') base.forEach(function(p){ if (p.talla && tallas.indexOf(p.talla) === -1) tallas.push(p.talla); });
+    base.forEach(function(p){ if (!esEncargo(p) && p.talla && tallas.indexOf(p.talla) === -1) tallas.push(p.talla); });
     var ordenTallas = ['XS','S','M','L','XL','XXL'];
     tallas.sort(function(a,b){
       var ia = ordenTallas.indexOf(String(a).toUpperCase()), ib = ordenTallas.indexOf(String(b).toUpperCase());
@@ -460,9 +548,9 @@
     });
     if (tallas.length < 2){ $('tallas').innerHTML = ''; }
     else {
-      var ht = '<button class="chip" type="button" data-talla="" aria-pressed="' + (filtroTalla === '') + '">Toda talla</button>';
+      var ht = '<button class="chip" type="button" data-talla="" aria-pressed="' + (s.talla === '') + '">Toda talla</button>';
       tallas.forEach(function(t){
-        ht += '<button class="chip" type="button" data-talla="' + esc(t) + '" aria-pressed="' + (filtroTalla === t) + '">' + esc(t) + '</button>';
+        ht += '<button class="chip" type="button" data-talla="' + esc(t) + '" aria-pressed="' + (s.talla === t) + '">' + esc(t) + '</button>';
       });
       $('tallas').innerHTML = ht;
     }
@@ -473,24 +561,23 @@
     if (!o) return;
     if (base.length < 8){ o.innerHTML = ''; return; }
     o.innerHTML =
-      '<button class="chip" type="button" data-orden="" aria-pressed="' + (orden === '') + '">Lo último</button>' +
-      '<button class="chip" type="button" data-orden="barato" aria-pressed="' + (orden === 'barato') + '">Más barato</button>' +
-      '<button class="chip" type="button" data-orden="caro" aria-pressed="' + (orden === 'caro') + '">Más caro</button>';
+      '<button class="chip" type="button" data-orden="" aria-pressed="' + (s.orden === '') + '">Lo último</button>' +
+      '<button class="chip" type="button" data-orden="barato" aria-pressed="' + (s.orden === 'barato') + '">Más barato</button>' +
+      '<button class="chip" type="button" data-orden="caro" aria-pressed="' + (s.orden === 'caro') + '">Más caro</button>';
   }
 
   function visibles(){
-    var lista = deSeccion().filter(function(p){
-      if (seccion !== 'encargo'){
-        if (filtro && p.categoria !== filtro) return false;
-        if (filtroTalla && p.talla !== filtroTalla) return false;
-      }
-      if (busqueda && (claves[p.id] || '').indexOf(busqueda) < 0) return false;
+    var s = st();
+    var lista = deTab().filter(function(p){
+      if (s.cat && p.categoria !== s.cat) return false;
+      if (s.talla && p.talla !== s.talla) return false;
+      if (s.q && (claves[p.id] || '').indexOf(s.q) < 0) return false;
       return true;
     });
     /* Sin orden elegido manda el que trae el catalogo: lo ultimo cargado
        primero, que es lo que la gente vuelve a mirar. */
-    if (orden === 'barato') lista = lista.slice().sort(function(a,b){ return (a.precio||0) - (b.precio||0); });
-    else if (orden === 'caro') lista = lista.slice().sort(function(a,b){ return (b.precio||0) - (a.precio||0); });
+    if (s.orden === 'barato') lista = lista.slice().sort(function(a,b){ return (a.precio||0) - (b.precio||0); });
+    else if (s.orden === 'caro') lista = lista.slice().sort(function(a,b){ return (b.precio||0) - (a.precio||0); });
     return lista;
   }
 
@@ -499,8 +586,6 @@
     for (var i = 0; i < n; i++) h += '<li class="card esq" aria-hidden="true"><div class="foto"></div><div class="cuerpo"><span class="lin"></span><span class="lin corta"></span></div></li>';
     $('grid').innerHTML = h;
   }
-
-  function claveCarro(id){ return seccion === 'encargo' ? id + '|' + (tallaElegida[id] || '') : id; }
 
   function tarjetaFardo(p){
     var puesto = !!carro[p.id];
@@ -533,18 +618,54 @@
     '</li>';
   }
 
-  /* Por encargo: la talla es obligatoria. El boton no se activa hasta que
-     hay talla, y el carro guarda una linea por camiseta Y talla: la misma
-     camiseta en M y en L son dos encargos. */
+  function elecDe(id){ return elec[id] || (elec[id] = { talla: '', tipo: '', nombre: '', numero: '', parche: '' }); }
+  function claveEnc(id, x){
+    return [id, x.talla, x.tipo, CON_ESTAMPADO[x.tipo] ? nombreEstampado(x.nombre) : '', CON_ESTAMPADO[x.tipo] ? Number(x.numero) : '',
+            CON_PARCHE[x.tipo] ? x.parche : ''].join('|');
+  }
+
+  /* Por encargo: la talla es obligatoria, y los extras aparecen recien
+     despues de elegirla, en el mismo paso de agregar al pedido. */
   function tarjetaEncargo(p){
-    var t = tallaElegida[p.id] || '';
-    var puesto = !!(t && carro[p.id + '|' + t]);
+    var x = elecDe(p.id), t = x.talla;
+    var puesto = !!(t && carro[claveEnc(p.id, x)]);
     var oferta = PRECIO_REF > 0 && Number(p.precio) > 0 && Number(p.precio) < PRECIO_REF;
     var meta = [p.equipo, p.temporada, p.modelo].filter(Boolean).join(' · ');
-    var opciones = '<option value="">Elige talla</option>' + tallasDe(p).map(function(x){
-      return '<option value="' + esc(x) + '"' + (x === t ? ' selected' : '') + '>' + esc(x) + '</option>';
+    var opciones = '<option value="">Elige talla</option>' + tallasDe(p).map(function(v){
+      return '<option value="' + esc(v) + '"' + (v === t ? ' selected' : '') + '>' + esc(v) + '</option>';
     }).join('');
-    return '<li class="card enc' + (puesto ? ' puesto' : '') + '">' +
+    var extras = '';
+    if (t && EXTRAS){
+      var op = function(v, txt){ return '<option value="' + v + '"' + (x.tipo === v ? ' selected' : '') + '>' + txt + '</option>'; };
+      extras = '<div class="extras">' +
+        '<p class="extra-copy">Estampado oficial con tu nombre y número: +' + clp(EXTRAS.nombre_numero) + '. Como el del estadio, pero con tu apellido.</p>' +
+        '<select class="extra-sel" data-para="' + esc(p.id) + '" data-campo="tipo" aria-label="Personalización de ' + esc(p.nombre) + '">' +
+          op('', 'Sin personalización') +
+          op('nombre_numero', 'Nombre + número (+' + clp(EXTRAS.nombre_numero) + ')') +
+          op('parche', 'Parche (+' + clp(EXTRAS.parche) + ')') +
+          op('pack_jugador', 'Pack Jugador (+' + clp(EXTRAS.pack_jugador) + ')') +
+        '</select>' +
+        /* En un telefono el <select> corta las opciones largas: lo que trae el
+           pack se dice debajo, cuando se elige. */
+        (x.tipo === 'pack_jugador' ? '<p class="extra-copy">Pack Jugador: nombre + número + parche.</p>' : '') +
+        (CON_ESTAMPADO[x.tipo]
+          ? '<div class="estampa">' +
+              '<input type="text" data-para="' + esc(p.id) + '" data-campo="nombre" maxlength="12" autocomplete="off" autocapitalize="characters"' +
+              ' placeholder="Nombre a estampar" aria-label="Nombre a estampar" value="' + esc(x.nombre) + '">' +
+              '<input type="text" data-para="' + esc(p.id) + '" data-campo="numero" maxlength="2" inputmode="numeric" pattern="[0-9]*"' +
+              ' placeholder="N.º" aria-label="Número del 1 al 99" value="' + esc(x.numero) + '">' +
+            '</div>'
+          : '') +
+        (CON_PARCHE[x.tipo] && PARCHES.length
+          ? '<select class="extra-sel" data-para="' + esc(p.id) + '" data-campo="parche" aria-label="Qué parche">' +
+              '<option value="">Elige parche</option>' + PARCHES.map(function(v){
+                return '<option value="' + esc(v) + '"' + (x.parche === v ? ' selected' : '') + '>Parche ' + esc(v) + '</option>';
+              }).join('') +
+            '</select>'
+          : '') +
+      '</div>';
+    }
+    return '<li class="card enc' + (puesto ? ' puesto' : '') + '" data-card="' + esc(p.id) + '">' +
       '<div class="foto">' +
         (p.foto ? '<img src="' + esc(p.foto) + '" alt="' + esc(p.nombre) + '" width="1000" height="1000" loading="lazy" decoding="async"' +
                   ' onerror="this.parentNode.insertAdjacentHTML(\'afterbegin\',\'<div class=&quot;vacia&quot;>sin foto</div>\');this.remove();">'
@@ -556,7 +677,8 @@
         (meta ? '<span class="meta">' + esc(meta) + '</span>' : '') +
         '<span class="meta plazo-c">Por encargo · llega en ' + esc(PLAZO) + '</span>' +
         '<span class="precio">' + clp(Number(p.precio)) + '</span>' +
-        '<select class="talla-sel" data-para="' + esc(p.id) + '" aria-label="Talla de ' + esc(p.nombre) + '">' + opciones + '</select>' +
+        '<select class="talla-sel" data-para="' + esc(p.id) + '" data-campo="talla" aria-label="Talla de ' + esc(p.nombre) + '">' + opciones + '</select>' +
+        extras +
         '<button type="button" data-id="' + esc(p.id) + '" data-enc="1"' + (t ? '' : ' disabled') + '>' +
           (puesto ? 'Quitar (' + esc(t) + ')' : (t ? 'Lo quiero' : 'Elige talla')) + '</button>' +
       '</div>' +
@@ -564,88 +686,90 @@
   }
 
   function pintar(){
-    var lista = visibles();
-    var total = deSeccion().length;
-    var palabra = seccion === 'encargo' ? ['camiseta por encargo', 'camisetas por encargo'] : ['prenda disponible', 'prendas disponibles'];
-    if (!total && prendas.length){
-      $('conteo').textContent = seccion === 'encargo'
-        ? 'Por ahora no hay camisetas por encargo publicadas.'
-        : 'Por ahora no hay prendas de entrega inmediata. Mira las camisetas por encargo.';
+    var lista = visibles(), s = st();
+    var base = deTab(), total = base.length;
+    var todoEnc = total > 0 && base.every(esEncargo);
+    var palabra = todoEnc ? ['prenda por encargo', 'prendas por encargo'] : ['prenda disponible', 'prendas disponibles'];
+    if (!prendas.length){
+      $('conteo').textContent = '';
     } else if (!lista.length && total){
-      $('conteo').textContent = busqueda
+      $('conteo').textContent = s.q
         ? 'Nada con esa búsqueda. Prueba con otro nombre de equipo o país.'
         : 'Nada con ese filtro. De ' + total + ' ' + palabra[1] + ', prueba con otra categoría o talla.';
     } else {
       $('conteo').textContent = (lista.length === 1 ? '1 ' + palabra[0] : (lista.length + ' ' + palabra[1])) +
         (lista.length !== total ? ' de ' + total : '');
     }
-    if (mostrados < PAGINA) mostrados = PAGINA;
+    if (s.n < PAGINA) s.n = PAGINA;
     /* Se pintan de a 60: mil tarjetas de una vez congelan un telefono barato
        y descargan fotos que nadie va a ver. El buscador y los filtros miran
-       el catalogo ENTERO, no solo lo pintado. */
-    $('grid').innerHTML = lista.slice(0, mostrados).map(function(p){
+       el apartado ENTERO, no solo lo pintado. */
+    $('grid').innerHTML = lista.slice(0, s.n).map(function(p){
       return esEncargo(p) ? tarjetaEncargo(p) : tarjetaFardo(p);
     }).join('');
-    var quedan = lista.length - Math.min(mostrados, lista.length);
+    var quedan = lista.length - Math.min(s.n, lista.length);
     $('mas').hidden = quedan <= 0;
     $('mas').textContent = 'Ver más (' + quedan + ')';
     barra();
   }
 
+  function totalCarro(){
+    var ks = Object.keys(carro), gratis = gratisAplica(ks.length), t = 0;
+    ks.forEach(function(k){
+      var e = carro[k];
+      t += (Number(e.precio) || 0) + (e.encargo ? valorExtra(e.extra, gratis) : 0);
+    });
+    return t;
+  }
+
   function barra(){
     var ks = Object.keys(carro);
-    var t = 0, hayFardo = false;
-    ks.forEach(function(k){ t += Number(carro[k].precio) || 0; if (!carro[k].encargo) hayFardo = true; });
+    var hayFardo = false, hayEnc = false;
+    ks.forEach(function(k){ if (carro[k].encargo) hayEnc = true; else hayFardo = true; });
     $('resumen').textContent = ks.length === 1 ? '1 prenda' : (ks.length + ' prendas');
-    $('total').textContent = clp(t);
+    $('total').textContent = clp(totalCarro());
     $('pedir').textContent = hayFardo || !ks.length ? 'Reservar por WhatsApp' : 'Pedir por WhatsApp';
+    /* Promo del estampado: se cuenta en voz alta cuanto falta. */
+    var promo = $('promo');
+    if (EXTRAS && GRATIS_DESDE > 0 && hayEnc){
+      var faltan = GRATIS_DESDE - ks.length;
+      promo.textContent = faltan <= 0 ? 'Estampado gratis aplicado'
+        : (faltan === 1 ? 'Te falta 1 camiseta para el estampado gratis'
+                        : 'Agrega ' + faltan + ' camisetas más y el estampado va de regalo');
+      promo.hidden = false;
+    } else { promo.hidden = true; promo.textContent = ''; }
     $('barra').className = ks.length ? 'barra visible' : 'barra';
   }
 
+  /* El pedido, en dos bloques. Diego reenvia el de arriba al distribuidor,
+     asi que NINGUNA linea lleva precio: el total sale una sola vez, debajo
+     de la linea divisoria. Mismo formato para fardo y para encargo; el #id
+     de cada prenda es lo que el bot usa para encontrarla (y el bot sabe que
+     una por encargo no se aparta nunca). */
   function mensaje(){
-    var ks = Object.keys(carro), bloques = [];
-    var fardo = ks.filter(function(k){ return !carro[k].encargo; });
-    var enc = ks.filter(function(k){ return carro[k].encargo; });
-    /* La ropa de fardo va igual que siempre: «PEDIDO US19» y un #id por
-       prenda, que es lo que el bot usa para apartarla. */
-    if (fardo.length){
-      var t = 0, L = ['PEDIDO US19', ''];
-      fardo.forEach(function(id){
-        var p = carro[id];
-        t += Number(p.precio) || 0;
-        L.push('- ' + p.nombre + (p.talla ? ' (' + p.talla + ')' : '') + ' ' + clp(p.precio) + ' #' + id);
-      });
-      L.push('');
-      L.push('Total: ' + clp(t));
-      bloques.push(L.join('\n'));
-    }
-    /* Los encargos van SIN #id a proposito: el id es lo que hace que el bot
-       aparte una prenda, y un encargo no se aparta nunca. Solo el titulo de
-       la fila («Prenda»): ya trae equipo, temporada y modelo, y sumarlos lo
-       repetia («… 26/27 edición especial — Real Madrid 26/27 Edición especial»). */
-    if (enc.length === 1){
-      var e1 = carro[enc[0]];
-      bloques.push('Hola! Quiero encargar: ' + e1.nombre + '\nTalla: ' + e1.tallaElegida + ' — ' + clp(e1.precio) +
-        '\n(Por encargo, llega en ' + PLAZO + ')');
-    } else if (enc.length > 1){
-      var te = 0, E = ['Hola! Quiero encargar:', ''];
-      enc.forEach(function(k){
-        var e = carro[k];
-        te += Number(e.precio) || 0;
-        E.push('- ' + e.nombre);
-        E.push('  Talla: ' + e.tallaElegida + ' — ' + clp(e.precio));
-      });
-      E.push('');
-      E.push('(Por encargo, llega en ' + PLAZO + ')');
-      E.push('Total: ' + clp(te));
-      bloques.push(E.join('\n'));
-    }
-    return bloques.join('\n\n');
+    var ks = Object.keys(carro), L = ['PEDIDO US19'];
+    ks.forEach(function(k){
+      var e = carro[k];
+      var talla = e.encargo ? e.tallaElegida : e.talla;
+      var partes = [e.nombre];
+      if (talla) partes.push('Talla ' + talla);
+      if (e.encargo && EXTRAS) partes.push(textoExtra(e.extra));
+      partes.push('#' + e.id);
+      L.push('· ' + partes.join(' — '));
+    });
+    L.push(DIVISORIA);
+    L.push('Total (' + (ks.length === 1 ? '1 prenda' : ks.length + ' prendas') + '): ' + clp(totalCarro()));
+    return L.join('\n');
   }
 
   function buscarPrenda(id){
     for (var i = 0; i < prendas.length; i++) if (prendas[i].id === id) return prendas[i];
     return null;
+  }
+  function repintarTarjeta(tarj, id){
+    var pr = buscarPrenda(id);
+    if (!tarj || !pr) return;
+    try { tarj.outerHTML = tarjetaEncargo(pr); } catch(e){}
   }
 
   document.addEventListener('click', function(ev){
@@ -672,18 +796,18 @@
       for (var k = 0; k < todas.length; k++) todas[k].setAttribute('aria-pressed', String(todas[k] === mini));
       return;
     }
-    var tab = ev.target.closest ? ev.target.closest('[data-sec]') : null;
-    if (tab){
-      seccion = tab.getAttribute('data-sec') === 'encargo' ? 'encargo' : 'inmediata';
-      mostrados = PAGINA;
+    var pestana = ev.target.closest ? ev.target.closest('[data-sec]') : null;
+    if (pestana){
+      tab = pestana.getAttribute('data-sec') || '';
       escribirHash(); pintarSecciones(); pintarFiltros(); pintar(); return;
     }
     var chip = ev.target.closest ? ev.target.closest('.chip') : null;
     if (chip){
-      if (chip.hasAttribute('data-talla')) filtroTalla = chip.getAttribute('data-talla') || '';
-      else if (chip.hasAttribute('data-orden')) orden = chip.getAttribute('data-orden') || '';
-      else filtro = chip.getAttribute('data-cat') || '';
-      mostrados = PAGINA;
+      var s = st();
+      if (chip.hasAttribute('data-talla')) s.talla = chip.getAttribute('data-talla') || '';
+      else if (chip.hasAttribute('data-orden')) s.orden = chip.getAttribute('data-orden') || '';
+      else s.cat = chip.getAttribute('data-cat') || '';
+      s.n = PAGINA;
       escribirHash(); pintarFiltros(); pintar(); return;
     }
     var btn = ev.target.closest ? ev.target.closest('.card button') : null;
@@ -691,15 +815,19 @@
       var id = btn.getAttribute('data-id');
       if (!id) return;
       var enc = btn.getAttribute('data-enc') === '1';
-      var talla = enc ? (tallaElegida[id] || '') : '';
-      if (enc && !talla){
+      var x = enc ? elecDe(id) : null;
+      if (enc && !x.talla){
         nota('Elige tu <b>talla</b> antes de pedir la camiseta.', true);
         return;
       }
-      var clave = enc ? id + '|' + talla : id;
+      var falta = enc ? faltaEnExtra(x) : '';
+      var clave = enc ? claveEnc(id, x) : id;
       if (carro[clave]) delete carro[clave];
       else {
-        /* El bot solo aparta MAX_PEDIDO por pedido y descartaba el resto sin
+        /* Estampado sin nombre o sin numero no entra: el distribuidor no
+           puede adivinarlo y el pedido quedaria cojo. */
+        if (falta){ nota('Para el estampado falta ' + falta + '.', true); return; }
+        /* El bot solo toma MAX_PEDIDO por pedido y descartaba el resto sin
            decir nada: alguien elegia 15 y recibia 12 sin explicacion. */
         if (Object.keys(carro).length >= MAX_PEDIDO){
           nota('Puedes reservar hasta <b>' + MAX_PEDIDO + ' prendas por pedido</b>. Manda este y enseguida armamos otro, o escríbenos y lo vemos juntos.', true);
@@ -707,7 +835,11 @@
         }
         var pr = buscarPrenda(id);
         if (!pr) return;
-        carro[clave] = enc ? Object.assign({}, pr, { tallaElegida: talla }) : pr;
+        carro[clave] = enc
+          ? Object.assign({}, pr, { tallaElegida: x.talla, extra: {
+              tipo: x.tipo, nombre: CON_ESTAMPADO[x.tipo] ? nombreEstampado(x.nombre) : '',
+              numero: CON_ESTAMPADO[x.tipo] ? String(Number(x.numero)) : '', parche: CON_PARCHE[x.tipo] ? x.parche : '' } })
+          : pr;
         nota('');
       }
       guardarCarro();
@@ -719,7 +851,7 @@
       if (tarj){
         var puesto = !!carro[clave];
         tarj.className = 'card' + (enc ? ' enc' : '') + (puesto ? ' puesto' : '');
-        btn.textContent = puesto ? (enc ? 'Quitar (' + talla + ')' : 'Quitar') : 'Lo quiero';
+        btn.textContent = puesto ? (enc ? 'Quitar (' + x.talla + ')' : 'Quitar') : 'Lo quiero';
       } else {
         pintar();
       }
@@ -727,39 +859,60 @@
     }
   });
 
-  /* Elegir talla en una tarjeta de encargo: activa el boton y dice si esa
-     camiseta en esa talla ya esta en el pedido. */
+  /* Talla, tipo de extra y parche: cambian la tarjeta (aparecen o se van
+     los campos) y el boton. */
   document.addEventListener('change', function(ev){
     var s = ev.target;
     if (!s || !s.getAttribute || s.getAttribute('data-para') === null || !s.closest) return;
-    var id = s.getAttribute('data-para');
-    tallaElegida[id] = s.value || '';
+    var id = s.getAttribute('data-para'), campo = s.getAttribute('data-campo') || 'talla';
+    var x = elecDe(id);
+    if (campo === 'talla' || campo === 'tipo' || campo === 'parche') x[campo] = s.value || '';
+    else return;
+    if (campo === 'tipo' && !CON_PARCHE[x.tipo]) x.parche = '';
     var tarj = s.closest('.card');
-    var b = tarj ? tarj.querySelector('button[data-id]') : null;
-    if (!b) return;
-    var t = tallaElegida[id];
-    var puesto = !!(t && carro[id + '|' + t]);
-    b.disabled = !t;
-    b.textContent = puesto ? 'Quitar (' + t + ')' : (t ? 'Lo quiero' : 'Elige talla');
-    tarj.className = 'card enc' + (puesto ? ' puesto' : '');
-    if (t) nota('');
+    if (x.talla) nota('');
+    if (campo === 'parche'){
+      actualizarBoton(tarj, id);
+      return;
+    }
+    repintarTarjeta(tarj, id);
+    actualizarBoton(tarj, id);
   });
+  /* Nombre y numero se escriben: se guardan sin repintar, para no perder el
+     foco del teclado a cada letra. */
+  document.addEventListener('input', function(ev){
+    var s = ev.target;
+    if (!s || !s.getAttribute) return;
+    var campo = s.getAttribute('data-campo');
+    if (campo !== 'nombre' && campo !== 'numero') return;
+    var id = s.getAttribute('data-para');
+    elecDe(id)[campo] = s.value || '';
+    actualizarBoton(s.closest ? s.closest('.card') : null, id);
+  });
+  function actualizarBoton(tarj, id){
+    var b = tarj && tarj.querySelector ? tarj.querySelector('button[data-id]') : null;
+    if (!b) return;
+    var x = elecDe(id), puesto = !!(x.talla && carro[claveEnc(id, x)]);
+    b.disabled = !x.talla;
+    b.textContent = puesto ? 'Quitar (' + x.talla + ')' : (x.talla ? 'Lo quiero' : 'Elige talla');
+    tarj.className = 'card enc' + (puesto ? ' puesto' : '');
+  }
 
   /* Buscador: filtra en el telefono, sin volver a pedir nada, sobre TODO el
-     catalogo de la seccion. Espera 200 ms a que se deje de escribir. */
+     apartado. Espera 200 ms a que se deje de escribir. Cada apartado
+     recuerda lo suyo. */
   var relojBusca = null;
-  function buscar(valor){
-    busqueda = norm(valor);
-    mostrados = PAGINA;
-    pintar();
-  }
   $('buscar').addEventListener('input', function(ev){
     var v = ev && ev.target ? ev.target.value : '';
     if (relojBusca) clearTimeout(relojBusca);
-    relojBusca = setTimeout(function(){ buscar(v); }, 200);
+    relojBusca = setTimeout(function(){
+      var s = st();
+      s.qTxt = v; s.q = norm(v); s.n = PAGINA;
+      pintar();
+    }, 200);
   });
 
-  $('mas').addEventListener('click', function(){ mostrados += PAGINA; pintar(); });
+  $('mas').addEventListener('click', function(){ st().n += PAGINA; pintar(); });
 
   $('vaciar').addEventListener('click', function(){ carro = {}; guardarCarro(); pintar(); });
 
@@ -801,8 +954,8 @@
       var e = carro[k];
       var id = (e && e.id) || k;
       if (vivos[id]){
-        /* El precio y los datos se refrescan; la talla que eligio, no. */
-        carro[k] = e && e.encargo ? Object.assign({}, vivos[id], { tallaElegida: e.tallaElegida }) : vivos[id];
+        /* El precio y los datos se refrescan; la talla y el extra que eligio, no. */
+        carro[k] = e && e.encargo ? Object.assign({}, vivos[id], { tallaElegida: e.tallaElegida, extra: e.extra }) : vivos[id];
       } else { perdidas.push(e && e.nombre ? e.nombre : 'una prenda'); delete carro[k]; }
     });
     guardarCarro();
@@ -838,14 +991,24 @@
     if (d && Number(d.precioRef) > 0) PRECIO_REF = Number(d.precioRef);
     if (d && d.plazoEncargo) PLAZO = String(d.plazoEncargo);
     if (d && Array.isArray(d.tallasEncargo) && d.tallasEncargo.length) TALLAS_DEF = d.tallasEncargo.map(String);
+    CATS_FARDO = (d && Array.isArray(d.catsFardo)) ? d.catsFardo.map(String) : null;
+    EXTRAS = (d && d.extras && typeof d.extras === 'object') ? d.extras : null;
+    GRATIS_DESDE = d && Number(d.estampadoGratisDesde) > 0 ? Number(d.estampadoGratisDesde) : 0;
+    PARCHES = (d && Array.isArray(d.parches)) ? d.parches.map(String) : [];
 
     claves = {};
     prendas.forEach(function(p){ claves[p.id] = norm([p.nombre, p.equipo, p.temporada, p.modelo].join(' ')); });
-    var hayE = false, hayI = false;
-    prendas.forEach(function(p){ if (esEncargo(p)) hayE = true; else hayI = true; });
-    /* Sin seccion elegida (ni en el enlace), se abre la que tiene algo. */
-    if (!seccion || (seccion === 'inmediata' && !hayI && hayE) || (seccion === 'encargo' && !hayE && hayI)){
-      seccion = hayI || !hayE ? 'inmediata' : 'encargo';
+    /* El apartado: el que pide el enlace; si no, el que ya estaba; si no,
+       el primero (Fardo cuando hay ropa de fardo). */
+    var lista = tabs().lista;
+    if (hashIni.sec && lista.indexOf(hashIni.sec) !== -1 && !tab) tab = hashIni.sec;
+    if (lista.indexOf(tab) === -1) tab = lista[0] || '';
+    if (hashIni.cat || hashIni.talla || hashIni.orden){
+      var s0 = st();
+      if (hashIni.cat) s0.cat = hashIni.cat;
+      if (hashIni.talla) s0.talla = hashIni.talla;
+      if (hashIni.orden) s0.orden = hashIni.orden;
+      hashIni = {};
     }
 
     /* El aviso de «próximamente» es de cuando no habia nada que vender. Con

@@ -183,7 +183,7 @@ if (!fs.existsSync(RUTA_BOT)) {
 
 function nuevoElemento(id) {
   return {
-    id, innerHTML: '', textContent: '', hidden: false, className: '', href: '',
+    id, innerHTML: '', textContent: '', hidden: false, className: '', href: '', value: '',
     _attrs: {},
     setAttribute(k, v) { this._attrs[k] = String(v); },
     getAttribute(k) { return Object.prototype.hasOwnProperty.call(this._attrs, k) ? this._attrs[k] : null; },
@@ -208,6 +208,7 @@ function nuevoEntorno(respuestas, opciones) {
   let handlerClick = null;
   let handlerVis = null;
   let handlerChange = null;
+  let handlerInput = null;
   let nPeticiones = 0;
   const irA = [];
 
@@ -217,6 +218,7 @@ function nuevoEntorno(respuestas, opciones) {
       if (ev === 'click') handlerClick = fn;
       if (ev === 'visibilitychange') handlerVis = fn;
       if (ev === 'change') handlerChange = fn;
+      if (ev === 'input') handlerInput = fn;
     },
     visibilityState: 'visible',
   };
@@ -260,6 +262,7 @@ function nuevoEntorno(respuestas, opciones) {
     peticiones: () => nPeticiones,
     click(target) { if (handlerClick) handlerClick({ target }); },
     cambiar(target) { if (handlerChange) handlerChange({ target }); },
+    escribir(target) { if (handlerInput) handlerInput({ target }); },
     volverAlaPestana() { if (handlerVis) handlerVis(); },
   };
 }
@@ -425,7 +428,9 @@ async function principal() {
   const texto = decodeURIComponent(url.split('text=')[1] || '');
   comprobar('pedido · empieza por la palabra que el bot reconoce', /^PEDIDO US19/.test(texto), texto.slice(0, 40));
   igual('pedido · lleva un #id por prenda', (texto.match(/#id-\d/g) || []).length, 3);
-  comprobar('pedido · lleva el total', texto.indexOf('Total: $29.970') >= 0, texto);
+  comprobar('pedido · el total va una sola vez, al final, tras la línea divisoria',
+    /\n-{20,}\nTotal \(3 prendas\): \$29\.970$/.test(texto), texto);
+  comprobar('pedido · cada línea: nombre — Talla — #id', texto.indexOf('· Polera 0 — Talla M — #id-0') >= 0, texto);
   comprobar('pedido · la URL cabe de sobra (WhatsApp corta las largas)', url.length < 2000,
     'mide ' + url.length + ' caracteres');
 
@@ -453,156 +458,252 @@ async function principal() {
   await esperar();
   igual('orden · con pocas prendas el control estorba y no sale', O.els.orden.innerHTML, '');
 
-  /* l) POR ENCARGO (14-sep-2026) ----------------------------------------
-     Las camisetas del proveedor: no se apartan, se piden con talla, y
-     conviven con la ropa de fardo en otra seccion. */
+  /* l) APARTADOS, POR ENCARGO Y EXTRAS (14-sep-2026) ----------------------
+     Las camisetas del proveedor: no se apartan, se piden con talla, llevan
+     extras de personalizacion, y viven en su apartado (la categoria de
+     Notion) junto al de fardo. */
 
   const ENC = (i, extra) => Object.assign({
     id: 'enc-' + i, nombre: 'Camiseta ' + i, categoria: 'Camiseta de fútbol', estado: 'Nuevo',
-    precio: 23000, foto: 'https://ultrasport19-boop.github.io/US19-FOTOS/fotos/' + i + '-v2.webp',
+    precio: 25000, foto: 'https://ultrasport19-boop.github.io/US19-FOTOS/fotos/' + i + '-v2.webp',
     encargo: true, equipo: 'Equipo ' + i, temporada: '25/26', modelo: 'Local',
   }, extra || {});
+  const CATS = ['Polera', 'Poleron', 'Chaqueta', 'Short', 'Calza', 'Pantalon', 'Zapatilla', 'Accesorio'];
   const CAT_ENC = (lista, extra) => Object.assign(CATALOGO(0), {
-    precioRef: 23000, plazoEncargo: '2 a 3 semanas', tallasEncargo: ['S', 'M', 'L', 'XL', 'XXL'], prendas: lista,
+    maxPedido: 12, precioRef: 23000, plazoEncargo: '2 a 3 semanas', tallasEncargo: ['S', 'M', 'L', 'XL', 'XXL'],
+    catsFardo: CATS, extras: { nombre_numero: 2000, parche: 2000, pack_jugador: 3500 },
+    estampadoGratisDesde: 3, parches: ['Liga', 'Champions'], prendas: lista,
   }, extra || {});
+  const tarjetas = E => (E.els.grid.innerHTML.match(/<li class="card/g) || []).length;
+  const pestanas = E => (E.els.secciones.innerHTML.match(/data-sec="[^"]+"/g) || []).map(s => s.slice(10, -1));
+  const irPestana = (E, k) => E.click({ closest: sel => (sel === '[data-sec]' ? { getAttribute: () => k } : null) });
+  const textoWa = E => decodeURIComponent((E.irA[E.irA.length - 1] || '').split('text=')[1] || '');
 
-  /* Un <select> de talla de mentira dentro de su tarjeta, con su boton. */
+  /* Una tarjeta de encargo de mentira: su <select> de talla, el de extra,
+     el de parche, los dos campos del estampado y el boton. */
   function tarjetaEnc(id) {
     const btn = { textContent: 'Elige talla', disabled: true,
       getAttribute: k => (k === 'data-id' ? id : (k === 'data-enc' ? '1' : null)), hasAttribute: () => false };
     const card = { className: 'card enc', querySelectorAll: () => [], querySelector: s => (s === 'button[data-id]' ? btn : null) };
     btn.closest = sel => (sel === '.card button' ? btn : (sel === '.card' ? card : null));
-    const select = { value: '', getAttribute: k => (k === 'data-para' ? id : null), closest: sel => (sel === '.card' ? card : null) };
-    return { btn, card, select, toque: { closest: sel => btn.closest(sel) } };
+    const campo = nombre => ({ value: '', getAttribute: k => (k === 'data-para' ? id : (k === 'data-campo' ? nombre : null)),
+      closest: sel => (sel === '.card' ? card : null) });
+    return { btn, card, talla: campo('talla'), tipo: campo('tipo'), parche: campo('parche'),
+      nombre: campo('nombre'), numero: campo('numero'), toque: { closest: sel => btn.closest(sel) } };
+  }
+  /* Elegir y agregar en un solo paso, como lo haria alguien en el telefono. */
+  function elegir(E, t, o) {
+    t.talla.value = o.talla; E.cambiar(t.talla);
+    if (o.tipo !== undefined) { t.tipo.value = o.tipo; E.cambiar(t.tipo); }
+    if (o.nombre !== undefined) { t.nombre.value = o.nombre; E.escribir(t.nombre); }
+    if (o.numero !== undefined) { t.numero.value = String(o.numero); E.escribir(t.numero); }
+    if (o.parche !== undefined) { t.parche.value = o.parche; E.cambiar(t.parche); }
+    E.click(t.toque);
   }
 
-  // Mezclado: abre en entrega inmediata, con los dos contadores
-  const P1 = nuevoEntorno([CAT_ENC([PRENDA(0), PRENDA(1), ENC(0), ENC(1), ENC(2)])]);
+  // Apartados desde «Categoria»: fardo junto, cada categoria nueva con el suyo
+  const P1 = nuevoEntorno([CAT_ENC([PRENDA(0), PRENDA(1, { categoria: 'Short' }), ENC(0), ENC(1), ENC(2),
+    ENC(3, { categoria: 'NBA', nombre: 'Camiseta Lakers' })])]);
   await esperar();
-  igual('secciones · con ropa de fardo abre en «Entrega inmediata»', P1.els['tab-inmediata'].getAttribute('aria-selected'), 'true');
-  igual('secciones · cuenta las dos', P1.els['n-inmediata'].textContent + P1.els['n-encargo'].textContent, '(2)(3)');
-  igual('secciones · entrega inmediata solo muestra fardo', (P1.els.grid.innerHTML.match(/<li class="card/g) || []).length, 2);
-  igual('secciones · el plazo no se ve en entrega inmediata', P1.els.plazo.hidden, true);
-  P1.click({ closest: sel => (sel === '[data-sec]' ? { getAttribute: () => 'encargo' } : null) });
-  igual('secciones · la pestaña «Por encargo» muestra las tres', (P1.els.grid.innerHTML.match(/<li class="card enc/g) || []).length, 3);
-  igual('secciones · y el plazo se ve', P1.els.plazo.hidden, false);
-  igual('secciones · el plazo lo manda el catalogo', P1.els['plazo-txt'].textContent, '2 a 3 semanas');
-  comprobar('secciones · cada tarjeta dice que es por encargo',
+  igual('apartados · salen de la categoria: Fardo primero, luego las demás', pestanas(P1).join(','), 'Fardo,Camiseta de fútbol,NBA');
+  comprobar('apartados · cada uno con su contador real', /Fardo <span>\(2\)/.test(P1.els.secciones.innerHTML) &&
+    /Camiseta de fútbol <span>\(3\)/.test(P1.els.secciones.innerHTML) && /NBA <span>\(1\)/.test(P1.els.secciones.innerHTML), P1.els.secciones.innerHTML);
+  igual('apartados · abre en Fardo cuando hay ropa de fardo', tarjetas(P1), 2);
+  igual('apartados · en Fardo se ve el aviso de pieza única', P1.els.unica.hidden, false);
+  igual('apartados · en Fardo no se ve el plazo', P1.els.plazo.hidden, true);
+  comprobar('apartados · dentro de Fardo siguen los chips de Polera/Short', P1.els.filtros.innerHTML.indexOf('Short') >= 0);
+  irPestana(P1, 'Camiseta de fútbol');
+  igual('apartados · «Camiseta de fútbol» muestra solo las suyas', (P1.els.grid.innerHTML.match(/<li class="card enc/g) || []).length, 3);
+  igual('apartados · ahí se ve el plazo', P1.els.plazo.hidden, false);
+  igual('apartados · y no el aviso de pieza única', P1.els.unica.hidden, true);
+  igual('apartados · el recuento es el del apartado', P1.els.conteo.textContent, '3 prendas por encargo');
+  igual('apartados · sin chips sueltos de categoria', P1.els.filtros.innerHTML, '');
+  comprobar('apartados · cada tarjeta dice que es por encargo',
     (P1.els.grid.innerHTML.match(/Por encargo · llega en 2 a 3 semanas/g) || []).length === 3);
-  igual('secciones · en encargo no hay chips de categoria', P1.els.filtros.innerHTML, '');
 
-  // Solo encargos: abre en «Por encargo» sin que nadie elija
-  const P2 = nuevoEntorno([CAT_ENC([ENC(0), ENC(1, { precio: 20000 }), ENC(2, { precio: 25000 }), ENC(3, { tallas: 'S-4XL' }),
-    ENC(4, { tallas: 'S / M / L' }), ENC(5, { tallas: 'talla única rara' })])]);
+  // Solo encargos: abre directo en su apartado
+  const P2 = nuevoEntorno([CAT_ENC([ENC(0), ENC(1, { precio: 20000 }), ENC(2, { precio: 23000 }), ENC(3, { tallas: 'S-4XL' }),
+    ENC(4, { tallas: 'S / M / L' }), ENC(5, { tallas: 'Dato a confirmar' })])]);
   await esperar();
-  igual('encargo · sin fardo abre directo en «Por encargo»', P2.els['tab-encargo'].getAttribute('aria-selected'), 'true');
+  igual('encargo · sin fardo abre en «Camiseta de fútbol»', pestanas(P2).join(','), 'Camiseta de fútbol');
   igual('encargo · OFERTA solo bajo el precio de referencia', (P2.els.grid.innerHTML.match(/class="oferta"/g) || []).length, 1);
   comprobar('encargo · la foto va con medidas fijas (sin salto al cargar)', /width="1000" height="1000" loading="lazy"/.test(P2.els.grid.innerHTML));
   const tarj = P2.els.grid.innerHTML.split('<li class="card');
-  const opciones = t => (t.match(/<option value="([^"]+)"/g) || []).map(x => x.slice(15, -1)).join(',');
+  const opciones = t => ((t.split('data-campo="talla"')[1] || '').split('</select>')[0].match(/<option value="([^"]+)"/g) || []).map(x => x.slice(15, -1)).join(',');
   igual('tallas · vacía → las del catalogo', opciones(tarj[1]), 'S,M,L,XL,XXL');
   igual('tallas · «S-4XL» → el rango entero', opciones(tarj[4]), 'S,M,L,XL,XXL,3XL,4XL');
   igual('tallas · «S / M / L» → la lista', opciones(tarj[5]), 'S,M,L');
-  igual('tallas · lo que no se entiende → las del catalogo', opciones(tarj[6]), 'S,M,L,XL,XXL');
+  igual('tallas · «Dato a confirmar» → las del catalogo', opciones(tarj[6]), 'S,M,L,XL,XXL');
   comprobar('talla · el boton nace desactivado', /data-enc="1" disabled>Elige talla/.test(tarj[1]), tarj[1].slice(-160));
+  comprobar('extras · NO aparecen antes de elegir talla (el precio queda limpio)', P2.els.grid.innerHTML.indexOf('Estampado oficial') < 0);
+  comprobar('extras · ningún valor de extra junto al precio de la tarjeta', P2.els.grid.innerHTML.indexOf('2.000') < 0 && P2.els.grid.innerHTML.indexOf('3.500') < 0);
 
-  // Sin catalogo nuevo (precioRef ausente) no se inventa ninguna oferta
+  // Sin catalogo nuevo (sin precioRef ni extras) no se inventa ni oferta ni extras
   const P3 = nuevoEntorno([CATALOGO(0, { prendas: [ENC(0, { precio: 1000 })] })]);
   await esperar();
   igual('encargo · sin precio de referencia no hay OFERTA (nada escrito a mano)', (P3.els.grid.innerHTML.match(/class="oferta"/g) || []).length, 0);
 
-  // La talla es obligatoria
-  const T = nuevoEntorno([CAT_ENC([ENC(0), ENC(1)])]);
+  // La talla es obligatoria, y después aparecen los extras
+  const T = nuevoEntorno([CAT_ENC([ENC(0), ENC(1), ENC(2), ENC(3)])]);
   await esperar();
   const t0 = tarjetaEnc('enc-0');
   T.click(t0.toque);
   igual('talla · sin elegir, no entra al pedido', T.els.resumen.textContent, '0 prendas');
   comprobar('talla · y se le dice por qué', T.els.nota.innerHTML.indexOf('talla') >= 0 && T.els.nota.hidden === false, T.els.nota.innerHTML);
-  t0.select.value = 'M'; T.cambiar(t0.select);
+  t0.talla.value = 'M'; T.cambiar(t0.talla);
   igual('talla · al elegirla se activa el boton', t0.btn.disabled, false);
-  T.click(t0.toque);
-  igual('talla · con talla entra', T.els.resumen.textContent, '1 prenda');
-  igual('talla · la tarjeta queda marcada con la talla', t0.btn.textContent, 'Quitar (M)');
-  t0.select.value = 'L'; T.cambiar(t0.select); T.click(t0.toque);
-  igual('talla · la misma camiseta en otra talla es otro encargo', T.els.resumen.textContent, '2 prendas');
-  igual('encargo · el boton dice «Pedir», no «Reservar»', T.els.pedir.textContent, 'Pedir por WhatsApp');
-  T.els.pedir._ev.click();
-  const txtEnc = decodeURIComponent((T.irA[T.irA.length - 1] || '').split('text=')[1] || '');
-  comprobar('encargo · el mensaje empieza como pidió Diego', /^Hola! Quiero encargar:/.test(txtEnc), txtEnc.slice(0, 60));
-  comprobar('encargo · lleva talla y precio de cada una', txtEnc.indexOf('Talla: M — $23.000') >= 0 && txtEnc.indexOf('Talla: L — $23.000') >= 0, txtEnc);
-  comprobar('encargo · SIN #id: el #id es lo que hace que el bot aparte', txtEnc.indexOf('#') < 0, txtEnc);
+  /* Al elegir talla la tarjeta se repinta (outerHTML): ahí aparecen los extras. */
+  comprobar('extras · aparecen recién después de la talla, con el texto pedido',
+    String(t0.card.outerHTML || '').indexOf('Estampado oficial con tu nombre y número: +$2.000. Como el del estadio, pero con tu apellido.') >= 0,
+    String(t0.card.outerHTML || '(no se repintó)').slice(0, 200));
+  comprobar('extras · las cuatro opciones con su valor del config',
+    /Sin personalización[\s\S]*Nombre \+ número \(\+\$2\.000\)[\s\S]*Parche \(\+\$2\.000\)[\s\S]*Pack Jugador \(\+\$3\.500\)/.test(String(t0.card.outerHTML || '')));
 
-  const T1 = nuevoEntorno([CAT_ENC([ENC(0)])]);
+  // Estampado: validaciones
+  const V1 = nuevoEntorno([CAT_ENC([ENC(0)])]);
   await esperar();
-  const u0 = tarjetaEnc('enc-0'); u0.select.value = 'XL'; T1.cambiar(u0.select); T1.click(u0.toque);
-  T1.els.pedir._ev.click();
-  const txt1 = decodeURIComponent((T1.irA[T1.irA.length - 1] || '').split('text=')[1] || '');
-  igual('encargo · una sola camiseta: el mensaje exacto', txt1,
-    'Hola! Quiero encargar: Camiseta 0\nTalla: XL — $23.000\n(Por encargo, llega en 2 a 3 semanas)');
-  comprobar('encargo · solo el título: no le pega equipo, temporada ni modelo',
-    txt1.indexOf('Equipo 0') < 0 && txt1.indexOf('25/26') < 0 && txt1.indexOf('Local') < 0, txt1);
+  const v1 = tarjetaEnc('enc-0');
+  elegir(V1, v1, { talla: 'L', tipo: 'nombre_numero', nombre: '', numero: 10 });
+  igual('estampado · con el nombre vacío NO entra', V1.els.resumen.textContent, '0 prendas');
+  comprobar('estampado · y dice qué falta', V1.els.nota.innerHTML.indexOf('nombre a estampar') >= 0, V1.els.nota.innerHTML);
+  v1.numero.value = '0'; V1.escribir(v1.numero); v1.nombre.value = 'Valenzuela'; V1.escribir(v1.nombre); V1.click(v1.toque);
+  igual('estampado · número 0 NO entra', V1.els.resumen.textContent, '0 prendas');
+  v1.numero.value = '100'; V1.escribir(v1.numero); V1.click(v1.toque);
+  igual('estampado · número 100 NO entra', V1.els.resumen.textContent, '0 prendas');
+  comprobar('estampado · y dice el rango', V1.els.nota.innerHTML.indexOf('1 al 99') >= 0, V1.els.nota.innerHTML);
+  v1.numero.value = '10'; v1.nombre.value = 'Valen2uela'; V1.escribir(v1.numero); V1.escribir(v1.nombre); V1.click(v1.toque);
+  igual('estampado · un nombre con dígitos NO entra', V1.els.resumen.textContent, '0 prendas');
+  v1.nombre.value = 'Abcdefghijklm'; V1.escribir(v1.nombre); V1.click(v1.toque);
+  igual('estampado · 13 letras NO entra', V1.els.resumen.textContent, '0 prendas');
+  v1.nombre.value = 'núñez'; V1.escribir(v1.nombre); V1.click(v1.toque);
+  igual('estampado · con tildes y Ñ entra', V1.els.resumen.textContent, '1 prenda');
+  V1.els.pedir._ev.click();
+  comprobar('estampado · sale en MAYÚSCULAS con su número', textoWa(V1).indexOf('Estampado: NÚÑEZ 10') >= 0, textoWa(V1));
+  const V2 = nuevoEntorno([CAT_ENC([ENC(0)])]);
+  await esperar();
+  const v2 = tarjetaEnc('enc-0');
+  elegir(V2, v2, { talla: 'M', tipo: 'nombre_numero', nombre: '  di   maria ', numero: '7' });
+  igual('estampado · nombre con espacios entra', V2.els.resumen.textContent, '1 prenda');
+  V2.els.pedir._ev.click();
+  comprobar('estampado · los espacios se ordenan: «DI MARIA 7»', textoWa(V2).indexOf('Estampado: DI MARIA 7') >= 0, textoWa(V2));
+  const V3 = nuevoEntorno([CAT_ENC([ENC(0)])]);
+  await esperar();
+  const v3 = tarjetaEnc('enc-0');
+  elegir(V3, v3, { talla: 'M', tipo: 'parche' });
+  igual('parche · sin elegir cuál, NO entra', V3.els.resumen.textContent, '0 prendas');
+  v3.parche.value = 'Champions'; V3.cambiar(v3.parche); V3.click(v3.toque);
+  igual('parche · elegido, entra', V3.els.resumen.textContent, '1 prenda');
 
-  // Fardo: el mensaje de siempre, con talla solo si la fila la tiene
+  // Promo: con 2 prendas no, con 3 sí; el pack queda en el valor del parche
+  const PR = nuevoEntorno([CAT_ENC([ENC(0), ENC(1), ENC(2)])]);
+  await esperar();
+  const pa = tarjetaEnc('enc-0'), pb = tarjetaEnc('enc-1'), pc = tarjetaEnc('enc-2');
+  elegir(PR, pa, { talla: 'L', tipo: 'pack_jugador', nombre: 'Valenzuela', numero: 10, parche: 'Liga' });
+  igual('promo · con 1: el aviso dice cuánto falta', PR.els.promo.textContent, 'Agrega 2 camisetas más y el estampado va de regalo');
+  igual('promo · con 1 el pack se cobra entero', PR.els.total.textContent, '$28.500');
+  elegir(PR, pb, { talla: 'M', tipo: 'nombre_numero', nombre: 'Messi', numero: 10 });
+  igual('promo · con 2: falta 1', PR.els.promo.textContent, 'Te falta 1 camiseta para el estampado gratis');
+  igual('promo · con 2 NO se activa (25.000+3.500 + 25.000+2.000)', PR.els.total.textContent, '$55.500');
+  elegir(PR, pc, { talla: 'S', tipo: 'parche', parche: 'Champions' });
+  igual('promo · con 3: aplicada', PR.els.promo.textContent, 'Estampado gratis aplicado');
+  igual('promo · con 3: pack = parche, estampado $0, parche suelto se cobra', PR.els.total.textContent, '$79.000');
+  PR.els.pedir._ev.click();
+  const txtD = textoWa(PR);
+  const [detalle, cierre] = txtD.split('---------------------------');
+  comprobar('mensaje · dos bloques separados por la línea divisoria', !!cierre && /^PEDIDO US19\n/.test(detalle), txtD);
+  comprobar('mensaje · al distribuidor ninguna cifra de precio por línea', !/\$|\d{1,3}\.\d{3}/.test(detalle), detalle);
+  comprobar('mensaje · el total, una sola vez, al final', /^\nTotal \(3 prendas\): \$79\.000$/.test(cierre), cierre);
+  comprobar('mensaje · la línea del pack', detalle.indexOf('· Camiseta 0 — Talla L — Estampado: VALENZUELA 10 — Parche: Liga — #enc-0') >= 0, detalle);
+  comprobar('mensaje · la línea del parche suelto', detalle.indexOf('· Camiseta 2 — Talla S — Sin estampado — Parche: Champions — #enc-2') >= 0, detalle);
+  igual('mensaje · el boton dice «Pedir», no «Reservar»', PR.els.pedir.textContent, 'Pedir por WhatsApp');
+
+  // Una sola camiseta sin extra: el formato exacto
+  const T1 = nuevoEntorno([CAT_ENC([ENC(0, { nombre: 'Camiseta Napoli 26/27 tercera' })])]);
+  await esperar();
+  elegir(T1, tarjetaEnc('enc-0'), { talla: 'M' });
+  T1.els.pedir._ev.click();
+  igual('mensaje · una camiseta sin extra, exacto', textoWa(T1),
+    'PEDIDO US19\n· Camiseta Napoli 26/27 tercera — Talla M — Sin estampado — #enc-0\n---------------------------\nTotal (1 prenda): $25.000');
+  comprobar('mensaje · solo el título: no le pega equipo, temporada ni modelo', textoWa(T1).indexOf('Equipo 0') < 0);
+
+  // La misma camiseta en dos tallas son dos líneas
+  const T2 = nuevoEntorno([CAT_ENC([ENC(0)])]);
+  await esperar();
+  const d0 = tarjetaEnc('enc-0');
+  elegir(T2, d0, { talla: 'M' });
+  elegir(T2, d0, { talla: 'L' });
+  igual('talla · la misma camiseta en otra talla es otra línea', T2.els.resumen.textContent, '2 prendas');
+
+  // Fardo: mismo formato, talla de la fila; sin talla, la línea va sin ella (el bot la pide)
   const FT = nuevoEntorno([CATALOGO(2, { prendas: [PRENDA(0), PRENDA(1, { talla: '' })] })]);
   await esperar();
   FT.click(botonDe('id-0').target); FT.click(botonDe('id-1').target);
   FT.els.pedir._ev.click();
-  const txtF = decodeURIComponent((FT.irA[FT.irA.length - 1] || '').split('text=')[1] || '');
-  comprobar('fardo · con talla la lleva entre paréntesis', txtF.indexOf('- Polera 0 (M) $9.990 #id-0') >= 0, txtF);
-  comprobar('fardo · sin talla no pone paréntesis vacíos', txtF.indexOf('- Polera 1 $9.990 #id-1') >= 0, txtF);
+  const txtF = textoWa(FT);
+  comprobar('fardo · la línea lleva la talla de la fila', txtF.indexOf('· Polera 0 — Talla M — #id-0') >= 0, txtF);
+  comprobar('fardo · sin talla en la fila, la línea va sin ella y el bot la pide', txtF.indexOf('· Polera 1 — #id-1') >= 0, txtF);
+  comprobar('fardo · sin «Sin estampado» (los extras son solo por encargo)', txtF.indexOf('estampado') < 0, txtF);
+  comprobar('fardo · ni un precio por línea', !/\$|\d{1,3}\.\d{3}/.test(txtF.split('---------------------------')[0]), txtF);
+
+  // Carro mixto
+  const X = nuevoEntorno([CAT_ENC([PRENDA(0), ENC(0)])]);
+  await esperar();
+  X.click(botonDe('id-0').target);
+  irPestana(X, 'Camiseta de fútbol');
+  elegir(X, tarjetaEnc('enc-0'), { talla: 'S' });
+  X.els.pedir._ev.click();
+  const txtMix = textoWa(X);
+  igual('mixto · un #id por línea, las dos', (txtMix.match(/#/g) || []).length, 2);
+  comprobar('mixto · total de las dos', txtMix.indexOf('Total (2 prendas): $34.990') >= 0, txtMix);
+  igual('mixto · con fardo en el carro, el boton dice «Reservar»', X.els.pedir.textContent, 'Reservar por WhatsApp');
+
+  // Ver más y buscador por apartado, sobre TODO el apartado
+  const muchas = Array.from({ length: 130 }, (_, i) => ENC(i, i === 125 ? { nombre: 'Camiseta Atlético de Madrid', equipo: 'Atlético de Madrid' } : {}));
+  const V = nuevoEntorno([CAT_ENC(muchas.concat([PRENDA(0)]))]);
+  await esperar();
+  irPestana(V, 'Camiseta de fútbol');
+  igual('ver más · pinta 60 de entrada', tarjetas(V), 60);
+  igual('ver más · el boton dice cuántas quedan', V.els.mas.textContent, 'Ver más (70)');
+  igual('ver más · el recuento habla del total del apartado', V.els.conteo.textContent, '130 prendas por encargo');
+  V.els.mas._ev.click();
+  igual('ver más · suma otras 60', tarjetas(V), 120);
+  V.els.mas._ev.click();
+  igual('ver más · al final desaparece', V.els.mas.hidden, true);
+  V.els.buscar._ev.input({ target: { value: 'ATLETICO' } });
+  igual('buscador · espera a que se deje de escribir', tarjetas(V), 130);
+  await new Promise(r => setTimeout(r, 260));
+  igual('buscador · sin acentos ni mayúsculas, y más allá de las 60 pintadas', tarjetas(V), 1);
+  irPestana(V, 'Fardo');
+  igual('buscador · cada apartado tiene el suyo: Fardo no quedó filtrado', tarjetas(V), 1);
+  comprobar('buscador · y el campo muestra lo del apartado', V.els.buscar.value === '', String(V.els.buscar.value));
+  irPestana(V, 'Camiseta de fútbol');
+  comprobar('buscador · al volver, su búsqueda sigue ahí', V.els.buscar.value === 'ATLETICO' && tarjetas(V) === 1, String(V.els.buscar.value));
+  V.els.buscar._ev.input({ target: { value: 'Colo-Colo' } });
+  await new Promise(r => setTimeout(r, 260));
+  comprobar('buscador · sin resultados lo dice', V.els.conteo.textContent.indexOf('Nada con esa búsqueda') === 0, V.els.conteo.textContent);
+  const W = nuevoEntorno([CAT_ENC([ENC(0, { nombre: 'Camiseta Colo Colo 24/25 local', equipo: 'Colo Colo' }), ENC(1)])]);
+  await esperar();
+  W.els.buscar._ev.input({ target: { value: 'Colo-Colo' } });
+  await new Promise(r => setTimeout(r, 260));
+  igual('buscador · «Colo-Colo» con guion encuentra «Colo Colo»', tarjetas(W), 1);
+
+  // El carro recuerda talla y extra aunque se recargue el catalogo
+  const carroEnc = JSON.stringify({ t: Date.now(), c: { 'enc-0|M|nombre_numero|PEREZ|9|': Object.assign(ENC(0), {
+    tallaElegida: 'M', precio: 1, extra: { tipo: 'nombre_numero', nombre: 'PEREZ', numero: '9', parche: '' } }) } });
+  const R = nuevoEntorno([CAT_ENC([ENC(0)])], { store: { us19_tienda_carro_v1: carroEnc } });
+  await esperar();
+  igual('carro · el encargo sobrevive a la recarga con precio al día (+ extra)', R.els.total.textContent, '$27.000');
+  R.els.pedir._ev.click();
+  comprobar('carro · y conserva talla y estampado', textoWa(R).indexOf('Talla M — Estampado: PEREZ 9') >= 0, textoWa(R));
 
   /* El aviso de «próximamente» empieza escondido: visible mientras carga le
      decía «el primer fardo viene en camino» a todo el que entraba. */
   comprobar('aviso · empieza escondido en el marcado', /<section class="pronto" id="pronto" hidden>/.test(src));
   comprobar('aviso · ya no habla del «primer fardo»', !/primer fardo/i.test(src));
-
-  // Carro mixto: el fardo sigue apartandose con su #id; el encargo va aparte y sin id
-  const X = nuevoEntorno([CAT_ENC([PRENDA(0), ENC(0)])]);
-  await esperar();
-  X.click(botonDe('id-0').target);
-  X.click({ closest: sel => (sel === '[data-sec]' ? { getAttribute: () => 'encargo' } : null) });
-  const x0 = tarjetaEnc('enc-0'); x0.select.value = 'S'; X.cambiar(x0.select); X.click(x0.toque);
-  X.els.pedir._ev.click();
-  const txtMix = decodeURIComponent((X.irA[X.irA.length - 1] || '').split('text=')[1] || '');
-  comprobar('mixto · empieza por PEDIDO US19 (el bot aparta el fardo)', /^PEDIDO US19/.test(txtMix), txtMix.slice(0, 40));
-  igual('mixto · un solo #id, el de la prenda de fardo', (txtMix.match(/#/g) || []).length, 1);
-  comprobar('mixto · y el encargo va detrás, con su talla', txtMix.indexOf('Hola! Quiero encargar: Camiseta 0') > 0 && txtMix.indexOf('Talla: S') > 0, txtMix);
-  igual('mixto · con fardo en el carro, el boton sigue diciendo «Reservar»', X.els.pedir.textContent, 'Reservar por WhatsApp');
-
-  // Ver más y buscador sobre TODO el catalogo
-  const muchas = Array.from({ length: 130 }, (_, i) => ENC(i, i === 125 ? { nombre: 'Camiseta Atlético de Madrid', equipo: 'Atlético de Madrid' } : {}));
-  const V = nuevoEntorno([CAT_ENC(muchas)]);
-  await esperar();
-  igual('ver más · pinta 60 de entrada', (V.els.grid.innerHTML.match(/<li class="card/g) || []).length, 60);
-  igual('ver más · el boton dice cuántas quedan', V.els.mas.textContent, 'Ver más (70)');
-  igual('ver más · el recuento habla del total', V.els.conteo.textContent, '130 camisetas por encargo');
-  V.els.mas._ev.click();
-  igual('ver más · suma otras 60', (V.els.grid.innerHTML.match(/<li class="card/g) || []).length, 120);
-  V.els.mas._ev.click();
-  igual('ver más · al final desaparece', V.els.mas.hidden, true);
-  V.els.buscar._ev.input({ target: { value: 'ATLETICO' } });
-  igual('buscador · espera a que se deje de escribir', (V.els.grid.innerHTML.match(/<li class="card/g) || []).length, 130);
-  await new Promise(r => setTimeout(r, 260));
-  igual('buscador · sin acentos ni mayúsculas, y busca más allá de las 60 pintadas',
-    (V.els.grid.innerHTML.match(/<li class="card/g) || []).length, 1);
-  comprobar('buscador · encuentra la del puesto 126', V.els.grid.innerHTML.indexOf('Atlético de Madrid') >= 0);
-  const W = nuevoEntorno([CAT_ENC([ENC(0, { nombre: 'Camiseta Colo Colo 24/25 local', equipo: 'Colo Colo' }), ENC(1)])]);
-  await esperar();
-  W.els.buscar._ev.input({ target: { value: 'Colo-Colo' } });
-  await new Promise(r => setTimeout(r, 260));
-  igual('buscador · «Colo-Colo» con guion encuentra «Colo Colo»', (W.els.grid.innerHTML.match(/<li class="card/g) || []).length, 1);
-  V.els.buscar._ev.input({ target: { value: 'zzz' } });
-  await new Promise(r => setTimeout(r, 260));
-  comprobar('buscador · sin resultados lo dice', V.els.conteo.textContent.indexOf('Nada con esa búsqueda') === 0, V.els.conteo.textContent);
-
-  // El carro recuerda la talla aunque se recargue el catalogo
-  const carroEnc = JSON.stringify({ t: Date.now(), c: { 'enc-0|M': Object.assign(ENC(0), { tallaElegida: 'M', precio: 1 }) } });
-  const R = nuevoEntorno([CAT_ENC([ENC(0)])], { store: { us19_tienda_carro_v1: carroEnc } });
-  await esperar();
-  igual('carro · el encargo sobrevive a la recarga con precio al día', R.els.total.textContent, '$23.000');
-  R.els.pedir._ev.click();
-  comprobar('carro · y conserva la talla elegida',
-    decodeURIComponent((R.irA[R.irA.length - 1] || '').split('text=')[1] || '').indexOf('Talla: M') >= 0);
+  /* El 2000 del reintento (setTimeout de 2 s) no es un precio. */
+  const sinTemporizadores = codigo.replace(/setTimeout\([^)]*\)/g, '');
+  comprobar('extras · ningún valor escrito a mano en la página', !/\b(2000|3500|23000)\b/.test(sinTemporizadores),
+    (sinTemporizadores.match(/.{0,40}\b(2000|3500|23000)\b.{0,20}/) || [''])[0]);
 
   avisos.push('el catalogo de prueba usa maxPedido=3 para no montar 13 clics');
 }
