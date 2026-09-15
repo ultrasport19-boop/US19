@@ -1087,7 +1087,10 @@
      pagina se quedaba en «Cargando el catálogo…» para siempre.
      14-sep-2026 · Con 1.252 camisetas Notion tarda ~12 s en entregar el
      catalogo cuando la cache del bot vence (ahora cada 45 min): el plazo
-     de 9 s lo cortaba siempre. 20 s por intento. */
+     de 9 s lo cortaba siempre. 20 s por intento.
+     15-sep-2026 · Con 2.432 camisetas tarda ~39 s en frio: 20 s cortaba casi
+     toda visita (con poco trafico, casi todas llegan con la cache vencida).
+     60 s el primer intento y 45 s el reintento; a los 6 s se avisa que carga. */
   function pedirCatalogo(ms){
     if (typeof AbortController !== 'function' || typeof fetch !== 'function'){
       return fetch(API).then(function(r){ return r.json(); });
@@ -1178,8 +1181,12 @@
   }
 
   function cargar(esRecarga){
-    return pedirCatalogo(20000)
+    var avisoLento = setTimeout(function(){
+      if (!prendas.length) $('conteo').textContent = 'Cargando el catálogo… la primera vez puede tardar hasta un minuto.';
+    }, 6000);
+    return pedirCatalogo(60000)
       .then(function(d){
+        clearTimeout(avisoLento);
         ultimaCarga = Date.now();
         if (d && Array.isArray(d.prendas) && !d.respaldo && !d.error) guardarCatalogo(d);
         aplicar(d, false);
@@ -1188,7 +1195,8 @@
         /* Un solo reintento, y a los dos segundos: casi siempre es el
            arranque en frio de Apps Script, no una caida. */
         return new Promise(function(ok){ setTimeout(ok, 2000); }).then(function(){
-          return pedirCatalogo(20000).then(function(d){
+          return pedirCatalogo(45000).then(function(d){
+            clearTimeout(avisoLento);
             ultimaCarga = Date.now();
             if (d && Array.isArray(d.prendas) && !d.respaldo && !d.error) guardarCatalogo(d);
             aplicar(d, false);
@@ -1196,6 +1204,7 @@
         });
       })
       .catch(function(){
+        clearTimeout(avisoLento);
         /* Ni con reintento. Si hay algo pintado —de la copia o de una carga
            anterior— se deja: una tienda con precios de hace un rato sirve
            mucho mas que un cartel de error. */
