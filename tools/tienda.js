@@ -243,7 +243,9 @@ function nuevoEntorno(respuestas, opciones) {
     const r = respuestas[Math.min(nPeticiones, respuestas.length - 1)];
     nPeticiones++;
     if (r instanceof Error) return Promise.reject(r);
-    return Promise.resolve({ json: () => Promise.resolve(r) });
+    /* `ok` solo si el entorno lo pide: la copia fija (catalogo.json) exige r.ok, y sin él
+       la página salta al bot como hacía antes; así las pruebas viejas no cambian. */
+    return Promise.resolve(Object.assign({ json: () => Promise.resolve(r) }, opciones.okCopia ? { ok: true } : {}));
   }
 
   const location = { hash: opciones.hash || '', pathname: '/US19/tienda/', search: '', href: '' };
@@ -351,14 +353,22 @@ async function principal() {
 
   const D = nuevoEntorno([new Error('sin red'), new Error('sin red')]);
   await esperarReintento();
-  igual('sin red · reintenta una vez', D.peticiones(), 2,
-    'el arranque en frio de Apps Script falla la primera y responde la segunda');
+  igual('sin red · copia fija, bot y un reintento', D.peticiones(), 3,
+    'primero la copia de la web; si falla, el bot con un reintento (el arranque en frio falla la primera)');
   igual('sin red · si no hay nada que mostrar, lo dice', D.els.vacio.hidden, false);
 
   const E = nuevoEntorno([new Error('sin red'), CATALOGO(4)]);
   await esperarReintento();
   comprobar('sin red · el reintento salva la visita', (E.els.grid.innerHTML.match(/<li class="card/g) || []).length === 4,
     'peticiones: ' + E.peticiones());
+
+  /* d2) La copia fija de la web (15-sep-2026): si responde, no se llama al bot */
+
+  const F0 = nuevoEntorno([CATALOGO(3)], { okCopia: true });
+  await esperar();
+  igual('copia fija · con la copia buena no se llama al bot', F0.peticiones(), 1);
+  comprobar('copia fija · pinta lo que trae la copia', (F0.els.grid.innerHTML.match(/<li class="card/g) || []).length === 3,
+    F0.els.grid.innerHTML.slice(0, 120));
 
   /* e) La copia local: la tienda aparece antes de que conteste nadie -- */
 

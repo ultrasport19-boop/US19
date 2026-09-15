@@ -1180,7 +1180,32 @@
     enlacePreguntar();
   }
 
+  /* 15-sep-2026 · Copia fija del catálogo en la propia web (tienda/catalogo.json), escrita por
+     C:/yupoo_trabajo/scripts/catalogo_estatico.js cuando el catálogo del bot cambia. Con 2.432
+     camisetas el bot entrega ~800 KB y el enlace de Google falla a ratos (404 «No se pudo abrir
+     el archivo»). La copia carga en ~1 s; si falta o viene rota, se sigue con el bot como antes.
+     Los pedidos se revisan igual contra Notion en vivo, así que una copia de hace unas horas no
+     vende nada que ya no esté. */
+  function pedirCopiaFija(){
+    if (typeof fetch !== 'function') return Promise.reject(new Error('sin fetch'));
+    var ctrl = typeof AbortController === 'function' ? new AbortController() : null;
+    var reloj = ctrl ? setTimeout(function(){ ctrl.abort(); }, 12000) : 0;
+    return fetch('catalogo.json?v=' + Math.floor(Date.now() / 600000), ctrl ? { signal: ctrl.signal } : {})
+      .then(function(r){ clearTimeout(reloj); if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+      .then(function(d){ if (!d || !Array.isArray(d.prendas) || !d.prendas.length) throw new Error('copia vacía'); return d; });
+  }
+
   function cargar(esRecarga){
+    return pedirCopiaFija()
+      .then(function(d){
+        ultimaCarga = Date.now();
+        guardarCatalogo(d);
+        aplicar(d, false);
+      })
+      .catch(function(){ return cargarDelBot(esRecarga); });
+  }
+
+  function cargarDelBot(esRecarga){
     var avisoLento = setTimeout(function(){
       if (!prendas.length) $('conteo').textContent = 'Cargando el catálogo… la primera vez puede tardar hasta un minuto.';
     }, 6000);
