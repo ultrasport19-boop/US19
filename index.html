@@ -366,6 +366,15 @@
   .equipo .dexa{margin-top:16px;background:var(--negro);border-left:3px solid var(--rojo);border-radius:4px;padding:12px 16px;font-size:.9rem}
   @media(max-width:720px){.equipo{grid-template-columns:1fr}.equipo .specs{columns:1}}
 
+  /* ---------- ACTIVE FORCE (plan 4x) ---------- */
+  #active-force .bio-precio{border-left-color:#1d5fd6}
+  #active-force .bio-nota{color:#6B9DFF}
+  .af-fotos{display:grid;grid-template-columns:1fr 1.3fr;gap:16px;margin-top:40px}
+  .af-fotos img{width:100%;height:100%;max-height:420px;object-fit:cover;border-radius:8px;border:1px solid var(--linea)}
+  .af-badge{display:inline-block;background:#1d5fd6;color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:.1em;
+    text-transform:uppercase;font-size:.78rem;padding:6px 10px;border-radius:4px;margin-bottom:12px}
+  @media(max-width:720px){.af-fotos{grid-template-columns:1fr}}
+
   /* ---------- HORARIOS ---------- */
   .horario-card{background:var(--negro);border:1px solid var(--linea);border-radius:var(--radius);overflow:hidden}
   .horario-card .row{display:flex;justify-content:space-between;gap:16px;padding:18px 24px;border-top:1px solid var(--linea);align-items:baseline}
@@ -637,6 +646,7 @@
       <a href="#espacio">Espacio</a>
       <a href="#planes">Planes</a>
       <a href="#bioimpedancia">Bioimpedancia</a>
+      <a href="#active-force">Active Force</a>
       <a href="#opiniones">Opiniones</a>
       <a href="#primer-dia">Primer día</a>
       <a href="#faq">Preguntas</a>
@@ -724,7 +734,7 @@
           <tr><td>Personas por hora</td><td class="no">Sin límite, filas para las máquinas</td><td class="si">Máximo 8, equipo siempre disponible</td></tr>
           <tr><td>Quién te guía</td><td class="no">Entrenas por tu cuenta</td><td class="si">Entrenador en sala de 16:00 a 22:00</td></tr>
           <tr><td>Tu rutina</td><td class="no">Genérica o sacada de internet</td><td class="si">Hecha según tu evaluación y tu nivel</td></tr>
-          <tr><td>Medición de resultados</td><td class="no">La pesa del baño</td><td class="si">Bioimpedancia de 8 sensores, cada mes</td></tr>
+          <tr><td>Medición de resultados</td><td class="no">La pesa del baño</td><td class="si">Bioimpedancia de 8 sensores, cada mes desde el plan 3x</td></tr>
           <tr><td>Matrícula y contratos</td><td class="no">Matrícula, permanencia y letra chica</td><td class="si">Sin matrícula, cambias de plan cuando quieras</td></tr>
           <tr><td>Traslado</td><td class="no">45 minutos a Talca</td><td class="si">En el centro de Pencahue</td></tr>
         </tbody>
@@ -753,7 +763,7 @@
       <article class="paso reveal">
         <div class="paso__n">03</div>
         <h3>Entrena y mide tu progreso</h3>
-        <p>Sesiones en grupo reducido y reevaluación mensual. Ajustamos tu rutina con tus datos, no con suposiciones.</p>
+        <p>Sesiones en grupo reducido y, desde el plan de 3 veces, una evaluación al mes. Ajustamos tu rutina con tus datos, no con suposiciones.</p>
       </article>
     </div>
   </div>
@@ -855,7 +865,7 @@
           <li><b>Bioimpedancia:</b> en planes de 3 y 4 veces por semana.</li>
           <li><b>BlazePod y Active Force:</b> en el plan de 4 veces por semana.</li>
           <li><b>Antropometría:</b> en planes de 3 y 4 veces por semana.</li>
-          <li><b>Reevaluación mensual</b> para comparar tu avance.</li>
+          <li><b>Una evaluación al mes</b>, siempre con bioimpedancia, en planes de 3 y 4 veces por semana.</li>
         </ul>
       </div>
       <div class="nota reveal">
@@ -915,6 +925,43 @@
         </ul>
         <div class="dexa">Correlación <b>superior a 0,986 frente a DEXA</b> (estándar internacional): datos consistentes, reproducibles y confiables.</div>
       </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ACTIVE FORCE (plan 4x) ============ -->
+<section id="active-force">
+  <div class="wrap feature">
+    <div class="reveal">
+      <span class="af-badge">Plan 4 veces por semana</span>
+      <p class="eyebrow">Evaluación de fuerza</p>
+      <h2 class="section-title">Active Force</h2>
+      <p class="section-sub">Un dinamómetro de mano que mide cuánta fuerza haces, en kilos y lado a lado, y cuánto se mueve cada articulación. Tu fuerza deja de ser una sensación: pasa a ser un número que puedes mejorar.</p>
+      <div class="bio-precio">
+        <span class="bio-monto">4x</span>
+        <span class="bio-detalle">Incluida en el plan de 4 veces por semana ($35.000 al mes)</span>
+        <p class="bio-nota">Junto a la bioimpedancia, una evaluación al mes</p>
+      </div>
+      <div class="hero__cta" style="margin-top:22px">
+        <a class="btn btn--rojo btn--sm" href="https://wa.me/56965902238?text=Hola%2C%20quiero%20el%20plan%204%20veces%20por%20semana%20con%20evaluaci%C3%B3n%20Active%20Force%20(web)" target="_blank" rel="noopener">Quiero el plan 4x</a>
+      </div>
+    </div>
+    <div class="panel reveal">
+      <h3>Qué mide tu evaluación</h3>
+      <ul>
+        <li><b>Fuerza máxima:</b> en kilos, en mano, codo, hombro, cadera, rodilla y tobillo.</li>
+        <li><b>Tiempo al máximo:</b> cuántos segundos tardas en llegar a tu fuerza máxima.</li>
+        <li><b>Lado a lado:</b> la diferencia entre derecha e izquierda, en kilos y en porcentaje.</li>
+        <li><b>Movilidad:</b> cuánto se mueve cada articulación, en grados.</li>
+        <li><b>Informe en PDF por WhatsApp:</b> tu historial, tu récord personal y la fecha sugerida de tu próxima evaluación.</li>
+      </ul>
+      <p class="fine">Medición descriptiva de seguimiento físico. No constituye diagnóstico médico.</p>
+    </div>
+  </div>
+  <div class="wrap">
+    <div class="af-fotos reveal">
+      <img src="img/active-force-mano.jpg" alt="Dinamómetro Active Force en la mano" width="600" height="600" loading="lazy" decoding="async">
+      <img src="img/active-force-kit.jpg" alt="Kit Active Force con sus sensores y la correa" width="900" height="688" loading="lazy" decoding="async">
     </div>
   </div>
 </section>
@@ -1132,11 +1179,11 @@
             <li>2 a 4 semanas: mejoras de técnica, control y tolerancia al esfuerzo.</li>
             <li>6 a 12 semanas: cambios más notorios en fuerza y condición física.</li>
           </ul>
-          Tu reevaluación mensual muestra el cambio en números.</div>
+          Desde el plan de 3 veces, tu evaluación mensual muestra el cambio en números.</div>
       </details>
       <details>
         <summary>¿Cuáles son los horarios?</summary>
-        <div class="a">Lunes a viernes de 06:00 a 22:00. De 16:00 a 22:00 hay entrenador en sala con sesiones guiadas. Las mañanas funcionan con supervisión, preferentemente para personas con experiencia previa. Fines de semana: evaluaciones con cita.</div>
+        <div class="a">Lunes a viernes de 06:00 a 22:00. De 16:00 a 22:00 hay entrenador en sala con sesiones guiadas. De 06:00 a 16:00 el entrenamiento es libre, sin supervisión: ideal para quien ya tiene experiencia. Fines de semana: evaluaciones con cita.</div>
       </details>
     </div>
   </div>
@@ -1275,6 +1322,7 @@
         <li><a href="#espacio">El espacio</a></li>
         <li><a href="#planes">Planes</a></li>
         <li><a href="#bioimpedancia">Bioimpedancia</a></li>
+        <li><a href="#active-force">Evaluación de fuerza (Active Force)</a></li>
         <li><a href="#primer-dia">Tu primer día</a></li>
         <li><a href="#faq">Preguntas frecuentes</a></li>
         <li><a href="tienda/">Tienda: camisetas y ropa deportiva</a></li>
@@ -1349,7 +1397,7 @@
   if(share&&navigator.share){
     share.addEventListener('click',e=>{
       e.preventDefault();
-      navigator.share({title:'Ultra-Sport19',text:'Mira este gimnasio en Pencahue: grupos de máximo 8 personas, bioimpedancia incluida y planes desde $15.000.',url:'https://ultrasport19-boop.github.io/US19/'}).catch(()=>{});
+      navigator.share({title:'Ultra-Sport19',text:'Mira este gimnasio en Pencahue: grupos de máximo 8 personas, bioimpedancia desde el plan 3x y planes desde $15.000.',url:'https://ultrasport19-boop.github.io/US19/'}).catch(()=>{});
     });
   }
 
