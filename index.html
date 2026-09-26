@@ -375,6 +375,17 @@
     text-transform:uppercase;font-size:.78rem;padding:6px 10px;border-radius:4px;margin-bottom:12px}
   @media(max-width:720px){.af-fotos{grid-template-columns:1fr}}
 
+  /* ---------- BLAZEPOD (plan 4x) ---------- */
+  #blazepod .bio-precio{border-left-color:#e21c25}
+  .bz-luces{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;align-content:center;background:#07090F;border:1px solid var(--linea);
+    border-radius:8px;padding:34px}
+  .bz-luz{aspect-ratio:1/1;border-radius:50%;background:radial-gradient(circle,#fff 0,var(--c) 32%,var(--c) 52%,transparent 72%);
+    box-shadow:0 0 50px 8px color-mix(in srgb,var(--c) 45%,transparent)}
+  .bz-luz.off{background:radial-gradient(circle,#3A4150 0,#252B36 60%,#1A1F28 100%);box-shadow:none}
+  @media (prefers-reduced-motion:no-preference){.bz-luz:not(.off){animation:bzluz 2.4s ease-in-out infinite}
+    .bz-luz:nth-child(3){animation-delay:.6s}.bz-luz:nth-child(5){animation-delay:1.2s}.bz-luz:nth-child(6){animation-delay:1.8s}}
+  @keyframes bzluz{0%,100%{opacity:1}50%{opacity:.45}}
+
   /* ---------- HORARIOS ---------- */
   .horario-card{background:var(--negro);border:1px solid var(--linea);border-radius:var(--radius);overflow:hidden}
   .horario-card .row{display:flex;justify-content:space-between;gap:16px;padding:18px 24px;border-top:1px solid var(--linea);align-items:baseline}
@@ -647,6 +658,7 @@
       <a href="#planes">Planes</a>
       <a href="#bioimpedancia">Bioimpedancia</a>
       <a href="#active-force">Active Force</a>
+      <a href="#blazepod">BlazePod</a>
       <a href="#opiniones">Opiniones</a>
       <a href="#primer-dia">Primer día</a>
       <a href="#faq">Preguntas</a>
@@ -962,6 +974,45 @@
     <div class="af-fotos reveal">
       <img src="img/active-force-mano.jpg" alt="Dinamómetro Active Force en la mano" width="600" height="600" loading="lazy" decoding="async">
       <img src="img/active-force-kit.jpg" alt="Kit Active Force con sus sensores y la correa" width="900" height="688" loading="lazy" decoding="async">
+    </div>
+  </div>
+</section>
+
+<!-- ============ BLAZEPOD (plan 4x) ============ -->
+<section id="blazepod">
+  <div class="wrap feature">
+    <div class="reveal">
+      <span class="af-badge" style="background:#e21c25">Plan 4 veces por semana</span>
+      <p class="eyebrow">Reacción y agilidad</p>
+      <h2 class="section-title">BlazePod</h2>
+      <p class="section-sub">Seis luces que se encienden al azar: tú reaccionas y el sistema mide cada toque. Entrenamos velocidad, agilidad y atención, siempre con entrenador.</p>
+      <div class="bio-precio">
+        <span class="bio-monto">4x</span>
+        <span class="bio-detalle">Incluido en el plan de 4 veces por semana ($35.000 al mes)</span>
+        <p class="bio-nota">Evaluación con BlazePod: muy pronto</p>
+      </div>
+      <div class="hero__cta" style="margin-top:22px">
+        <a class="btn btn--rojo btn--sm" href="https://wa.me/56965902238?text=Hola%2C%20quiero%20saber%20del%20plan%204%20veces%20por%20semana%20con%20BlazePod%20(web)" target="_blank" rel="noopener">Quiero el plan 4x</a>
+      </div>
+    </div>
+    <div class="panel reveal">
+      <h3>Qué vas a medir</h3>
+      <ul>
+        <li><b>Tiempo de reacción:</b> cuánto tardas en tocar cada luz desde que se enciende.</li>
+        <li><b>Toques en 90 segundos:</b> el Reto Pared, con los 6 pods en la pared.</li>
+        <li><b>Agilidad:</b> desplazamientos entre luces, en juegos contra el reloj.</li>
+        <li><b>Informe en PDF por WhatsApp:</b> tus tiempos, tu mejor marca y cómo vas desde la última vez.</li>
+      </ul>
+      <p class="fine">Siempre con entrenador. Medición descriptiva de seguimiento físico.</p>
+    </div>
+  </div>
+  <div class="wrap">
+    <div class="af-fotos reveal">
+      <img src="img/blazepod-pods.jpg" alt="Los seis pods de BlazePod apilados" width="480" height="660" loading="lazy" decoding="async">
+      <div class="bz-luces" role="img" aria-label="Seis luces BlazePod, cuatro encendidas y dos apagadas">
+        <div class="bz-luz" style="--c:#3DF5FF"></div><div class="bz-luz off"></div><div class="bz-luz" style="--c:#FF4FD8"></div>
+        <div class="bz-luz off"></div><div class="bz-luz" style="--c:#B6FF3B"></div><div class="bz-luz" style="--c:#FFE14D"></div>
+      </div>
     </div>
   </div>
 </section>
@@ -1323,6 +1374,7 @@
         <li><a href="#planes">Planes</a></li>
         <li><a href="#bioimpedancia">Bioimpedancia</a></li>
         <li><a href="#active-force">Evaluación de fuerza (Active Force)</a></li>
+        <li><a href="#blazepod">Reacción con luces (BlazePod)</a></li>
         <li><a href="#primer-dia">Tu primer día</a></li>
         <li><a href="#faq">Preguntas frecuentes</a></li>
         <li><a href="tienda/">Tienda: camisetas y ropa deportiva</a></li>
