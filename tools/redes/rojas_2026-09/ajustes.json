@@ -1,0 +1,105 @@
+{
+ "US19K_bio_s1.jpg": {
+  "eyebrow": "SI ENTRENAS 3 VECES O MÁS",
+  "cuerpo": "Desde el plan de 3 veces por semana, tu reevaluación del mes va incluida. Si no la has usado, este mes te toca. Medición de referencia para seguir tu progreso; no es una evaluación médica."
+ },
+ "US19K_bio_s2.jpg": {
+  "cuerpo": "Si llevas más de un mes sin medirte, estás entrenando a ciegas. Desde el plan de 3 veces, tu reevaluación ya va incluida. Medición de referencia; no es una evaluación médica."
+ },
+ "US19K_bio_s3.jpg": {
+  "eyebrow": "DESDE EL PLAN DE 3 VECES",
+  "titular": [
+   "UNA AL MES.",
+   "NI MÁS",
+   "NI MENOS."
+  ],
+  "acento": 1,
+  "cuerpo": "Medirse cada semana no sirve: el cuerpo no cambia tan rápido. Una vez al mes es el ritmo que muestra algo. Medición de referencia; no es una evaluación médica."
+ },
+ "US19K_bio_ns1.jpg": {
+  "cuerpo": "Bioimpedancia completa en pocos minutos, aunque no entrenes con nosotros. $5.000 por medición. Medición de referencia; no es una evaluación médica."
+ },
+ "US19K_bio_ns2.jpg": {
+  "cuerpo": "Peso, músculo, grasa, agua y metabolismo en una sola medición. Sin ser socio, sin compromiso: $5.000. Medición de referencia; no es una evaluación médica."
+ },
+ "US19K_bio_ns3.jpg": {
+  "titular": [
+   "SABER CÓMO",
+   "ESTÁS",
+   "CUESTA POCO."
+  ],
+  "acento": 2,
+  "cuerpo": "Menos que salir a comer: $5.000 por medición. Y a diferencia de la comida, esto te dura todo el proceso. Medición de referencia; no es una evaluación médica."
+ },
+ "US19E_B_guia_remedicion.jpg": {
+  "eyebrow": "DESDE EL PLAN DE 3 VECES",
+  "cuerpo": "Desde el plan de 3 veces por semana, la reevaluación mensual va incluida. Si no la has usado, este mes te toca. Sin ser socio: $5.000 por medición."
+ },
+ "US19K_con09_reevaluacion.jpg": {
+  "eyebrow": "DESDE EL PLAN DE 3 VECES",
+  "titular": [
+   "1 MEDICIÓN",
+   "AL MES."
+  ],
+  "acento": 1,
+  "cuerpo": "Desde el plan de 3 veces por semana, la reevaluación mensual va incluida. Se hace dos sábados al mes, los más cercanos al 15 y al 30."
+ },
+ "US19E_B_precios.jpg": {
+  "lista": [
+   [
+    "2 veces por semana",
+    ""
+   ],
+   [
+    "3 veces por semana",
+    ""
+   ],
+   [
+    "4 veces por semana",
+    ""
+   ],
+   [
+    "Todos con evaluación inicial",
+    ""
+   ]
+  ]
+ },
+ "US19E_B_guia_evaluacion.jpg": {
+  "cuerpo": "Peso, masa muscular, grasa, agua y metabolismo. Para saber desde dónde partes, no para juzgarte. Medición de referencia; no es una evaluación médica."
+ },
+ "US19B_020_el-espejo-miente.jpg": {
+  "cuerpo": "La luz, la hora y el ánimo cambian lo que ves. Los números no cambian de humor. Por eso medimos."
+ },
+ "US19K_con12_sabados.jpg": {
+  "titular": [
+   "2 SÁBADOS",
+   "AL MES."
+  ],
+  "acento": 0,
+  "cuerpo": "Los más cercanos al 15 y al 30. Son las únicas fechas de evaluación, así que conviene reservar el cupo antes. Sin ser socio: $5.000 la medición."
+ },
+ "US19K_con05_tecnica.jpg": {
+  "titular": [
+   "TÉCNICA"
+  ],
+  "acento": 0
+ },
+ "US19K_con11_calentar.jpg": {
+  "titular": [
+   "CALENTAMIENTO"
+  ],
+  "acento": 0
+ },
+ "US19K_con14_descarga.jpg": {
+  "titular": [
+   "CONSTANCIA"
+  ],
+  "acento": 0
+ },
+ "US19K_con02_adherencia.jpg": {
+  "titular": [
+   "ADHERENCIA"
+  ],
+  "acento": 0
+ }
+}
