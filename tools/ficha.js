@@ -163,7 +163,7 @@ comprobar('validacion · con un aviso que dice que falta', /nombre/i.test(E.els.
 E = nuevoEntorno(Object.assign({}, COMPLETA, { acepta: false }), { imagen: 'Si' });
 E.pulsar();
 igual('validacion · sin aceptar el consentimiento no se envia', E.destino(), '');
-comprobar('validacion · y dice en que seccion esta', /4/.test(E.els.aviso.textContent), E.els.aviso.textContent);
+comprobar('validacion · y dice en que seccion esta', /5/.test(E.els.aviso.textContent), E.els.aviso.textContent);
 
 E = nuevoEntorno(COMPLETA, {});
 E.pulsar();

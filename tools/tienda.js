@@ -448,7 +448,7 @@ async function principal() {
   igual('pedido · lleva un #id por prenda', (texto.match(/#id-\d/g) || []).length, 3);
   comprobar('pedido · el total va una sola vez, al final, tras la línea divisoria',
     /\n-{20,}\nTotal \(3 prendas\): \$29\.970$/.test(texto), texto);
-  comprobar('pedido · cada línea: nombre — Talla — #id', texto.indexOf('· Polera 0 — Talla M — #id-0') >= 0, texto);
+  comprobar('pedido · cada línea: nombre — Talla — #id', texto.indexOf('- Polera 0 — Talla M — #id-0') >= 0, texto);
   comprobar('pedido · la URL cabe de sobra (WhatsApp corta las largas)', url.length < 2000,
     'mide ' + url.length + ' caracteres');
 
@@ -631,8 +631,8 @@ async function principal() {
   comprobar('mensaje · dos bloques separados por la línea divisoria', !!cierre && /^PEDIDO US19\n/.test(detalle), txtD);
   comprobar('mensaje · al distribuidor ninguna cifra de precio por línea', !/\$|\d{1,3}\.\d{3}/.test(detalle), detalle);
   comprobar('mensaje · el total, una sola vez, al final', /^\nTotal \(3 prendas\): \$79\.000$/.test(cierre), cierre);
-  comprobar('mensaje · la línea del pack', detalle.indexOf('· Camiseta 0 — Talla L — Estampado: VALENZUELA 10 — Parche: Liga — #enc-0') >= 0, detalle);
-  comprobar('mensaje · la línea del parche suelto', detalle.indexOf('· Camiseta 2 — Talla S — Sin estampado — Parche: Champions — #enc-2') >= 0, detalle);
+  comprobar('mensaje · la línea del pack', detalle.indexOf('- Camiseta 0 — Talla L — Estampado: VALENZUELA 10 — Parche: Liga — #enc-0') >= 0, detalle);
+  comprobar('mensaje · la línea del parche suelto', detalle.indexOf('- Camiseta 2 — Talla S — Sin estampado — Parche: Champions — #enc-2') >= 0, detalle);
   igual('mensaje · el boton dice «Pedir», no «Reservar»', PR.els.pedir.textContent, 'Pedir por WhatsApp');
 
   // Una sola camiseta sin extra: el formato exacto
@@ -641,7 +641,7 @@ async function principal() {
   elegir(T1, tarjetaEnc('enc-0'), { talla: 'M' });
   T1.els.pedir._ev.click();
   igual('mensaje · una camiseta sin extra, exacto', textoWa(T1),
-    'PEDIDO US19\n· Camiseta Napoli 26/27 tercera — Talla M — Sin estampado — #enc-0\n---------------------------\nTotal (1 prenda): $25.000');
+    'PEDIDO US19\n- Camiseta Napoli 26/27 tercera — Talla M — Sin estampado — #enc-0\n---------------------------\nTotal (1 prenda): $25.000');
   comprobar('mensaje · solo el título: no le pega equipo, temporada ni modelo', textoWa(T1).indexOf('Equipo 0') < 0);
 
   // La misma camiseta en dos tallas son dos líneas
@@ -658,8 +658,8 @@ async function principal() {
   FT.click(botonDe('id-0').target); FT.click(botonDe('id-1').target);
   FT.els.pedir._ev.click();
   const txtF = textoWa(FT);
-  comprobar('fardo · la línea lleva la talla de la fila', txtF.indexOf('· Polera 0 — Talla M — #id-0') >= 0, txtF);
-  comprobar('fardo · sin talla en la fila, la línea va sin ella y el bot la pide', txtF.indexOf('· Polera 1 — #id-1') >= 0, txtF);
+  comprobar('fardo · la línea lleva la talla de la fila', txtF.indexOf('- Polera 0 — Talla M — #id-0') >= 0, txtF);
+  comprobar('fardo · sin talla en la fila, la línea va sin ella y el bot la pide', txtF.indexOf('- Polera 1 — #id-1') >= 0, txtF);
   comprobar('fardo · sin «Sin estampado» (los extras son solo por encargo)', txtF.indexOf('estampado') < 0, txtF);
   comprobar('fardo · ni un precio por línea', !/\$|\d{1,3}\.\d{3}/.test(txtF.split('---------------------------')[0]), txtF);
 

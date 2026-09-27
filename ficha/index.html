@@ -258,8 +258,8 @@
       if (foco) { foco.focus(); foco.scrollIntoView({ block: 'center' }); }
     }
     if (!limpio($('nombre').value)) return falla('Falta tu nombre completo.', $('nombre'));
-    if (!$('acepta').checked) return falla('Falta marcar que leiste y aceptas, en la seccion 4.', $('acepta'));
-    if (!imagen()) return falla('Falta responder si autorizas o no las fotos, en la seccion 5. Cualquiera de las dos respuestas esta bien.', document.querySelector('input[name="imagen"]'));
+    if (!$('acepta').checked) return falla('Falta marcar que leiste y aceptas, en la seccion 5.', $('acepta'));
+    if (!imagen()) return falla('Falta responder si autorizas o no las fotos, en la seccion 6. Cualquiera de las dos respuestas esta bien.', document.querySelector('input[name="imagen"]'));
     a.textContent = 'Abriendo WhatsApp...'; a.className = 'aviso-envio';
     window.location.href = 'https://wa.me/' + BOT + '?text=' + encodeURIComponent(armar());
   });

@@ -852,7 +852,7 @@
       if (talla) partes.push('Talla ' + talla);
       if (e.encargo && EXTRAS) partes.push(textoExtra(e.extra));
       partes.push('#' + e.id);
-      L.push('· ' + partes.join(' — '));
+      L.push('- ' + partes.join(' — '));
     });
     L.push(DIVISORIA);
     L.push('Total (' + (ks.length === 1 ? '1 prenda' : ks.length + ' prendas') + '): ' + clp(totalCarro()));
