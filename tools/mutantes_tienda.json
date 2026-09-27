@@ -110,8 +110,8 @@
     },
     {
       "nombre": "la tarjeta pinta un campo interno si el bot lo manda",
-      "de": "    var meta = [p.equipo, p.temporada, p.modelo].filter(Boolean).join(' · ');",
-      "a": "    var meta = [p.equipo, p.temporada, p.modelo, p.costo, p.vendidaA].filter(Boolean).join(' · ');"
+      "de": "    var meta = [p.equipo, p.temporada, p.modelo].filter(Boolean).join(', ');",
+      "a": "    var meta = [p.equipo, p.temporada, p.modelo, p.costo, p.vendidaA].filter(Boolean).join(', ');"
     },
     {
       "nombre": "la busqueda de un apartado se ve en los demas",

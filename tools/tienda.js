@@ -537,7 +537,7 @@ async function principal() {
   igual('apartados · el recuento es el del apartado', P1.els.conteo.textContent, '3 prendas por encargo');
   igual('apartados · sin chips sueltos de categoria', P1.els.filtros.innerHTML, '');
   comprobar('apartados · cada tarjeta dice que es por encargo',
-    (P1.els.grid.innerHTML.match(/Por encargo · llega en 2 a 3 semanas/g) || []).length === 3);
+    (P1.els.grid.innerHTML.match(/Por encargo, llega en 2 a 3 semanas/g) || []).length === 3);
 
   // Solo encargos: abre directo en su apartado
   const P2 = nuevoEntorno([CAT_ENC([ENC(0), ENC(1, { precio: 20000 }), ENC(2, { precio: 23000 }), ENC(3, { tallas: 'S-4XL' }),

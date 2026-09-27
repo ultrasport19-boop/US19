@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Tienda · Ultra-Sport 19</title>
+<title>Tienda Ultra-Sport 19</title>
 <meta name="description" content="Camisetas de fútbol por encargo (eliges tu talla, llegan en 2 a 3 semanas) y ropa deportiva de fardo, pieza única. Pides por WhatsApp. Ultra-Sport 19, Pencahue, Maule.">
 <link rel="canonical" href="https://ultrasport19-boop.github.io/US19/tienda/">
 
@@ -19,14 +19,14 @@
 <meta property="og:site_name" content="Ultra-Sport 19">
 <meta property="og:locale" content="es_CL">
 <meta property="og:url" content="https://ultrasport19-boop.github.io/US19/tienda/">
-<meta property="og:title" content="Tienda · Ultra-Sport 19">
+<meta property="og:title" content="Tienda Ultra-Sport 19">
 <meta property="og:description" content="Camisetas de fútbol por encargo con tu talla y tu nombre, y ropa deportiva de fardo. Pides por WhatsApp. Pencahue, Maule.">
 <meta property="og:image" content="https://ultrasport19-boop.github.io/US19/img/og-tienda.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Seis camisetas de fútbol del catálogo por encargo de Ultra-Sport 19, Pencahue.">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Tienda · Ultra-Sport 19">
+<meta name="twitter:title" content="Tienda Ultra-Sport 19">
 <meta name="twitter:description" content="Camisetas de fútbol por encargo y ropa deportiva de fardo. Pides por WhatsApp. Pencahue, Maule.">
 <meta name="twitter:image" content="https://ultrasport19-boop.github.io/US19/img/og-tienda.jpg">
 <!-- Datos estructurados: solo lo que la pagina ya dice (contacto, comuna,
@@ -313,8 +313,8 @@
   </section>
 
   <p class="pie">
-    Se pide por WhatsApp y se paga por transferencia o en efectivo. Ultra-Sport 19 ·
-    Hernando Bravo de Villalba 811, Pencahue, Maule · <a href="../">Volver al gimnasio</a> ·
+    Se pide por WhatsApp y se paga por transferencia o en efectivo. Ultra-Sport 19,
+    Hernando Bravo de Villalba 811, Pencahue, Maule. <a href="../">Volver al gimnasio</a>.
     <a href="../privacidad.html">Privacidad</a>.
     <span id="actualizado"></span>
     <br><br>
@@ -683,7 +683,7 @@
 
   function tarjetaFardo(p){
     var puesto = !!carro[p.id];
-    var meta = [p.categoria, p.estado].filter(Boolean).join(' · ');
+    var meta = [p.categoria, p.estado].filter(Boolean).join(', ');
     return '<li class="card' + (puesto ? ' puesto' : '') + '">' +
       '<div class="foto">' +
         /* Las URL de Notion caducan a la hora: si la foto no carga, el
@@ -724,7 +724,7 @@
     var x = elecDe(p.id), t = x.talla;
     var puesto = !!(t && carro[claveEnc(p.id, x)]);
     var oferta = PRECIO_REF > 0 && Number(p.precio) > 0 && Number(p.precio) < PRECIO_REF;
-    var meta = [p.equipo, p.temporada, p.modelo].filter(Boolean).join(' · ');
+    var meta = [p.equipo, p.temporada, p.modelo].filter(Boolean).join(', ');
     var opciones = '<option value="">Elige talla</option>' + tallasDe(p).map(function(v){
       return '<option value="' + esc(v) + '"' + (v === t ? ' selected' : '') + '>' + esc(v) + '</option>';
     }).join('');
@@ -769,7 +769,7 @@
       '<div class="cuerpo">' +
         '<h3>' + esc(p.nombre) + '</h3>' +
         (meta ? '<span class="meta">' + esc(meta) + '</span>' : '') +
-        '<span class="meta plazo-c">Por encargo · llega en ' + esc(PLAZO) + '</span>' +
+        '<span class="meta plazo-c">Por encargo, llega en ' + esc(PLAZO) + '</span>' +
         '<span class="precio">' + clp(Number(p.precio)) + '</span>' +
         '<select class="talla-sel" data-para="' + esc(p.id) + '" data-campo="talla" aria-label="Talla de ' + esc(p.nombre) + '">' + opciones + '</select>' +
         extras +
@@ -1173,7 +1173,7 @@
     }
 
     if (d && d.actualizado){
-      $('actualizado').textContent = ' · Catálogo actualizado el ' + String(d.actualizado).slice(8,10) + '/' + String(d.actualizado).slice(5,7) + ' a las ' + String(d.actualizado).slice(11,16) + '.';
+      $('actualizado').textContent = ' Catálogo actualizado el ' + String(d.actualizado).slice(8,10) + '/' + String(d.actualizado).slice(5,7) + ' a las ' + String(d.actualizado).slice(11,16) + '.';
     }
     pintarFiltros();
     pintar();
