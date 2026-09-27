@@ -24,7 +24,7 @@ RECLUTAR = [
                 "como a todo lo que quieres que dure.",
          modulo=("lista", [("Fuerza guiada", "un plan, no una máquina suelta"),
                            ("Grupos reducidos", "ocho personas por hora, no cuarenta"),
-                           ("Reevaluación mensual", "incluida en tu plan")])),
+                           ("Reevaluación mensual", "incluida desde el plan de 3 veces")])),
 
     dict(piel="rojo", eyebrow="empieza esta semana",
          titular=["DOS DÍAS", "A LA SEMANA", "CAMBIAN", "EL AÑO."], acento=3,
@@ -43,7 +43,7 @@ RECLUTAR = [
          cuerpo="Peso, masa muscular, perímetros y fuerza. Los mismos números, "
                 "el mismo día del mes, para que veas si vas o no vas.",
          modulo=("cifra", ("1", "reevaluación", "mensual incluida",
-                           "en todos los planes, sin costo extra"))),
+                           "desde el plan de 3 veces por semana"))),
 
     dict(piel="papel", eyebrow="para partir",
          titular=["NO NECESITAS", "ESTAR EN FORMA", "PARA EMPEZAR."], acento=2,
@@ -67,7 +67,7 @@ RECLUTAR = [
 
     dict(piel="dato", eyebrow="antes de opinar, medir",
          titular=["SIN MEDIR,", "TODO ES", "OPINIÓN."], acento=2,
-         cuerpo="Bioimpedancia al entrar y todos los meses. No para asustarte: "
+         cuerpo="Bioimpedancia al entrar y, desde el plan de 3 veces, todos los meses. No para asustarte: "
                 "para saber qué está funcionando y qué no.",
          modulo=("cifra", ("28", "datos", "en cada medición",
                            "peso, masa muscular, agua, perímetros y más"))),

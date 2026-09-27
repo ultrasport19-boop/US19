@@ -43,6 +43,12 @@ CARBON = (16, 20, 24)
 HUESO  = (244, 242, 238)
 GRIS   = (150, 150, 158)
 LIMA   = (168, 209, 57)
+# 27-sep-2026: pieles nuevas
+NAVY, CIAN = (14, 24, 44), (70, 200, 232)
+ARENA, TERRA = (236, 226, 208), (190, 88, 44)
+BOSQUE, MOSTAZA = (17, 40, 33), (234, 186, 60)
+GRAFITO, AZUL = (220, 222, 226), (36, 86, 226)
+AMAR = (242, 196, 48)
 TEL    = "+56 9 6590 2238"
 DIR    = "Hernando Bravo de Villalba 811, Pencahue"
 
@@ -107,7 +113,7 @@ def cabecera(im, d, tinta, acento, sub):
     x = M + 158
     w = escribir(d, (x, y + 6), "ULTRA-SPORT ", cond(56), tinta)
     escribir(d, (x + w, y + 6), "19", cond(56), acento)
-    escribir(d, (x, y + 66), "PENCAHUE · MAULE", cond(28), sub, track=7)
+    escribir(d, (x, y + 66), "PENCAHUE, MAULE", cond(28), sub, track=7)   # 27-sep-2026: sin «·», regla de la casa
     return y + 132
 
 
@@ -117,6 +123,11 @@ def cta(d, tono):
         "rojo":  (ROJO,  HUESO, (255, 214, 216)),
         "negro": (NEGRO, HUESO, GRIS),
         "hueso": (HUESO, NEGRO, (110, 110, 116)),
+        # 27-sep-2026: los de las pieles nuevas
+        "cian":    (CIAN, NAVY, (20, 60, 80)),
+        "terra":   (TERRA, HUESO, (255, 220, 200)),
+        "mostaza": (MOSTAZA, BOSQUE, (60, 70, 40)),
+        "azul":    (AZUL, HUESO, (200, 215, 255)),
     }[tono]
     d.rounded_rectangle((M, y0, W - M, y0 + alto), radius=14, fill=fondo)
     escribir(d, (M + 44, y0 + 44), "ESCRÍBENOS POR WHATSAPP", cond(40), tinta, track=5)
@@ -145,6 +156,19 @@ PIELES = {
     "dato":  dict(fondo=CARBON, tinta=HUESO, acento=LIMA, eyebrow=LIMA,
                   cuerpo=(196, 196, 202), sub=GRIS, cta="rojo",
                   caja=(22, 27, 32), linea=(44, 52, 60)),
+    # 27-sep-2026: Diego pidió dejar de repetir el negro con rojo. Cinco pieles
+    # nuevas; el rojo queda para ofertas y cupos. Ojo con «amarillo»: el «19»
+    # va en azul, en hueso desaparecía (misma trampa que la piel roja).
+    "noche":   dict(fondo=NAVY, tinta=HUESO, acento=CIAN, eyebrow=CIAN, cuerpo=(200, 212, 228),
+                    sub=(130, 150, 176), cta="cian", caja=(22, 36, 62), linea=(40, 60, 92)),
+    "arena":   dict(fondo=ARENA, tinta=(28, 26, 24), acento=TERRA, eyebrow=TERRA, cuerpo=(78, 70, 62),
+                    sub=(130, 118, 104), cta="terra", caja=(224, 212, 190), linea=(200, 186, 162)),
+    "bosque":  dict(fondo=BOSQUE, tinta=HUESO, acento=MOSTAZA, eyebrow=MOSTAZA, cuerpo=(206, 216, 206),
+                    sub=(140, 160, 146), cta="mostaza", caja=(26, 56, 46), linea=(44, 80, 66)),
+    "grafito": dict(fondo=GRAFITO, tinta=(14, 16, 20), acento=AZUL, eyebrow=AZUL, cuerpo=(60, 64, 72),
+                    sub=(110, 114, 124), cta="azul", caja=(206, 209, 215), linea=(180, 184, 192)),
+    "amarillo": dict(fondo=AMAR, tinta=(14, 14, 14), acento=(28, 52, 150), eyebrow=(60, 46, 0), cuerpo=(40, 34, 10),
+                    sub=(90, 72, 10), cta="negro", caja=(226, 180, 30), linea=(200, 160, 20)),
 }
 
 
