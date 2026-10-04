@@ -647,6 +647,18 @@
   .share svg{width:18px;height:18px;fill:var(--wsp)}
   .share:hover{border-color:var(--wsp);color:var(--hueso)}
 
+  /* ---------- secciones plegables en el celular (la página medía ~33 pantallas) ---------- */
+  @media(max-width:720px){
+    .plegable{position:relative;max-height:520px;overflow:hidden}
+    .plegable::after{content:"";position:absolute;left:0;right:0;bottom:0;height:150px;pointer-events:none;
+      background:linear-gradient(180deg,transparent,var(--fondo-sec,#0b0b0c) 88%)}
+    .plegable.abierta{max-height:none!important}
+    .plegable.abierta::after{display:none}
+    .ver-mas{display:flex;margin:14px auto 0;min-width:180px}
+  }
+  .ver-mas{display:none}
+  @media(max-width:720px){.ver-mas{display:flex}}
+
   /* ---------- animación ---------- */
   .js .reveal{opacity:0;transform:translateY(16px);transition:opacity .5s var(--ease-out),transform .5s var(--ease-out)}
   .js .reveal.in{opacity:1;transform:none}
@@ -1432,6 +1444,30 @@
   const heroCta=document.getElementById('hero-cta'),mbar=document.querySelector('.mobile-bar');
   if(heroCta&&mbar){new IntersectionObserver(([e])=>mbar.classList.toggle('visible',!e.isIntersecting)).observe(heroCta)}
   else if(mbar){mbar.classList.add('visible')}
+
+  // Celular: secciones de detalle plegadas con «Ver más» (no se borra nada; en computador no cambia)
+  if(window.matchMedia('(max-width:720px)').matches){
+    const PLEGAR={porque:520,como:560,espacio:920,bioimpedancia:560,'active-force':520,blazepod:520,horarios:520,reglas:520,opiniones:760,'primer-dia':520};
+    Object.entries(PLEGAR).forEach(([id,alto])=>{
+      const sec=document.getElementById(id);
+      if(!sec)return;
+      const w=document.createElement('div');
+      while(sec.firstChild)w.appendChild(sec.firstChild);
+      sec.appendChild(w);
+      if(w.scrollHeight<alto+240){while(w.firstChild)sec.insertBefore(w.firstChild,w);w.remove();return}
+      w.style.maxHeight=alto+'px';
+      let bg=getComputedStyle(sec).backgroundColor;
+      if(!bg||bg==='rgba(0, 0, 0, 0)'||bg==='transparent')bg=getComputedStyle(document.body).backgroundColor;
+      w.style.setProperty('--fondo-sec',bg);w.classList.add('plegable');
+      const b=document.createElement('button');
+      b.type='button';b.className='btn btn--linea btn--sm ver-mas';b.textContent='Ver más';b.setAttribute('aria-expanded','false');
+      b.addEventListener('click',()=>{
+        const a=w.classList.toggle('abierta');b.textContent=a?'Ver menos':'Ver más';b.setAttribute('aria-expanded',a);
+        if(a){w.querySelectorAll('.reveal').forEach(r=>r.classList.add('in'))}else{sec.scrollIntoView({block:'start'})}
+      });
+      w.after(b);
+    });
+  }
 
   // Barra de navegación
   const nav=document.getElementById('nav');
