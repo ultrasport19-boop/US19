@@ -15,7 +15,7 @@
   "shortcuts": [
     {
       "name": "Quiero ingresar",
-      "url": "https://wa.me/56965902238?text=Hola%2C%20quiero%20informaci%C3%B3n%20para%20ingresar%20(web)",
+      "url": "./#contacto",
       "icons": [{ "src": "img/icon-192.png", "sizes": "192x192" }]
     },
     {
