@@ -194,7 +194,8 @@
   .brand{flex-shrink:0;display:flex;align-items:center;gap:10px;font-family:'Anton',sans-serif;font-size:1.15rem;letter-spacing:.03em;text-transform:uppercase;line-height:1;color:#fff;white-space:nowrap}
   .nav.scrolled .brand{color:var(--navy)}
   .brand span{color:var(--rojo)}
-  .brand img{width:38px;height:38px;border-radius:50%;object-fit:cover;background:#fff}
+  .brand img{width:40px;height:40px;border-radius:50%;object-fit:cover;background:#fff;box-shadow:0 0 0 2px rgba(255,255,255,.35)}
+  .nav.scrolled .brand img{box-shadow:0 0 0 2px rgba(16,42,67,.15)}
   .nav__links{display:flex;align-items:center;gap:6px;min-width:0}
   @media(max-width:1500px){.nav__links{gap:3px}.nav__links a{padding:8px 9px;font-size:.8rem}.nav__cta{padding:8px 14px}}
   .nav__links a{
@@ -238,7 +239,7 @@
   .hero__bg img{width:100%;height:100%;object-fit:cover;object-position:center 40%;opacity:.55;filter:saturate(.85)}
   .hero__bg::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(16,42,67,.55) 0%,rgba(16,42,67,.62) 55%,rgba(11,31,51,.92) 100%)}
   .hero>.wrap{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center}
-  .hero__badge{width:clamp(72px,9vw,104px);height:auto;margin-bottom:18px;border-radius:50%;background:#fff;box-shadow:0 12px 40px rgba(0,0,0,.35)}
+  .hero__badge{width:clamp(120px,14vw,168px);height:auto;margin-bottom:22px;padding:10px;border-radius:22px;background:#fff;box-shadow:0 12px 40px rgba(0,0,0,.35),0 0 0 3px var(--rojo)}
   .hero__logo{font-size:clamp(1.3rem,2.6vw,1.8rem);line-height:1;letter-spacing:.08em;color:#fff;opacity:.95}
   .hero__logo .n19{color:var(--rojo)}
   .hero__tag{font-family:'Barlow Condensed',sans-serif;text-transform:uppercase;letter-spacing:.42em;font-weight:700;color:#BFD4EA;font-size:.78rem;margin-top:8px;padding-left:.42em}
@@ -633,6 +634,42 @@
   @media(max-width:720px){.ver-mas{display:flex}}
 
   /* ---------- animación ---------- */
+  /* Tres indicadores de evolución (17-oct): tarjetas 3D sobre navy */
+  .ind{background:var(--navy);color:#fff;position:relative;overflow:hidden}
+  .ind::before{content:"";position:absolute;inset:0;background:radial-gradient(60% 50% at 50% 0%,rgba(76,140,255,.22),transparent 70%),radial-gradient(40% 40% at 90% 100%,rgba(226,28,37,.18),transparent 70%);pointer-events:none}
+  .ind .wrap{position:relative}
+  .ind .eyebrow{color:#BFD4EA}
+  .ind .section-title{color:#fff}
+  .ind .section-sub{color:#D6E3F2}
+  .ind__grid{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;margin-top:44px;perspective:1400px}
+  .ind__card{position:relative;background:linear-gradient(160deg,rgba(255,255,255,.09),rgba(255,255,255,.03));border:1px solid rgba(255,255,255,.12);border-radius:var(--radius);padding:26px 26px 30px;transform-style:preserve-3d;transition:transform .35s var(--ease-out),box-shadow .35s;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+  .ind__card:hover{box-shadow:0 30px 80px rgba(0,0,0,.45)}
+  .ind__num{font-family:'Anton',sans-serif;font-size:1rem;letter-spacing:.14em;color:#BFD4EA}
+  .ind__tag{position:absolute;top:22px;right:22px;background:var(--rojo);color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.74rem;letter-spacing:.14em;text-transform:uppercase;padding:6px 12px;border-radius:999px}
+  .ind__fig{margin:22px 0 8px;aspect-ratio:1/1;border-radius:22px;overflow:hidden;box-shadow:0 30px 60px rgba(0,0,0,.45);background:#0b1d30}
+  .ind__fig img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .6s var(--ease-out)}
+  .ind__card:hover .ind__fig img{transform:scale(1.05)}
+  .ind__card h3{font-family:'Anton',sans-serif;font-size:1.9rem;letter-spacing:.02em;line-height:1;margin-top:18px;color:#fff;text-transform:uppercase}
+  .ind__mide{color:#BFD4EA;font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:.12em;text-transform:uppercase;font-size:.8rem;margin-top:6px}
+  .ind__card p{color:#D6E3F2;margin-top:12px;line-height:1.55;font-size:.98rem}
+  .ind__card p.ind__mide{color:#BFD4EA;margin-top:6px;line-height:1.3}
+  .ind__card ul{list-style:none;margin-top:14px;display:grid;gap:7px}
+  .ind__card li{position:relative;padding-left:18px;color:#fff;font-size:.94rem}
+  .ind__card li::before{content:"";position:absolute;left:0;top:9px;width:8px;height:8px;border-radius:50%;background:var(--rojo)}
+  .ind__vs{margin-top:40px;display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  .ind__col{border-radius:var(--radius);padding:24px 26px;border:1px solid rgba(255,255,255,.12)}
+  .ind__col--no{background:rgba(255,255,255,.04)}
+  .ind__col--si{background:#fff;color:var(--navy)}
+  .ind__col h4{font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:.12em;text-transform:uppercase;font-size:.84rem;color:#BFD4EA}
+  .ind__col--si h4{color:var(--rojo)}
+  .ind__col ul{list-style:none;margin-top:12px;display:grid;gap:8px}
+  .ind__col li{padding-left:22px;position:relative;font-size:.96rem;color:#D6E3F2}
+  .ind__col--si li{color:var(--navy);font-weight:600}
+  .ind__col--no li::before{content:"\00D7";position:absolute;left:0;top:-1px;color:#8FA6C2}
+  .ind__col--si li::before{content:"\2713";position:absolute;left:0;top:-1px;color:var(--rojo);font-weight:700}
+  .ind__fine{margin-top:18px;color:#8FA6C2;font-size:.8rem}
+  @media(max-width:980px){.ind__grid{grid-template-columns:1fr 1fr}}
+  @media(max-width:640px){.ind__grid{grid-template-columns:1fr}.ind__vs{grid-template-columns:1fr}}
   .js .reveal{opacity:0;transform:translateY(18px);transition:opacity .6s var(--ease-out),transform .6s var(--ease-out)}
   .js .reveal.in{opacity:1;transform:none}
   @media(prefers-reduced-motion:reduce){.js .reveal{opacity:1;transform:none;transition:none}html{scroll-behavior:auto}.in .bar i{transition:none}}
@@ -646,17 +683,15 @@
 <nav class="nav" id="nav" aria-label="Principal">
   <div class="wrap nav__in">
     <a class="brand" href="#top" aria-label="Ultra-Sport19, inicio">
-      <img src="img/logo.png" alt="" width="38" height="38" onerror="this.remove()">
+      <img src="img/logo-lobo.png" alt="" width="40" height="40" onerror="this.remove()">
       <span style="color:inherit">ULTRA-SPORT<span>19</span></span>
     </a>
     <button class="nav__burger" id="burger" aria-expanded="false" aria-controls="menu" aria-label="Abrir menú"><span></span></button>
     <div class="nav__links" id="menu">
       <a href="#porque">Por qué</a>
+      <a href="#indicadores">Indicadores</a>
       <a href="#espacio">Espacio</a>
       <a href="#planes">Planes</a>
-      <a href="#bioimpedancia">Bioimpedancia</a>
-      <a href="#active-force">Active Force</a>
-      <a href="#blazepod">BlazePod</a>
       <a href="#opiniones">Opiniones</a>
       <a href="#primer-dia">Primer día</a>
       <a href="#faq">Preguntas</a>
@@ -674,9 +709,7 @@
     <img src="img/hero.jpg" alt="" width="960" height="1280" fetchpriority="high" decoding="async">
   </div>
   <div class="wrap">
-    <img class="hero__badge reveal" src="img/logo.png" alt="Logo Ultra-Sport19: lobo blanco con rayo rojo" width="104" height="104" onerror="this.remove()">
-    <p class="hero__logo anton reveal" aria-hidden="true">ULTRA-SPORT<span class="n19">19</span></p>
-    <p class="hero__tag reveal">Despierta tu instinto</p>
+    <img class="hero__badge reveal" src="img/logo.png" alt="Logo Ultra-Sport 19: lobo navy, despierta tu instinto" width="168" height="191" onerror="this.remove()">
     <p class="hero__kicker reveal"><span>Gimnasio boutique en Pencahue, Maule. Desde 2025</span></p>
     <h1 class="reveal">Máximo 8 personas por hora, entrenador en la tarde y resultados que se miden.</h1>
     <p class="hero__lead reveal">Bioimpedancia incluida desde el plan de 3 veces, rutina a tu medida y seguimiento mensual. Sin masificación, sin esperas, sin adivinar.</p>
@@ -744,7 +777,7 @@
           <tr><td>Personas por hora</td><td class="no">Sin límite, filas para las máquinas</td><td class="si">Máximo 8, equipo siempre disponible</td></tr>
           <tr><td>Quién te guía</td><td class="no">Entrenas por tu cuenta</td><td class="si">Entrenador en sala de 16:00 a 22:00</td></tr>
           <tr><td>Tu rutina</td><td class="no">Genérica o sacada de internet</td><td class="si">Hecha según tu evaluación y tu nivel</td></tr>
-          <tr><td>Medición de resultados</td><td class="no">La pesa del baño</td><td class="si">Bioimpedancia de 8 sensores, cada mes desde el plan 3x</td></tr>
+          <tr><td>Medición de resultados</td><td class="no">La pesa del baño</td><td class="si">Bioimpedancia de 8 sensores, Active Force y BlazePod</td></tr>
           <tr><td>Matrícula y contratos</td><td class="no">Matrícula, permanencia y letra chica</td><td class="si">Sin matrícula, cambias de plan cuando quieras</td></tr>
           <tr><td>Traslado</td><td class="no">45 minutos a Talca</td><td class="si">En el centro de Pencahue</td></tr>
         </tbody>
@@ -861,7 +894,6 @@
           <li>Máximo 8 personas por hora</li>
           <li>Rutina según tu objetivo</li>
           <li>Bioimpedancia + antropometría mensual</li>
-          <li>BlazePod y Active Force (desde 2027)</li>
           <li>Seguimiento de tu evolución</li>
         </ul>
         <a class="btn btn--linea" href="https://wa.me/56965902238?text=Hola%2C%20quiero%20informaci%C3%B3n%20del%20plan%204%20veces%20por%20semana%20(web)" target="_blank" rel="noopener">Consultar cupos</a>
@@ -873,7 +905,6 @@
         <h3>Evaluaciones incluidas</h3>
         <ul>
           <li><b>Bioimpedancia:</b> en planes de 3 y 4 veces por semana.</li>
-          <li><b>BlazePod y Active Force:</b> en el plan de 4 veces por semana, desde 2027.</li>
           <li><b>Antropometría:</b> en planes de 3 y 4 veces por semana.</li>
           <li><b>Una evaluación al mes</b>, siempre con bioimpedancia, en planes de 3 y 4 veces por semana.</li>
         </ul>
@@ -891,6 +922,46 @@
 </section>
 
 <!-- ============ BIOIMPEDANCIA ============ -->
+<!-- ============ TRES INDICADORES DE EVOLUCIÓN ============ -->
+<section class="ind" id="indicadores">
+  <div class="wrap">
+    <p class="eyebrow reveal">Por qué somos distintos</p>
+    <h2 class="section-title reveal">Tres indicadores de evolución</h2>
+    <p class="section-sub reveal">En un gimnasio convencional tu progreso es una sensación. Aquí lo medimos con tres equipos que no son habituales en un gimnasio: tu composición corporal, tu fuerza y tu velocidad de reacción, en números que se comparan mes a mes.</p>
+    <div class="ind__grid">
+      <article class="ind__card reveal">
+        <span class="ind__num">01</span>
+        <div class="ind__fig"><img src="img/3d-bioimpedancia.jpg" alt="Báscula de bioimpedancia con 8 sensores" width="1024" height="1024" loading="lazy" decoding="async"></div>
+        <h3>Bioimpedancia</h3>
+        <p class="ind__mide">Composición corporal</p>
+        <p>Ocho sensores de doble frecuencia que separan músculo, grasa y agua. Tu punto de partida y tu cambio real cada mes, no lo que dice la pesa del baño.</p>
+        <ul><li>Masa muscular y grasa, en kilos y porcentaje</li><li>Grasa visceral y metabolismo basal</li><li>Comparación mes a mes en tu ficha</li></ul>
+      </article>
+      <article class="ind__card reveal">
+        <span class="ind__num">02</span><span class="ind__tag">Novedad</span>
+        <div class="ind__fig"><img src="img/3d-activeforce.jpg" alt="Sensor de fuerza Active Force" width="1015" height="1400" loading="lazy" decoding="async"></div>
+        <h3>Active Force</h3>
+        <p class="ind__mide">Fuerza y movilidad</p>
+        <p>Un dinamómetro que mide cuánta fuerza haces, en kilos, lado a lado y articulación por articulación. Tu fuerza deja de ser una sensación y pasa a ser un número que puedes mejorar.</p>
+        <ul><li>Fuerza máxima en mano, codo, hombro, cadera, rodilla y tobillo</li><li>Diferencia entre derecha e izquierda, en porcentaje</li><li>Informe en PDF por WhatsApp</li></ul>
+      </article>
+      <article class="ind__card reveal">
+        <span class="ind__num">03</span><span class="ind__tag">Novedad</span>
+        <div class="ind__fig"><img src="img/3d-blazepod.jpg" alt="Pod luminoso de BlazePod" width="1015" height="1400" loading="lazy" decoding="async"></div>
+        <h3>BlazePod</h3>
+        <p class="ind__mide">Reacción y agilidad</p>
+        <p>Seis luces que se encienden al azar y registran cada toque. Velocidad de reacción, agilidad y atención, medidas en milisegundos y comparadas con tu mejor marca.</p>
+        <ul><li>Tiempo de reacción por toque</li><li>Reto Pared: toques en 90 segundos</li><li>Tu progreso desde la última vez</li></ul>
+      </article>
+    </div>
+    <div class="ind__vs reveal">
+      <div class="ind__col ind__col--no"><h4>Gimnasio convencional</h4><ul><li>Tu avance se mide a ojo o con la pesa del baño</li><li>Nadie sabe cuánta fuerza haces ni si un lado está más débil</li><li>Rutina igual para todos, sin punto de partida</li></ul></div>
+      <div class="ind__col ind__col--si"><h4>Ultra-Sport19</h4><ul><li>Composición corporal con bioimpedancia de 8 sensores</li><li>Fuerza y movilidad articulación por articulación con Active Force</li><li>Reacción y agilidad con BlazePod, siempre con entrenador</li></ul></div>
+    </div>
+    <p class="ind__fine reveal">Mediciones descriptivas para el seguimiento del entrenamiento; no son un examen médico. Active Force y BlazePod son novedades de nuestro centro de rendimiento: consulta por WhatsApp cómo acceder.</p>
+  </div>
+</section>
+
 <section id="bioimpedancia">
   <div class="wrap feature">
     <div class="reveal">
@@ -939,21 +1010,21 @@
   </div>
 </section>
 
-<!-- ============ ACTIVE FORCE (plan 4x) ============ -->
+<!-- ============ ACTIVE FORCE ============ -->
 <section id="active-force">
   <div class="wrap feature">
     <div class="reveal">
-      <span class="af-badge">Plan 4 veces por semana, desde 2027</span>
+      <span class="af-badge">Novedad</span>
       <p class="eyebrow">Evaluación de fuerza</p>
       <h2 class="section-title">Active Force</h2>
       <p class="section-sub">Un dinamómetro de mano que mide cuánta fuerza haces, en kilos y lado a lado, y cuánto se mueve cada articulación. Tu fuerza deja de ser una sensación: pasa a ser un número que puedes mejorar.</p>
       <div class="bio-precio">
-        <span class="bio-monto">4x</span>
-        <span class="bio-detalle">Llega en 2027 al plan de 4 veces por semana ($35.000 al mes)</span>
+        <span class="bio-monto">6 articulaciones</span>
+        <span class="bio-detalle">Mano, codo, hombro, cadera, rodilla y tobillo, lado a lado</span>
         <p class="bio-nota">Junto a la bioimpedancia y los perímetros, una evaluación al mes</p>
       </div>
       <div class="hero__cta" style="margin-top:22px">
-        <a class="btn btn--rojo btn--sm" href="https://wa.me/56965902238?text=Hola%2C%20quiero%20el%20plan%204%20veces%20por%20semana%20con%20evaluaci%C3%B3n%20Active%20Force%20(web)" target="_blank" rel="noopener">Quiero el plan 4x</a>
+        <a class="btn btn--rojo btn--sm" href="https://wa.me/56965902238?text=Hola%2C%20quiero%20saber%20de%20la%20evaluaci%C3%B3n%20Active%20Force%20(web)" target="_blank" rel="noopener">Quiero saber más</a>
       </div>
     </div>
     <div class="panel reveal">
@@ -977,21 +1048,21 @@
   </div>
 </section>
 
-<!-- ============ BLAZEPOD (plan 4x) ============ -->
+<!-- ============ BLAZEPOD ============ -->
 <section id="blazepod">
   <div class="wrap feature">
     <div class="reveal">
-      <span class="af-badge" style="background:var(--rojo)">Plan 4 veces por semana, desde 2027</span>
+      <span class="af-badge" style="background:var(--rojo)">Novedad</span>
       <p class="eyebrow">Reacción y agilidad</p>
       <h2 class="section-title">BlazePod</h2>
       <p class="section-sub">Seis luces que se encienden al azar: tú reaccionas y el sistema mide cada toque. Entrenamos velocidad, agilidad y atención, siempre con entrenador.</p>
       <div class="bio-precio">
-        <span class="bio-monto">4x</span>
-        <span class="bio-detalle">Llega en 2027 al plan de 4 veces por semana ($35.000 al mes)</span>
+        <span class="bio-monto">6 luces</span>
+        <span class="bio-detalle">Reacción, agilidad y atención, medidas en milisegundos</span>
         <p class="bio-nota">Y muy pronto, el Reto Pared en la sala</p>
       </div>
       <div class="hero__cta" style="margin-top:22px">
-        <a class="btn btn--rojo btn--sm" href="https://wa.me/56965902238?text=Hola%2C%20quiero%20saber%20del%20plan%204%20veces%20por%20semana%20con%20BlazePod%20(web)" target="_blank" rel="noopener">Quiero el plan 4x</a>
+        <a class="btn btn--rojo btn--sm" href="https://wa.me/56965902238?text=Hola%2C%20quiero%20saber%20de%20BlazePod%20(web)" target="_blank" rel="noopener">Quiero saber más</a>
       </div>
     </div>
     <div class="panel reveal">
@@ -1411,6 +1482,12 @@
   document.querySelectorAll('.reveal').forEach((el,i)=>{
     el.style.transitionDelay=(Math.min(i%5,4)*60)+'ms';
     io.observe(el);
+  });
+
+  // Tarjetas 3D de los indicadores: se inclinan hacia el cursor
+  document.querySelectorAll('.ind__card').forEach(c=>{
+    c.addEventListener('mousemove',e=>{const r=c.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;c.style.transform='rotateY('+(x*10).toFixed(2)+'deg) rotateX('+(-y*10).toFixed(2)+'deg) translateY(-6px)'});
+    c.addEventListener('mouseleave',()=>{c.style.transform=''});
   });
 
   // Barra fija del celular: aparece cuando el botón del hero sale de la pantalla (antes se veían dos iguales)
