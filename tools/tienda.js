@@ -758,7 +758,7 @@ async function principal() {
   comprobar('condiciones · garantía legal para fallas y para «no es lo que pediste»',
     cond.indexOf('garantía legal') >= 0 && cond.indexOf('falla de') >= 0);
   comprobar('condiciones · reclamo con correo real, WhatsApp y SERNAC',
-    cond.indexOf('prime@ultrasport19.com') >= 0 && cond.indexOf('wa.me/56965902238') >= 0 && cond.indexOf('SERNAC') >= 0);
+    cond.indexOf('ultrasport19@gmail.com') >= 0 && cond.indexOf('wa.me/56965902238') >= 0 && cond.indexOf('SERNAC') >= 0);
   comprobar('condiciones · enlaza la política de privacidad', cond.indexOf('../privacidad.html') >= 0);
   comprobar('condiciones · no promete ni boleta ni factura ni «original»',
     !/\bboleta electr|\bfactura electr|\boriginal(es)?\b/i.test(cond));
