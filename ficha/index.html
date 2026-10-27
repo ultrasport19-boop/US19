@@ -126,7 +126,7 @@
          entra, sin un mensaje más. -->
     <label class="campo ancho"><span>¿Cómo llegaste a Ultra-Sport 19? <em>(nos ayuda a saber qué funciona)</em></span>
       <select id="comollegaste">
-        <option value="">Prefiero no decir</option>
+        <option value="" disabled selected>Elige una opción</option>
         <option value="Instagram">Instagram</option>
         <option value="Facebook">Facebook</option>
         <option value="Recomendación">Me lo recomendó alguien</option>
@@ -138,6 +138,11 @@
          de traer gente, y sin el nombre no se le puede agradecer. Opcional
          siempre: nadie tiene que delatar a nadie para poder entrenar. -->
     <label class="campo ancho"><span>Si te lo recomendó alguien, ¿quién? <em>(opcional, para agradecérselo)</em></span><input type="text" id="quienrecomendo" placeholder="Nombre de quien te habló de nosotros"></label>
+    <!-- v192 (26-oct-2026): el objetivo, obligatorio. Estaba vacío en 59 de 62
+         activos porque nadie lo preguntaba al entrar. Viaja con etiqueta propia
+         («Objetivo:») y el bot lo escribe en «Objetivo» solo si la ficha no
+         tiene ya uno. Tope de 200 caracteres aquí y en el bot. -->
+    <label class="campo ancho"><span>¿Qué quieres lograr en los próximos 3 meses?</span><input type="text" id="objetivo" maxlength="200" placeholder="Por ejemplo: ganar fuerza, bajar grasa, rendir mejor en mi deporte, más energía, volver a entrenar, otro"></label>
   </div>
 
   <div class="bloque rojo" id="aviso-salud" hidden>
@@ -215,6 +220,9 @@
 <script>
 (function(){
   var BOT = '56965902238';
+  /* v192: las mismas seis opciones del <select id="comollegaste"> y de Notion.
+     Sin una de estas no se envía: «Cómo nos conoció» estaba vacío en 41 de 62. */
+  var CANALES = ['Instagram', 'Facebook', 'Recomendación', 'Pasó por el gym', 'Google / Web', 'Otro'];
   function $(id){ return document.getElementById(id); }
 
   var salud = $('salud');
@@ -247,7 +255,10 @@
       /* Va al final y con etiqueta propia: el bot lo lee con
          US19_FICHA_campo_ y lo escribe en «Cómo nos conoció». */
       'Como llegaste: ' + ($('comollegaste').value || '-'),
-      'Quien recomendo: ' + (limpio($('quienrecomendo').value) || '-')
+      'Quien recomendo: ' + (limpio($('quienrecomendo').value) || '-'),
+      /* v192: el objetivo. Etiqueta propia para US19_FICHA_campo_; el bot lo
+         escribe en «Objetivo» si la ficha no tiene uno. Tope 200. */
+      'Objetivo: ' + (limpio($('objetivo').value).slice(0, 200) || '-')
     ].join('\n');
   }
 
@@ -258,6 +269,8 @@
       if (foco) { foco.focus(); foco.scrollIntoView({ block: 'center' }); }
     }
     if (!limpio($('nombre').value)) return falla('Falta tu nombre completo.', $('nombre'));
+    if (!limpio($('objetivo').value)) return falla('Falta decir que quieres lograr en los proximos 3 meses, en la seccion 2.', $('objetivo'));
+    if (CANALES.indexOf($('comollegaste').value) < 0) return falla('Falta elegir como llegaste a Ultra-Sport 19, en la seccion 2.', $('comollegaste'));
     if (!$('acepta').checked) return falla('Falta marcar que leiste y aceptas, en la seccion 5.', $('acepta'));
     if (!imagen()) return falla('Falta responder si autorizas o no las fotos, en la seccion 6. Cualquiera de las dos respuestas esta bien.', document.querySelector('input[name="imagen"]'));
     a.textContent = 'Abriendo WhatsApp...'; a.className = 'aviso-envio';

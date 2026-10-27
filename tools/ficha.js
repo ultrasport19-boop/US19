@@ -151,7 +151,7 @@ function nuevoEntorno(valores, opciones) {
 const COMPLETA = {
   nombre: '  Juan   Pérez  ', rut: '11.111.111-1', nacimiento: '1990-05-02',
   emergencia: 'María 912345678', antecedentes: 'ninguno', medicamentos: '',
-  comollegaste: 'Recomendación', quienrecomendo: 'Pedro', acepta: true,
+  comollegaste: 'Recomendación', quienrecomendo: 'Pedro', objetivo: '  Ganar fuerza  ', acepta: true,
 };
 
 let E = nuevoEntorno(Object.assign({}, COMPLETA, { nombre: '   ' }), { imagen: 'Si' });
@@ -170,6 +170,41 @@ E.pulsar();
 igual('validacion · sin responder lo de las fotos no se envia', E.destino(), '');
 comprobar('validacion · y deja claro que un NO tambien vale',
   /cualquiera de las dos/i.test(E.els.aviso.textContent), E.els.aviso.textContent);
+
+/* v192 (26-oct-2026): el objetivo y el canal, obligatorios. Vacíos en 59 y 41
+   de 62 activos porque nada obligaba a decirlos al entrar. */
+E = nuevoEntorno(Object.assign({}, COMPLETA, { objetivo: '   ' }), { imagen: 'Si' });
+E.pulsar();
+igual('validacion · sin objetivo no se envia', E.destino(), '');
+comprobar('validacion · y el foco va al objetivo', E.enfocado.indexOf('objetivo') >= 0);
+comprobar('validacion · con un aviso que habla de lograr', /lograr/i.test(E.els.aviso.textContent), E.els.aviso.textContent);
+
+E = nuevoEntorno(Object.assign({}, COMPLETA, { comollegaste: '' }), { imagen: 'Si' });
+E.pulsar();
+igual('validacion · sin elegir como llego no se envia', E.destino(), '');
+comprobar('validacion · y el foco va al desplegable', E.enfocado.indexOf('comollegaste') >= 0);
+comprobar('validacion · con un aviso que habla de como llegaste', /llegaste/i.test(E.els.aviso.textContent), E.els.aviso.textContent);
+
+E = nuevoEntorno(Object.assign({}, COMPLETA, { comollegaste: 'Prefiero no decir' }), { imagen: 'Si' });
+E.pulsar();
+igual('validacion · un canal que no es de los seis de Notion tampoco se envia', E.destino(), '');
+
+['Instagram', 'Facebook', 'Recomendación', 'Pasó por el gym', 'Google / Web', 'Otro'].forEach(function (canal) {
+  const F = nuevoEntorno(Object.assign({}, COMPLETA, { comollegaste: canal }), { imagen: 'Si' });
+  F.pulsar();
+  comprobar('validacion · el canal «' + canal + '» deja enviar', F.destino().indexOf('wa.me') > 0);
+});
+
+comprobar('marcado · ya no existe la opcion «Prefiero no decir»', src.indexOf('Prefiero no decir') < 0);
+comprobar('marcado · el desplegable arranca sin canal elegido (marcador deshabilitado con value="")',
+  /<option value="" disabled selected>/.test(src), 'sin marcador el navegador preselecciona el primer canal y el dato se inventa');
+comprobar('marcado · el objetivo tiene tope de 200 caracteres en el campo',
+  /id="objetivo" maxlength="200"/.test(src));
+
+E = nuevoEntorno(Object.assign({}, COMPLETA, { objetivo: 'x'.repeat(250) }), { imagen: 'Si' });
+E.pulsar();
+igual('mensaje · un objetivo de 250 caracteres viaja recortado a 200',
+  ((E.mensaje().match(/^Objetivo: (.*)$/m) || [])[1] || '').length, 200);
 
 /* Que un NO a las fotos SI deje enviar: si no, el consentimiento no seria
    libre, y un consentimiento obligatorio no vale justo cuando hace falta. */
@@ -193,6 +228,7 @@ comprobar('mensaje · un campo vacio va como "-", no como vacio',
   /^Medicamentos: -$/m.test(MSG), (MSG.match(/^Medicamentos:.*$/m) || [])[0]);
 comprobar('mensaje · la atribucion viaja', /^Como llegaste: Recomendación$/m.test(MSG));
 comprobar('mensaje · y quien recomendo tambien', /^Quien recomendo: Pedro$/m.test(MSG));
+comprobar('mensaje · el objetivo viaja limpio y con su etiqueta', /^Objetivo: Ganar fuerza$/m.test(MSG), (MSG.match(/^Objetivo:.*$/m) || [])[0]);
 
 const SIN_SALUD = (() => {
   const F = nuevoEntorno(COMPLETA, { imagen: 'Si', salud: [] });
@@ -268,6 +304,7 @@ if (!fs.existsSync(RUTA_BOT)) {
     igual('contrato · el bot lee la salud marcada', api.campo(MSG, 'Salud'), 'Asma / Hipertensión');
     igual('contrato · el bot lee como llego', api.campo(MSG, 'Como llegaste'), 'Recomendación');
     igual('contrato · el bot lee quien recomendo', api.campo(MSG, 'Quien recomendo'), 'Pedro');
+    igual('contrato · el bot lee el objetivo', api.campo(MSG, 'Objetivo'), 'Ganar fuerza');
     igual('contrato · el bot lee la respuesta de fotos', api.campo(MSG, 'Fotos'), 'SI');
     /* Un campo vacio viaja como «-» y el bot lo traduce a cadena vacia:
        si eso deja de coincidir, Notion se llena de guiones. */
