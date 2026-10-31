@@ -3,43 +3,43 @@
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
         xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
   <url>
-    <loc>https://ultrasport19-boop.github.io/US19/</loc>
+    <loc>https://ultrasport19.com/</loc>
     <lastmod>2026-09-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>
     <image:image>
-      <image:loc>https://ultrasport19-boop.github.io/US19/img/og-image.jpg</image:loc>
+      <image:loc>https://ultrasport19.com/img/og-image.jpg</image:loc>
       <image:title>Ultra-Sport19, gimnasio boutique en Pencahue</image:title>
     </image:image>
     <image:image>
-      <image:loc>https://ultrasport19-boop.github.io/US19/img/hero.jpg</image:loc>
+      <image:loc>https://ultrasport19.com/img/hero.jpg</image:loc>
       <image:title>Sesión de entrenamiento en grupo reducido</image:title>
     </image:image>
     <image:image>
-      <image:loc>https://ultrasport19-boop.github.io/US19/img/sala-1.jpg</image:loc>
+      <image:loc>https://ultrasport19.com/img/sala-1.jpg</image:loc>
       <image:title>Rack y barra olímpica, sala de fuerza</image:title>
     </image:image>
     <image:image>
-      <image:loc>https://ultrasport19-boop.github.io/US19/img/sala-2.jpg</image:loc>
+      <image:loc>https://ultrasport19.com/img/sala-2.jpg</image:loc>
       <image:title>Zona de peso libre con mancuernas</image:title>
     </image:image>
     <video:video>
-      <video:thumbnail_loc>https://ultrasport19-boop.github.io/US19/img/video-poster.jpg</video:thumbnail_loc>
+      <video:thumbnail_loc>https://ultrasport19.com/img/video-poster.jpg</video:thumbnail_loc>
       <video:title>Recorrido por la sala de fuerza de Ultra-Sport19</video:title>
       <video:description>Un vistazo a la sala de fuerza de Ultra-Sport19 en Pencahue: rack, barra, máquinas, mancuernas y zona de peso libre.</video:description>
-      <video:content_loc>https://ultrasport19-boop.github.io/US19/media/promo.mp4</video:content_loc>
+      <video:content_loc>https://ultrasport19.com/media/promo.mp4</video:content_loc>
       <video:duration>23</video:duration>
       <video:publication_date>2026-09-05</video:publication_date>
       <video:family_friendly>yes</video:family_friendly>
     </video:video>
   </url>
   <url>
-    <loc>https://ultrasport19-boop.github.io/US19/tienda/</loc>
+    <loc>https://ultrasport19.com/tienda/</loc>
     <lastmod>2026-09-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <image:image>
-      <image:loc>https://ultrasport19-boop.github.io/US19/img/og-tienda.jpg</image:loc>
+      <image:loc>https://ultrasport19.com/img/og-tienda.jpg</image:loc>
       <image:title>Camisetas de fútbol por encargo, tienda de Ultra-Sport 19</image:title>
     </image:image>
   </url>

@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /privacidad.html
 
-Sitemap: https://ultrasport19-boop.github.io/US19/sitemap.xml
+Sitemap: https://ultrasport19.com/sitemap.xml
