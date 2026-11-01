@@ -45,8 +45,8 @@
     },
     {
       "nombre": "una imagen se queda sin alt",
-      "de": "<img src=\"img/hero.jpg\" alt=\"\" width=\"960\" height=\"1280\"",
-      "a": "<img src=\"img/hero.jpg\" width=\"960\" height=\"1280\""
+      "de": "<img src=\"img/sala-cardio.jpg\" alt=\"Sala de cardio con trotadora y bicicletas\" width=\"640\"",
+      "a": "<img src=\"img/sala-cardio.jpg\" width=\"640\""
     }
   ]
 }

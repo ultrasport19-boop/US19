@@ -4,25 +4,13 @@
         xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
   <url>
     <loc>https://ultrasport19.com/</loc>
-    <lastmod>2026-09-14</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>1.0</priority>
-    <image:image>
-      <image:loc>https://ultrasport19.com/img/og-image.jpg</image:loc>
-      <image:title>Ultra-Sport19, gimnasio boutique en Pencahue</image:title>
-    </image:image>
-    <image:image>
-      <image:loc>https://ultrasport19.com/img/hero.jpg</image:loc>
-      <image:title>Sesión de entrenamiento en grupo reducido</image:title>
-    </image:image>
-    <image:image>
-      <image:loc>https://ultrasport19.com/img/sala-1.jpg</image:loc>
-      <image:title>Rack y barra olímpica, sala de fuerza</image:title>
-    </image:image>
-    <image:image>
-      <image:loc>https://ultrasport19.com/img/sala-2.jpg</image:loc>
-      <image:title>Zona de peso libre con mancuernas</image:title>
-    </image:image>
+    <lastmod>2026-10-31</lastmod>
+    <image:image><image:loc>https://ultrasport19.com/img/hero-sala.jpg</image:loc></image:image>
+    <image:image><image:loc>https://ultrasport19.com/img/sala-rack.jpg</image:loc></image:image>
+    <image:image><image:loc>https://ultrasport19.com/img/sala-pesolibre.jpg</image:loc></image:image>
+    <image:image><image:loc>https://ultrasport19.com/img/sala-fuerza.jpg</image:loc></image:image>
+    <image:image><image:loc>https://ultrasport19.com/img/sala-cardio.jpg</image:loc></image:image>
+    <image:image><image:loc>https://ultrasport19.com/img/sala-multi.jpg</image:loc></image:image>
     <video:video>
       <video:thumbnail_loc>https://ultrasport19.com/img/video-poster.jpg</video:thumbnail_loc>
       <video:title>Recorrido por la sala de fuerza de Ultra-Sport19</video:title>
@@ -35,12 +23,7 @@
   </url>
   <url>
     <loc>https://ultrasport19.com/tienda/</loc>
-    <lastmod>2026-09-14</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-    <image:image>
-      <image:loc>https://ultrasport19.com/img/og-tienda.jpg</image:loc>
-      <image:title>Camisetas de fútbol por encargo, tienda de Ultra-Sport 19</image:title>
-    </image:image>
+    <lastmod>2026-10-31</lastmod>
+    <image:image><image:loc>https://ultrasport19.com/img/og-tienda.jpg</image:loc></image:image>
   </url>
 </urlset>
