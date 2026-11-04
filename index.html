@@ -889,6 +889,10 @@
   .recu .ind__chip--hoy{background:var(--t1);color:var(--fondo)}
   .hero h1 .h1-rojo{box-shadow:none}
   .foto img,.comunidad img{filter:saturate(.42) contrast(1.1) brightness(.86)}
+  .hero__badge{width:clamp(130px,15vw,190px);margin-bottom:18px;filter:drop-shadow(0 18px 40px rgba(0,0,0,.55))}
+  .hero__logo{font-size:clamp(1.5rem,3vw,2.1rem);letter-spacing:.1em}
+  .hero__tag{color:var(--etiqueta)}
+  .brand img{background:var(--fondo-hondo);padding:5px}
   .foto::after,.comunidad::after{background:linear-gradient(180deg,rgba(16,42,67,.28) 0%,rgba(10,26,43,.18) 40%,rgba(10,26,43,.9) 100%)}
   @media (hover:hover) and (pointer:fine){.foto:hover img{filter:saturate(.75) contrast(1.05) brightness(.95)}}
 </style>
@@ -901,7 +905,7 @@
 <nav class="nav" id="nav" aria-label="Principal">
   <div class="wrap nav__in">
     <a class="brand" href="#top" aria-label="Ultra-Sport19, inicio">
-      <img src="img/logo-hielo-cabeza.png" alt="" width="42" height="42" onerror="this.remove()">
+      <img src="img/lobo-grafito-96.png" alt="" width="42" height="42" onerror="this.remove()">
       <span style="color:inherit">ULTRA-SPORT<span>19</span></span>
     </a>
     <button class="nav__burger" id="burger" aria-expanded="false" aria-controls="menu" aria-label="Abrir menú"><span></span></button>
@@ -927,7 +931,9 @@
     <video autoplay muted loop playsinline preload="auto" poster="img/hero-sala.jpg" width="960" height="540"><source src="media/hero-sala.mp4" type="video/mp4"></video>
   </div>
   <div class="wrap">
-    <picture><source srcset="img/logo-hielo-440.webp" type="image/webp"><img class="hero__badge reveal" src="img/logo-hielo-440.png" alt="Logo Ultra-Sport 19: lobo de hielo, despierta tu instinto" width="220" height="250" fetchpriority="high" onerror="this.remove()"></picture>
+    <picture><source srcset="img/lobo-grafito-440.webp" type="image/webp"><img class="hero__badge reveal" src="img/lobo-grafito-440.png" alt="Logo Ultra-Sport 19: lobo grafito de ojos rojos" width="397" height="440" fetchpriority="high" onerror="this.remove()"></picture>
+    <p class="hero__logo anton reveal">ULTRA-SPORT <span class="n19">19</span></p>
+    <p class="hero__tag reveal">Despierta tu instinto</p>
     <p class="hero__kicker reveal"><span>Gimnasio boutique en Pencahue, Maule. Desde 2025</span></p>
     <h1 class="reveal">Máximo 8 personas por hora, entrenador en la tarde y <span class="h1-rojo">resultados que se miden.</span></h1>
     <p class="hero__lead reveal">Bioimpedancia incluida desde el plan de 3 veces, rutina a tu medida y seguimiento mensual. Sin masificación, sin esperas, sin adivinar.</p>
