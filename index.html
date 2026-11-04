@@ -413,14 +413,9 @@
   @media(max-width:720px){.equipo{grid-template-columns:1fr}.equipo .specs{columns:1}}
 
   /* ---------- ACTIVE FORCE y BLAZEPOD ---------- */
-  #active-force{background:var(--blanco)}
-  #active-force .bio-precio{border-left-color:var(--navy);background:var(--hielo);box-shadow:none}
-  #active-force .bio-nota{color:var(--navy)}
-  #active-force .panel{background:var(--hielo);box-shadow:none}
   .af-fotos{display:grid;grid-template-columns:1fr 1.3fr;gap:16px;margin-top:44px}
   .af-fotos img{width:100%;height:100%;max-height:440px;object-fit:cover;border-radius:var(--radius);box-shadow:var(--sombra)}
   .af-badge{display:inline-block;background:var(--navy);color:#fff;font-family:'Barlow',sans-serif;font-weight:600;letter-spacing:.02em;font-size:.82rem;padding:7px 14px;border-radius:999px;margin-bottom:14px}
-  #blazepod .bio-precio{border-left-color:var(--rojo)}
   .bz-luces{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;align-content:center;background:var(--navy-2);border-radius:var(--radius);padding:34px}
   .bz-luz{aspect-ratio:1/1;border-radius:50%;background:radial-gradient(circle,#fff 0,var(--c) 32%,var(--c) 52%,transparent 72%);box-shadow:0 0 50px 8px color-mix(in srgb,var(--c) 45%,transparent)}
   .bz-luz.off{background:radial-gradient(circle,#3A4150 0,#252B36 60%,#1A1F28 100%);box-shadow:none}
@@ -645,6 +640,27 @@
   .share svg{width:18px;height:18px;fill:var(--wsp)}
   .share:hover{border-color:var(--wsp);background:rgba(255,255,255,.08)}
 
+  /* ---------- Academia US19 (3-nov-2026): su propia marca, negro y oro, sin rojo ni navy ---------- */
+  .aca{background:#0B0B0D;color:#F5F5F5;border-top:1px solid rgba(212,167,44,.35)}
+  .aca__in{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:56px;align-items:center}
+  .aca__escudo{display:flex;justify-content:center}
+  .aca__escudo img{width:min(240px,62vw);height:auto;filter:drop-shadow(0 18px 40px rgba(212,167,44,.18))}
+  .aca__eyebrow{font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:.22em;text-transform:uppercase;font-size:.8rem;color:#D4A72C}
+  .aca__tit{font-family:'Anton',sans-serif;text-transform:uppercase;font-size:clamp(2.2rem,6vw,3.4rem);line-height:1;margin-top:10px;color:#F5F5F5}
+  .aca__lema{font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:.18em;text-transform:uppercase;font-size:.86rem;color:#F5F5F5;opacity:.8;margin-top:12px}
+  .aca__txt{font-family:'Barlow',sans-serif;font-weight:600;font-size:1.02rem;line-height:1.6;color:#F5F5F5;opacity:.86;margin-top:16px;max-width:560px}
+  .aca__cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px}
+  .aca__btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:12px 24px;border-radius:999px;background:#D4A72C;color:#0B0B0D;font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:.14em;text-transform:uppercase;font-size:.9rem;text-decoration:none;transition:transform .2s var(--ease-out),background .2s}
+  .aca__btn--linea{background:transparent;color:#F5F5F5;border:1px solid rgba(245,245,245,.35)}
+  .aca__btn:active{transform:scale(.97)}
+  @media(hover:hover) and (pointer:fine){.aca__btn:hover{background:#F4D27A}.aca__btn--linea:hover{background:rgba(212,167,44,.12);border-color:#D4A72C}}
+  .aca__fine{font-size:.82rem;color:#F5F5F5;opacity:.55;margin-top:14px}
+  @media(max-width:720px){.aca__in{grid-template-columns:1fr;gap:28px;text-align:center}.aca__txt{margin-inline:auto}.aca__cta{justify-content:center}}
+  /* Indicadores: enlace por tarjeta (reemplaza a las secciones Active Force y BlazePod) y figuras mas bajas en el celular */
+  .ind__mas{display:inline-block;margin-top:16px;color:#fff;font-family:'Barlow',sans-serif;font-weight:700;font-size:.92rem;text-decoration:underline;text-underline-offset:4px;text-decoration-color:var(--rojo)}
+  .ind__card[id]{scroll-margin-top:calc(var(--nav-h,72px) + 16px)}
+  .recu .ind__chip--hoy{background:var(--navy);color:#fff}
+
   /* ---------- secciones plegables en el celular ---------- */
   @media(max-width:720px){
     .plegable{position:relative;max-height:520px;overflow:hidden}
@@ -735,6 +751,15 @@
   @media(max-width:980px){.ind__grid{grid-template-columns:1fr 1fr}.ind__grid--2{grid-template-columns:1fr}}
   @media(max-width:640px){.ind__grid--2 .ind__card{grid-template-columns:1fr}.ind__grid--2 .ind__num{margin-top:18px}}
   @media(max-width:640px){.ind__grid{grid-template-columns:1fr}.ind__vs{grid-template-columns:1fr}}
+  .ind__desliza{display:none;color:#BFD4EA;font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:.14em;text-transform:uppercase;font-size:.74rem;margin-top:10px}
+  /* Celular (3-nov-2026): figuras 16:10 y la fila «2027» se desliza de lado en vez de apilar tres tarjetas */
+  @media(max-width:640px){
+    #indicadores .ind__fig{aspect-ratio:16/10}
+    #indicadores .ind__grid:not(.ind__grid--2){display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;margin-inline:-28px;padding:6px 28px 18px;scrollbar-width:none;perspective:none}
+    #indicadores .ind__grid:not(.ind__grid--2)::-webkit-scrollbar{display:none}
+    #indicadores .ind__grid:not(.ind__grid--2) .ind__card{flex:0 0 86%;scroll-snap-align:center;transform:none}
+    .ind__desliza{display:block}
+  }
   .js .reveal{opacity:0;transform:translateY(18px);transition:opacity .6s var(--ease-out),transform .6s var(--ease-out)}
   .js .reveal.in{opacity:1;transform:none}
   @media(prefers-reduced-motion:reduce){.js .reveal{opacity:1;transform:none;transition:none}html{scroll-behavior:auto}.in .bar i{transition:none}}
@@ -1027,8 +1052,9 @@
       </article>
     </div>
     <div class="ind__fila reveal"><span class="ind__chip">Desde 2027</span><span class="ind__fila-tit">Lo que se suma en 2027</span></div>
+    <p class="ind__desliza" aria-hidden="true">Desliza para ver las tres →</p>
     <div class="ind__grid">
-      <article class="ind__card reveal">
+      <article class="ind__card reveal" id="active-force">
         <span class="ind__tag">2027</span>
         <div class="ind__fig"><img src="img/3d-activeforce-v2.jpg" alt="Sensor de fuerza Active Force" width="800" height="800" loading="lazy" decoding="async" onerror="this.remove()"></div>
         <div>
@@ -1036,10 +1062,11 @@
           <h3>Active Force</h3>
           <p class="ind__mide">Fuerza y movilidad</p>
           <p>Un dinamómetro que mide cuánta fuerza haces, en kilos, lado a lado y articulación por articulación. Tu fuerza deja de ser una sensación y pasa a ser un número que puedes mejorar.</p>
-          <ul><li>Fuerza máxima en mano, codo, hombro, cadera, rodilla y tobillo</li><li>Diferencia entre derecha e izquierda, en porcentaje</li><li>Informe en PDF por WhatsApp</li></ul>
+          <ul><li>Fuerza máxima en mano, codo, hombro, cadera, rodilla y tobillo</li><li>Diferencia entre derecha e izquierda, en porcentaje</li><li>Tiempo al máximo y movilidad de cada articulación, en grados</li><li>Informe en PDF por WhatsApp</li></ul>
+          <a class="ind__mas" href="https://wa.me/56965902238?text=Hola%2C%20quiero%20saber%20de%20la%20evaluaci%C3%B3n%20Active%20Force%20(web)" target="_blank" rel="noopener">Quiero saber más</a>
         </div>
       </article>
-      <article class="ind__card reveal">
+      <article class="ind__card reveal" id="blazepod">
         <span class="ind__tag">2027</span>
         <div class="ind__fig"><img src="img/3d-blazepod-v2.jpg" alt="Luz de reacción BlazePod" width="800" height="800" loading="lazy" decoding="async" onerror="this.remove()"></div>
         <div>
@@ -1047,7 +1074,8 @@
           <h3>BlazePod</h3>
           <p class="ind__mide">Reacción y agilidad</p>
           <p>Luces que se encienden al azar y registran cada toque. Velocidad de reacción, agilidad y atención, medidas en milisegundos y comparadas con tu mejor marca.</p>
-          <ul><li>Tiempo de reacción por toque</li><li>Reto Pared: toques en 90 segundos</li><li>Tu progreso desde la última vez</li></ul>
+          <ul><li>Tiempo de reacción por toque</li><li>Reto Pared: toques en 90 segundos</li><li>Agilidad entre luces, contra el reloj y siempre con entrenador</li><li>Tu progreso desde la última vez</li></ul>
+          <a class="ind__mas" href="https://wa.me/56965902238?text=Hola%2C%20quiero%20saber%20de%20BlazePod%20(web)" target="_blank" rel="noopener">Quiero saber más</a>
         </div>
       </article>
       <article class="ind__card reveal">
@@ -1070,15 +1098,15 @@
   </div>
 </section>
 
-<!-- ============ RECUPERACIÓN (2027) ============ -->
+<!-- ============ RECUPERACIÓN (disponible desde oct-2026) ============ -->
 <section class="recu" id="recuperacion">
   <div class="wrap recu__in">
     <div class="recu__fig reveal"><img src="img/3d-therapress.jpg" alt="Botas de compresión Therapress Pro con su unidad de control" width="800" height="800" loading="lazy" decoding="async" onerror="this.remove()"></div>
     <div class="reveal">
-      <span class="ind__chip">Próximamente en 2027</span>
+      <span class="ind__chip ind__chip--hoy">Disponible</span>
       <p class="eyebrow">Recuperación</p>
       <h2 class="section-title">Therapress Pro</h2>
-      <p class="section-sub">Botas de compresión por aire para recuperar las piernas después de un entrenamiento exigente. Presión y tiempo regulables, en sesiones dentro de la sala.</p>
+      <p class="section-sub">Botas de compresión por aire para recuperar las piernas después de un entrenamiento exigente. Presión y tiempo regulables, en sesiones dentro de la sala. Es un servicio adicional a tu plan: te contamos los detalles por WhatsApp.</p>
       <ul class="recu__lista"><li>Compresión secuencial por cámaras, de los pies a los muslos</li><li>Programas de presión y tiempo ajustables</li><li>Ideal después de piernas, fútbol o semanas de alta carga</li></ul>
       <div class="hero__cta"><a class="btn btn--rojo btn--sm" href="https://wa.me/56965902238?text=Hola%2C%20quiero%20saber%20de%20la%20recuperaci%C3%B3n%20con%20Therapress%20(web)" target="_blank" rel="noopener">Quiero saber más</a></div>
     </div>
@@ -1130,81 +1158,6 @@
         <div class="dexa">Correlación <b>superior a 0,986 frente a DEXA</b> (estándar internacional): datos consistentes, reproducibles y confiables.</div>
       </div>
     </div>
-  </div>
-</section>
-
-<!-- ============ ACTIVE FORCE ============ -->
-<section id="active-force">
-  <div class="wrap feature">
-    <div class="reveal">
-      <span class="af-badge">Desde 2027</span>
-      <p class="eyebrow">Evaluación de fuerza</p>
-      <h2 class="section-title">Active Force</h2>
-      <p class="section-sub">Un dinamómetro de mano que mide cuánta fuerza haces, en kilos y lado a lado, y cuánto se mueve cada articulación. Tu fuerza deja de ser una sensación: pasa a ser un número que puedes mejorar.</p>
-      <div class="bio-precio">
-        <span class="bio-monto">6 articulaciones</span>
-        <span class="bio-detalle">Mano, codo, hombro, cadera, rodilla y tobillo, lado a lado</span>
-        <p class="bio-nota">Disponible desde 2027</p>
-      </div>
-      <div class="hero__cta" style="margin-top:22px">
-        <a class="btn btn--rojo btn--sm" href="https://wa.me/56965902238?text=Hola%2C%20quiero%20saber%20de%20la%20evaluaci%C3%B3n%20Active%20Force%20(web)" target="_blank" rel="noopener">Quiero saber más</a>
-      </div>
-    </div>
-    <div class="panel reveal">
-      <h3>Qué mide tu evaluación</h3>
-      <ul>
-        <li><b>Fuerza máxima:</b> en kilos, en mano, codo, hombro, cadera, rodilla y tobillo.</li>
-        <li><b>Tiempo al máximo:</b> cuántos segundos tardas en llegar a tu fuerza máxima.</li>
-        <li><b>Lado a lado:</b> la diferencia entre derecha e izquierda, en kilos y en porcentaje.</li>
-        <li><b>Movilidad:</b> cuánto se mueve cada articulación, en grados.</li>
-        <li><b>Informe en PDF por WhatsApp:</b> tu historial, tu récord personal y la fecha sugerida de tu próxima evaluación.</li>
-      </ul>
-      <p class="fine">Medición descriptiva de fuerza y movilidad para el seguimiento del entrenamiento. No es un examen médico.</p>
-    </div>
-  </div>
-  <div class="wrap">
-    <div class="af-fotos reveal">
-      <img src="img/activforce-uso.jpg" alt="Medición de fuerza con el dinamómetro ActivForce" width="900" height="450" loading="lazy" decoding="async">
-      <img src="img/activforce-app.jpg" alt="Resultado de la medición en kilos en la app de ActivForce" width="900" height="705" loading="lazy" decoding="async">
-    </div>
-    <p class="fine" style="margin-top:10px">Imágenes: ActivForce, usadas con autorización.</p>
-  </div>
-</section>
-
-<!-- ============ BLAZEPOD ============ -->
-<section id="blazepod">
-  <div class="wrap feature">
-    <div class="reveal">
-      <span class="af-badge" style="background:var(--rojo)">Desde 2027</span>
-      <p class="eyebrow">Reacción y agilidad</p>
-      <h2 class="section-title">BlazePod</h2>
-      <p class="section-sub">Seis luces que se encienden al azar: tú reaccionas y el sistema mide cada toque. Entrenamos velocidad, agilidad y atención, siempre con entrenador.</p>
-      <div class="bio-precio">
-        <span class="bio-monto">6 luces</span>
-        <span class="bio-detalle">Reacción, agilidad y atención, medidas en milisegundos</span>
-        <p class="bio-nota">Disponible desde 2027, con el Reto Pared</p>
-      </div>
-      <div class="hero__cta" style="margin-top:22px">
-        <a class="btn btn--rojo btn--sm" href="https://wa.me/56965902238?text=Hola%2C%20quiero%20saber%20de%20BlazePod%20(web)" target="_blank" rel="noopener">Quiero saber más</a>
-      </div>
-    </div>
-    <div class="panel reveal">
-      <h3>Qué vas a medir</h3>
-      <ul>
-        <li><b>Tiempo de reacción:</b> cuánto tardas en tocar cada luz desde que se enciende.</li>
-        <li><b>Toques en 90 segundos:</b> el Reto Pared, con los 6 pods en la pared.</li>
-        <li><b>Agilidad:</b> desplazamientos entre luces, en juegos contra el reloj.</li>
-        <li><b>Informe en PDF por WhatsApp:</b> tus tiempos, tu mejor marca y cómo vas desde la última vez.</li>
-      </ul>
-      <p class="fine">Siempre con entrenador. Medición descriptiva de seguimiento físico.</p>
-    </div>
-  </div>
-  <div class="wrap">
-    <div class="af-fotos reveal">
-      <img src="img/blazepod-fitness.jpg" alt="Entrenamiento de reacción con BlazePod" width="434" height="547" loading="lazy" decoding="async">
-      <img src="img/blazepod-luces.jpg" alt="Pods de BlazePod encendidos en el suelo" width="1000" height="422" loading="lazy" decoding="async">
-    </div>
-    <p class="fine" style="margin-top:10px">Imágenes: BlazePod, usadas con autorización.</p>
   </div>
 </section>
 
@@ -1489,6 +1442,27 @@
   </div>
 </section>
 
+<!-- ============ ACADEMIA US19 (temporada 2027) ============ -->
+<section class="aca" id="academia" aria-labelledby="aca-tit">
+  <div class="wrap aca__in">
+    <picture class="aca__escudo reveal">
+      <source srcset="img/academia-escudo-360.webp" type="image/webp">
+      <img src="img/academia-escudo-360.png" alt="Escudo de la Academia US19" width="293" height="360" loading="lazy" decoding="async">
+    </picture>
+    <div class="reveal">
+      <p class="aca__eyebrow">Nuevo | Temporada 2027</p>
+      <h2 class="aca__tit" id="aca-tit">Academia US19</h2>
+      <p class="aca__lema">Técnica | Fuerza | Mentalidad</p>
+      <p class="aca__txt">Futsal de rendimiento en Pencahue. Cancha y gimnasio de fuerza, grupos reducidos y una evaluación al entrar y otra al cerrar la temporada. Pensado para apoderados que quieren que su hijo o hija entrene para competir.</p>
+      <div class="aca__cta">
+        <a class="aca__btn" href="https://us19-academia-web.pages.dev/" target="_blank" rel="noopener">Conocer la academia</a>
+        <a class="aca__btn aca__btn--linea" href="https://wa.me/56965902238?text=ACADEMIA%20US19%20%7C%20INSCRIPCI%C3%93N%0AHola%2C%20quiero%20informaci%C3%B3n%20sobre%20la%20academia%20y%20los%20cupos%20para%20la%20temporada.%0AOrigen%3A%20web%20del%20gimnasio" target="_blank" rel="noopener">Consultar cupos</a>
+      </div>
+      <p class="aca__fine">Cupos limitados. Los detalles del programa se entregan por WhatsApp.</p>
+    </div>
+  </div>
+</section>
+
 <!-- ============ REDES ============ -->
 <section class="redes" id="redes">
   <div class="wrap">
@@ -1569,6 +1543,7 @@
         <li><a href="#primer-dia">Tu primer día</a></li>
         <li><a href="#faq">Preguntas frecuentes</a></li>
         <li><a href="tienda/">Tienda: camisetas y ropa deportiva</a></li>
+        <li><a href="#academia">Academia US19 de futsal</a></li>
       </ul>
     </div>
     <div>
@@ -1631,7 +1606,7 @@
 
   // Celular: secciones de detalle plegadas con «Ver más» (no se borra nada; en computador no cambia)
   if(window.matchMedia('(max-width:720px)').matches){
-    const PLEGAR={porque:520,como:560,espacio:920,bioimpedancia:560,'active-force':520,blazepod:520,horarios:520,reglas:520,opiniones:760,'primer-dia':520};
+    const PLEGAR={porque:520,como:560,espacio:920,bioimpedancia:560,horarios:520,reglas:520,opiniones:760,'primer-dia':520};
     Object.entries(PLEGAR).forEach(([id,alto])=>{
       const sec=document.getElementById(id);
       if(!sec)return;
