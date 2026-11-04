@@ -40,8 +40,8 @@
     },
     {
       "nombre": "se cuela lenguaje clinico nuevo en el texto que lee el cliente",
-      "de": "<h3>Conversamos tu historial y tus objetivos</h3>",
-      "a": "<h3>Diagnóstico funcional y plan de tratamiento</h3>"
+      "de": "<li>Cómo es tu primera sesión y qué llevar</li>",
+      "a": "<li>Diagnóstico funcional y plan de tratamiento</li>"
     },
     {
       "nombre": "una imagen se queda sin alt",

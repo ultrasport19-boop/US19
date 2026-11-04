@@ -104,18 +104,6 @@
       "publisher": {"@id": "https://ultrasport19.com/#gimnasio"}
     },
     {
-      "@type": "FAQPage",
-      "mainEntity": [
-        {"@type":"Question","name":"¿Cómo ingreso al gimnasio?","acceptedAnswer":{"@type":"Answer","text":"Escríbenos por WhatsApp a nuestro asistente. Trabajamos con cupos limitados por hora, así que revisamos la disponibilidad de tu horario, te explicamos los planes y coordinamos tu evaluación inicial."}},
-        {"@type":"Question","name":"¿Necesito una evaluación para comenzar?","acceptedAnswer":{"@type":"Answer","text":"Sí. Iniciamos con una evaluación para conocer tu historial, tu estado actual y tus objetivos. Así ajustamos las cargas y definimos una rutina segura para ti. Desde el plan de 3 veces por semana, además medimos tu composición corporal con bioimpedancia."}},
-        {"@type":"Question","name":"Nunca he entrenado. ¿Puedo partir igual?","acceptedAnswer":{"@type":"Answer","text":"Perfecto, es el mejor momento. Partimos desde lo básico: técnica, control del movimiento, movilidad y progresión gradual. El objetivo es que aprendas a moverte bien y ganes confianza."}},
-        {"@type":"Question","name":"¿Qué debo llevar el primer día?","acceptedAnswer":{"@type":"Answer","text":"Ropa cómoda, zapatillas, botella de agua y una toalla pequeña. Si usas plantillas, rodillera o implementos personales, tráelos. El plan se activa con el pago de la primera mensualidad."}},
-        {"@type":"Question","name":"¿Cómo reservo mis sesiones?","acceptedAnswer":{"@type":"Answer","text":"Con tu plan activo, escribes al asistente de WhatsApp y reservas tu hora, con al menos 24 horas de anticipación y hasta 2 semanas hacia adelante. Por el mismo asistente puedes cambiar o cancelar tu hora."}},
-        {"@type":"Question","name":"¿Cuáles son los horarios?","acceptedAnswer":{"@type":"Answer","text":"Lunes a viernes de 06:00 a 22:00. De 16:00 a 22:00 hay entrenador en sala con sesiones guiadas. De 06:00 a 16:00 el entrenamiento es libre, sin supervisión: ideal para quien ya tiene experiencia. Fines de semana: evaluaciones con cita."}},
-        {"@type":"Question","name":"¿Cuánto cuestan los planes?","acceptedAnswer":{"@type":"Answer","text":"Plan 2 veces por semana $15.000, 3 veces por semana $25.000 y 4 veces por semana $35.000 al mes. Desde el plan de 3 veces incluyen evaluación de bioimpedancia; en el de 2 veces se paga aparte ($5.000). Sin matrícula."}}
-      ]
-    },
-    {
       "@type": "VideoObject",
       "name": "Recorrido por la sala de fuerza de Ultra-Sport19",
       "description": "Un vistazo a la sala de fuerza de Ultra-Sport19 en Pencahue: rack, barra, máquinas, mancuernas y zona de peso libre.",
@@ -755,6 +743,18 @@
   .recu{background:var(--fondo)}
   .recu .ind__chip--hoy{background:var(--t1);color:var(--fondo)}
 
+  /* Asistente virtual con QR (3-nov-2026) */
+  .asis{background:var(--tarjeta)}
+  .asis__in{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr);gap:56px;align-items:center}
+  .asis__lista{list-style:none;margin:26px 0 30px;display:grid;gap:12px}
+  .asis__lista li{position:relative;padding-left:24px;color:var(--t1)}
+  .asis__lista li::before{content:"";position:absolute;left:0;top:.72em;width:12px;height:2px;background:var(--rojo)}
+  .asis__nota{margin-top:22px;max-width:520px}
+  .asis__qr{justify-self:center;display:flex;flex-direction:column;align-items:center;gap:10px;background:var(--fondo);border:1px solid var(--linea);border-radius:var(--radius);padding:26px 26px 22px;text-align:center}
+  .asis__qr img{width:min(240px,60vw);height:auto;border-radius:10px;background:#fff;padding:10px}
+  .asis__num{font-family:'Anton',sans-serif;font-size:1.4rem;letter-spacing:.04em;color:var(--t1);margin-top:6px}
+  .asis__guarda{font-size:.84rem;color:var(--t3)}
+  @media(max-width:820px){.asis__in{grid-template-columns:1fr;gap:34px}}
   /* ---------- Academia US19 (3-nov-2026): su propia marca, negro y oro, sin rojo ni navy ---------- */
   .aca{background:#0B0B0D;color:#F5F5F5;border-top:1px solid rgba(212,167,44,.35)}
   .aca__in{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:56px;align-items:center}
@@ -915,8 +915,7 @@
       <a href="#espacio">Espacio</a>
       <a href="#planes">Planes</a>
       <a href="#opiniones">Opiniones</a>
-      <a href="#primer-dia">Primer día</a>
-      <a href="#faq">Preguntas</a>
+      <a href="#asistente">Asistente</a>
       <a href="#contacto">Contacto</a>
       <a href="tienda/">Tienda</a>
       <a class="nav__cta" href="https://wa.me/56965902238?text=Hola%2C%20quiero%20informaci%C3%B3n%20para%20ingresar%20(web)" target="_blank" rel="noopener">Quiero ingresar</a>
@@ -1164,10 +1163,6 @@
         </div>
       </article>
     </div>
-    <div class="ind__vs reveal">
-      <div class="ind__col ind__col--no"><h4>Gimnasio convencional</h4><ul><li>Tu avance se mide a ojo o con la pesa del baño</li><li>Nadie registra tus perímetros ni compara mes a mes</li><li>Rutina igual para todos, sin punto de partida</li></ul></div>
-      <div class="ind__col ind__col--si"><h4>Ultra-Sport19</h4><ul><li>Composición corporal con bioimpedancia de 8 sensores</li><li>Perímetros con cinta métrica digital, cada mes</li><li>Desde 2027: fuerza, reacción y frecuencia cardíaca en vivo</li></ul></div>
-    </div>
     <p class="ind__fine reveal">Mediciones descriptivas para el seguimiento del entrenamiento; no son un examen médico. Active Force, BlazePod y la banda cardíaca estarán disponibles desde 2027.</p>
   </div>
 </section>
@@ -1326,99 +1321,27 @@
   </div>
 </section>
 
-<!-- ============ PRIMER DÍA ============ -->
-<section class="dia" id="primer-dia">
-  <div class="wrap">
-    <p class="eyebrow reveal">Tu primera sesión</p>
-    <h2 class="section-title reveal">Así es tu primer día,<br>paso a paso</h2>
-    <p class="section-sub reveal">Sin sorpresas ni protocolos raros. Llegas, conversamos tus objetivos, entrenas acompañado y te vas con tu plan claro.</p>
-    <ol class="dia-list">
-      <li class="dia-item reveal">
-        <span class="t">1</span>
-        <span class="min">Antes de venir</span>
-        <h3>Coordinas tu hora por WhatsApp</h3>
-        <p>Nuestro asistente revisa los cupos de tu horario y agenda tu evaluación inicial. Trae ropa cómoda, zapatillas, agua y una toalla pequeña.</p>
-      </li>
-      <li class="dia-item reveal">
-        <span class="t">2</span>
-        <span class="min">Primeros 10 minutos</span>
-        <h3>Conversamos tu historial y tus objetivos</h3>
-        <p>Tu experiencia previa, tu historial y lo que quieres lograr. Con eso definimos por dónde partir.</p>
-      </li>
-      <li class="dia-item reveal">
-        <span class="t">3</span>
-        <span class="min">Evaluación</span>
-        <h3>Medimos tu composición corporal (desde el plan 3x)</h3>
-        <p>Bioimpedancia de 8 sensores: masa muscular, grasa, agua y metabolismo basal. Es tu punto de partida para comparar en tus próximas evaluaciones.</p>
-      </li>
-      <li class="dia-item reveal">
-        <span class="t">4</span>
-        <span class="min">Sesión guiada</span>
-        <h3>Entrenas acompañado desde el primer ejercicio</h3>
-        <p>Calentamiento, técnica básica y una rutina adaptada a tu nivel, con el entrenador corrigiendo a tu lado. Máximo 8 personas en la sala.</p>
-      </li>
-      <li class="dia-item reveal">
-        <span class="t">5</span>
-        <span class="min">Al terminar</span>
-        <h3>Eliges tu plan y reservas tus próximas sesiones</h3>
-        <p>Activas tu plan con la primera mensualidad y agendas con el asistente hasta 2 semanas hacia adelante. Sin matrícula ni permanencia.</p>
-      </li>
-    </ol>
-    <div class="dia-cta reveal">
-      <a class="btn btn--verde" href="https://wa.me/56965902238?text=Hola%2C%20quiero%20agendar%20mi%20primera%20sesi%C3%B3n%20(web)" target="_blank" rel="noopener">Agendar mi primera sesión</a>
-      <span class="fine">Cupos limitados por hora. Respuesta inmediata por WhatsApp.</span>
+<!-- ============ ASISTENTE VIRTUAL (3-nov-2026: reemplaza «Primer día» y las preguntas frecuentes) ============ -->
+<section class="asis" id="asistente">
+  <div class="wrap asis__in">
+    <div class="reveal">
+      <p class="eyebrow">Asistente virtual 24/7</p>
+      <h2 class="section-title">¿Tienes dudas? Pregúntale al asistente</h2>
+      <p class="section-sub">Escanea el código o toca el botón. El asistente de WhatsApp te responde al instante, a cualquier hora.</p>
+      <ul class="asis__lista">
+        <li>Planes, precios y horarios</li>
+        <li>Cupos disponibles en tu horario</li>
+        <li>Cómo es tu primera sesión y qué llevar</li>
+        <li>Reservar, cambiar o cancelar tu hora</li>
+      </ul>
+      <a class="btn btn--rojo" href="https://wa.me/56965902238?text=Hola%2C%20vengo%20de%20la%20web" target="_blank" rel="noopener">Abrir el asistente</a>
+      <p class="fine asis__nota">¿Tienes una molestia o lesión? Lo conversamos en la evaluación inicial y, si corresponde, te sugerimos consultar primero a tu médico.</p>
     </div>
-  </div>
-</section>
-
-<!-- ============ FAQ ============ -->
-<section id="faq">
-  <div class="wrap">
-    <p class="eyebrow reveal">Preguntas frecuentes</p>
-    <h2 class="section-title reveal">Antes de tu primer día</h2>
-    <div class="faq-list reveal">
-      <details>
-        <summary>¿Cómo ingreso al gimnasio?</summary>
-        <div class="a">Escríbenos por WhatsApp a nuestro asistente. Trabajamos con cupos limitados por hora, así que revisamos la disponibilidad de tu horario, te explicamos los planes y coordinamos tu evaluación inicial.</div>
-      </details>
-      <details>
-        <summary>¿Necesito una evaluación para comenzar?</summary>
-        <div class="a">Sí. Iniciamos con una evaluación para conocer tu historial, tu estado actual y tus objetivos. Así ajustamos las cargas y definimos una rutina segura para ti. Desde el plan de 3 veces por semana, además medimos tu composición corporal con bioimpedancia.</div>
-      </details>
-      <details>
-        <summary>Nunca he entrenado. ¿Puedo partir igual?</summary>
-        <div class="a">Perfecto, es el mejor momento. Partimos desde lo básico: técnica, control del movimiento, movilidad y progresión gradual. El objetivo es que aprendas a moverte bien y ganes confianza.</div>
-      </details>
-      <details>
-        <summary>¿Puedo entrenar si tengo una molestia o lesión?</summary>
-        <div class="a">Sí, pero lo conversamos primero en la evaluación. Si hay dolor agudo, lesión reciente o síntomas nuevos, adaptamos la rutina y, si corresponde, te sugerimos consultar primero a tu médico.</div>
-      </details>
-      <details>
-        <summary>¿Qué debo llevar el primer día?</summary>
-        <div class="a">Ropa cómoda, zapatillas, botella de agua y una toalla pequeña. Si usas plantillas, rodillera o implementos personales, tráelos. El plan se activa con el pago de la primera mensualidad.</div>
-      </details>
-      <details>
-        <summary>¿Cómo reservo mis sesiones?</summary>
-        <div class="a">Con tu plan activo, escribes al asistente de WhatsApp y reservas tu hora, con al menos 24 horas de anticipación y hasta 2 semanas hacia adelante. Por el mismo asistente puedes cambiar o cancelar tu hora.</div>
-      </details>
-      <details>
-        <summary>¿Puedo cambiar de plan o recuperar una clase?</summary>
-        <div class="a">Puedes cambiar de plan para el período siguiente si cambia tu disponibilidad. Recuperar una clase depende de cupos: si avisas con anticipación, intentamos reacomodarla dentro de la semana.</div>
-      </details>
-      <details>
-        <summary>¿En cuánto tiempo veré resultados?</summary>
-        <div class="a">Depende de tu punto de partida y tu constancia. En general:
-          <ul>
-            <li>2 a 4 semanas: mejoras de técnica, control y tolerancia al esfuerzo.</li>
-            <li>6 a 12 semanas: cambios más notorios en fuerza y condición física.</li>
-          </ul>
-          Desde el plan de 3 veces, tu evaluación mensual muestra el cambio en números.</div>
-      </details>
-      <details>
-        <summary>¿Cuáles son los horarios?</summary>
-        <div class="a">Lunes a viernes de 06:00 a 22:00. De 16:00 a 22:00 hay entrenador en sala con sesiones guiadas. De 06:00 a 16:00 el entrenamiento es libre, sin supervisión: ideal para quien ya tiene experiencia. Fines de semana: evaluaciones con cita.</div>
-      </details>
-    </div>
+    <a class="asis__qr reveal" href="https://wa.me/56965902238?text=Hola%2C%20vengo%20de%20la%20web" target="_blank" rel="noopener" aria-label="Abrir el asistente de WhatsApp">
+      <img src="img/qr-asistente.svg" alt="Código QR del asistente de WhatsApp de Ultra-Sport19" width="360" height="360" loading="lazy" decoding="async">
+      <span class="asis__num">+56 9 6590 2238</span>
+      <span class="asis__guarda">Guárdalo como «Ultra-Sport19 Bot»</span>
+    </a>
   </div>
 </section>
 
@@ -1524,8 +1447,7 @@
         <li><a href="#bioimpedancia">Bioimpedancia</a></li>
         <li><a href="#active-force">Evaluación de fuerza (Active Force)</a></li>
         <li><a href="#blazepod">Reacción con luces (BlazePod)</a></li>
-        <li><a href="#primer-dia">Tu primer día</a></li>
-        <li><a href="#faq">Preguntas frecuentes</a></li>
+        <li><a href="#asistente">Asistente virtual 24/7</a></li>
         <li><a href="tienda/">Tienda: camisetas y ropa deportiva</a></li>
         <li><a href="#academia">Academia US19 de futsal</a></li>
       </ul>
@@ -1583,7 +1505,7 @@
 
   // Celular: secciones de detalle plegadas con «Ver más» (no se borra nada; en computador no cambia)
   if(window.matchMedia('(max-width:720px)').matches){
-    const PLEGAR={porque:520,espacio:920,bioimpedancia:560,horarios:520,reglas:520,opiniones:760,'primer-dia':520};
+    const PLEGAR={porque:520,espacio:920,bioimpedancia:560,horarios:520,reglas:520,opiniones:760};
     Object.entries(PLEGAR).forEach(([id,alto])=>{
       const sec=document.getElementById(id);
       if(!sec)return;
