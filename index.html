@@ -745,6 +745,11 @@
 
   /* Asistente virtual con QR (3-nov-2026) */
   .score__item--ancho{grid-column:1/-1}
+  .colab{background:var(--fondo);padding:72px 0}
+  .colab__item{margin-top:30px;display:flex;align-items:center;gap:24px;max-width:620px;background:var(--tarjeta);border:1px solid var(--linea);border-radius:var(--radius);padding:22px 26px}
+  .colab__item img{width:96px;height:96px;flex:none}
+  .colab__item h3{font-family:'Barlow',sans-serif;font-weight:700;text-transform:none;letter-spacing:0;font-size:1.2rem;color:var(--t1)}
+  .colab__item p{color:var(--t2);font-size:.96rem;margin-top:4px}
   .pedidos{margin-top:40px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:34px;align-items:center;background:var(--fondo);border:1px solid var(--linea);border-left:3px solid var(--rojo);border-radius:var(--radius);padding:32px 34px}
   .pedidos__tit{font-family:'Anton',sans-serif;text-transform:uppercase;font-size:clamp(1.6rem,3vw,2.2rem);line-height:1.05;color:var(--t1)}
   .pedidos__txt{color:var(--t2);margin-top:12px;font-size:.98rem}
@@ -1391,6 +1396,21 @@
   </div>
 </section>
 
+<!-- ============ COLABORADORES (3-nov-2026) ============ -->
+<section class="colab" id="colaboradores" aria-labelledby="colab-tit">
+  <div class="wrap">
+    <p class="eyebrow reveal">Colaboradores</p>
+    <h2 class="section-title reveal" id="colab-tit">Trabajamos junto a</h2>
+    <div class="colab__item reveal">
+      <picture><source srcset="img/semillero-240.webp" type="image/webp"><img src="img/semillero-240.png" alt="Escudo de la Escuela de Fútbol Semillero" width="240" height="240" loading="lazy" decoding="async"></picture>
+      <div>
+        <h3>Escuela de Fútbol Semillero</h3>
+        <p>Escuela formativa de fútbol de la comuna de Pencahue.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ============ CONTACTO ============ -->
 <section class="contacto" id="contacto">
   <div class="wrap contacto-grid">
@@ -1449,6 +1469,7 @@
         <li><a href="#asistente">Asistente virtual 24/7</a></li>
         <li><a href="tienda/">Tienda: camisetas y ropa deportiva</a></li>
         <li><a href="#academia">Academia US19 de futsal</a></li>
+        <li><a href="#colaboradores">Colaboradores</a></li>
       </ul>
     </div>
     <div>
