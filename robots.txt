@@ -1,5 +1,4 @@
 User-agent: *
 Allow: /
-Disallow: /privacidad.html
 
 Sitemap: https://ultrasport19.com/sitemap.xml
