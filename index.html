@@ -751,6 +751,11 @@
   .colab__item h3{font-family:'Barlow',sans-serif;font-weight:700;text-transform:none;letter-spacing:0;font-size:1.2rem;color:var(--t1)}
   .colab__item p{color:var(--t2);font-size:.96rem;margin-top:4px}
   .colab__btn{margin-top:14px}
+  .colab__btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+  .colab__grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:30px}
+  .colab__grid .colab__item{margin-top:0;max-width:none}
+  .colab__item img.colab__escudo{width:78px;height:96px;object-fit:contain}
+  @media(max-width:820px){.colab__grid{grid-template-columns:1fr}}
   .pedidos{margin-top:40px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:34px;align-items:center;background:var(--fondo);border:1px solid var(--linea);border-left:3px solid var(--rojo);border-radius:var(--radius);padding:32px 34px}
   .pedidos__tit{font-family:'Anton',sans-serif;text-transform:uppercase;font-size:clamp(1.6rem,3vw,2.2rem);line-height:1.05;color:var(--t1)}
   .pedidos__txt{color:var(--t2);margin-top:12px;font-size:.98rem}
@@ -1402,13 +1407,23 @@
   <div class="wrap">
     <p class="eyebrow reveal">Colaboradores</p>
     <h2 class="section-title reveal" id="colab-tit">Trabajamos junto a</h2>
+    <div class="colab__grid">
     <div class="colab__item reveal">
       <picture><source srcset="img/semillero-240.webp" type="image/webp"><img src="img/semillero-240.png" alt="Escudo de la Escuela de Fútbol El Semillero" width="240" height="240" loading="lazy" decoding="async"></picture>
       <div>
         <h3>Escuela de Fútbol El Semillero</h3>
         <p>Escuela formativa de fútbol en Figueroa, Pencahue.</p>
-        <a class="btn btn--linea btn--sm colab__btn" href="https://ultrasport19-boop.github.io/WEBSEMILLERO2.0/" target="_blank" rel="noopener">Visitar su página</a>
+        <div class="colab__btns"><a class="btn btn--linea btn--sm" href="https://www.instagram.com/escdefutbol.elsemillero/" target="_blank" rel="noopener">Instagram</a><a class="btn btn--linea btn--sm" href="https://www.facebook.com/escdefutbol.elsemillero" target="_blank" rel="noopener">Facebook</a></div>
       </div>
+    </div>
+    <div class="colab__item reveal">
+      <picture><source srcset="img/academia-escudo-360.webp" type="image/webp"><img src="img/academia-escudo-360.png" alt="Escudo de la Academia US19" width="293" height="360" loading="lazy" decoding="async" class="colab__escudo"></picture>
+      <div>
+        <h3>Academia US19</h3>
+        <p>Futsal de rendimiento en Pencahue. Temporada 2027.</p>
+        <a class="btn btn--linea btn--sm colab__btn" href="#academia">Ver la academia</a>
+      </div>
+    </div>
     </div>
   </div>
 </section>
