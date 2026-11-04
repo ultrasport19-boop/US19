@@ -745,6 +745,14 @@
 
   /* Asistente virtual con QR (3-nov-2026) */
   .score__item--ancho{grid-column:1/-1}
+  .pedidos{margin-top:40px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:34px;align-items:center;background:var(--fondo);border:1px solid var(--linea);border-left:3px solid var(--rojo);border-radius:var(--radius);padding:32px 34px}
+  .pedidos__tit{font-family:'Anton',sans-serif;text-transform:uppercase;font-size:clamp(1.6rem,3vw,2.2rem);line-height:1.05;color:var(--t1)}
+  .pedidos__txt{color:var(--t2);margin-top:12px;font-size:.98rem}
+  .pedidos__lista{list-style:none;display:grid;gap:14px}
+  .pedidos__lista li{display:grid;gap:2px;padding:14px 18px;border:1px solid var(--linea);border-radius:var(--radius-sm);background:var(--tarjeta)}
+  .pedidos__lista b{color:var(--t1);font-weight:700}
+  .pedidos__lista span{color:var(--t2);font-size:.92rem}
+  @media(max-width:820px){.pedidos{grid-template-columns:1fr;gap:22px;padding:26px 22px}}
   .asis{background:var(--tarjeta)}
   .asis__in{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr);gap:56px;align-items:center}
   .asis__lista{list-style:none;margin:26px 0 30px;display:grid;gap:12px}
@@ -1263,6 +1271,19 @@
       </div>
     </div>
     <p class="opi-fuente">Promedio de las dos rondas: abril de 2026 (30 respuestas) y octubre de 2026 (25 respuestas). Escala de 1 a 5 en cada categoría y de 0 a 10 en recomendación. Las respuestas se usan para mejorar el servicio; las citas van con la ortografía corregida.</p>
+
+    <div class="pedidos reveal">
+      <div>
+        <p class="eyebrow">Lo que nos pidieron</p>
+        <h3 class="pedidos__tit">Nuestras prioridades para 2027</h3>
+        <p class="pedidos__txt">Leímos cada respuesta de la encuesta. Esto es lo que más se repitió y es lo que vamos a trabajar el próximo año.</p>
+      </div>
+      <ul class="pedidos__lista">
+        <li><b>Más máquinas de pierna</b><span>Prensa, hack y polea para glúteo.</span></li>
+        <li><b>Más equipos de cardio</b><span>Lo pidieron varios socios en la encuesta.</span></li>
+        <li><b>Baño y camarines</b><span>Para cambiarse antes y después de entrenar.</span></li>
+      </ul>
+    </div>
 
     <p class="eyebrow reveal" style="margin-top:46px">Reseñas en Google</p>
     <div class="review-grid reveal">
