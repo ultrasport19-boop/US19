@@ -751,13 +751,15 @@
   @media(max-width:980px){.ind__grid{grid-template-columns:1fr 1fr}.ind__grid--2{grid-template-columns:1fr}}
   @media(max-width:640px){.ind__grid--2 .ind__card{grid-template-columns:1fr}.ind__grid--2 .ind__num{margin-top:18px}}
   @media(max-width:640px){.ind__grid{grid-template-columns:1fr}.ind__vs{grid-template-columns:1fr}}
+  .ind__desliza + .ind__grid{margin-top:20px}
+  .aca :focus-visible{outline-color:#D4A72C}
   .ind__desliza{display:none;color:#BFD4EA;font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:.14em;text-transform:uppercase;font-size:.74rem;margin-top:10px}
   /* Celular (3-nov-2026): figuras 16:10 y la fila «2027» se desliza de lado en vez de apilar tres tarjetas */
   @media(max-width:640px){
     #indicadores .ind__fig{aspect-ratio:16/10}
     #indicadores .ind__grid:not(.ind__grid--2){display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;margin-inline:-28px;padding:6px 28px 18px;scrollbar-width:none;perspective:none}
     #indicadores .ind__grid:not(.ind__grid--2)::-webkit-scrollbar{display:none}
-    #indicadores .ind__grid:not(.ind__grid--2) .ind__card{flex:0 0 86%;scroll-snap-align:center;transform:none}
+    #indicadores .ind__grid:not(.ind__grid--2) .ind__card{flex:0 0 86%;scroll-snap-align:center;transform:none!important}
     .ind__desliza{display:block}
   }
   .js .reveal{opacity:0;transform:translateY(18px);transition:opacity .6s var(--ease-out),transform .6s var(--ease-out)}
@@ -1053,7 +1055,7 @@
     </div>
     <div class="ind__fila reveal"><span class="ind__chip">Desde 2027</span><span class="ind__fila-tit">Lo que se suma en 2027</span></div>
     <p class="ind__desliza" aria-hidden="true">Desliza para ver las tres →</p>
-    <div class="ind__grid">
+    <div class="ind__grid" role="region" aria-label="Lo que se suma en 2027" tabindex="0">
       <article class="ind__card reveal" id="active-force">
         <span class="ind__tag">2027</span>
         <div class="ind__fig"><img src="img/3d-activeforce-v2.jpg" alt="Sensor de fuerza Active Force" width="800" height="800" loading="lazy" decoding="async" onerror="this.remove()"></div>
