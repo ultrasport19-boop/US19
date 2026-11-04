@@ -752,6 +752,14 @@
   .colab__item p{color:var(--t2);font-size:.96rem;margin-top:4px}
   .colab__btn{margin-top:14px}
   .colab__btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+  .colab__item{flex-wrap:wrap;overflow:hidden}
+  .colab__foto{flex:1 0 100%;margin:-22px -26px 6px;aspect-ratio:16/10;overflow:hidden}
+  .colab__foto img{width:100%;height:100%;object-fit:cover;filter:saturate(.7) contrast(1.05)}
+  .colab__item>picture{flex:none}
+  .colab__item>div:last-child{flex:1;min-width:0}
+  .colab__cta{margin-top:22px;display:flex;flex-wrap:wrap;gap:20px;align-items:center;justify-content:space-between;background:var(--tarjeta);border:1px solid var(--linea);border-left:3px solid var(--rojo);border-radius:var(--radius);padding:26px 28px}
+  .colab__cta h3{font-family:'Anton',sans-serif;text-transform:uppercase;font-size:clamp(1.3rem,2.4vw,1.7rem);line-height:1.1;color:var(--t1)}
+  .colab__cta p{color:var(--t2);margin-top:8px;max-width:640px;font-size:.98rem}
   .colab__grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:30px}
   .colab__grid .colab__item{margin-top:0;max-width:none}
   .colab__item img.colab__escudo{width:78px;height:96px;object-fit:contain}
@@ -1409,6 +1417,7 @@
     <h2 class="section-title reveal" id="colab-tit">Trabajamos junto a</h2>
     <div class="colab__grid">
     <div class="colab__item reveal">
+      <div class="colab__foto"><img src="img/colab-semillero-800.webp" alt="Plantel de la Escuela de Fútbol El Semillero en un estadio" width="800" height="500" loading="lazy" decoding="async"></div>
       <picture><source srcset="img/semillero-240.webp" type="image/webp"><img src="img/semillero-240.png" alt="Escudo de la Escuela de Fútbol El Semillero" width="240" height="240" loading="lazy" decoding="async"></picture>
       <div>
         <h3>Escuela de Fútbol El Semillero</h3>
@@ -1417,6 +1426,7 @@
       </div>
     </div>
     <div class="colab__item reveal">
+      <div class="colab__foto"><img src="img/colab-academia-800.webp" alt="Cancha de futsal iluminada" width="800" height="500" loading="lazy" decoding="async"></div>
       <picture><source srcset="img/academia-escudo-360.webp" type="image/webp"><img src="img/academia-escudo-360.png" alt="Escudo de la Academia US19" width="293" height="360" loading="lazy" decoding="async" class="colab__escudo"></picture>
       <div>
         <h3>Academia US19</h3>
@@ -1424,6 +1434,13 @@
         <a class="btn btn--linea btn--sm colab__btn" href="#academia">Ver la academia</a>
       </div>
     </div>
+    </div>
+    <div class="colab__cta reveal">
+      <div>
+        <h3>¿Eres un club o una entidad deportiva de Pencahue?</h3>
+        <p>Queremos sumar convenios con los clubes, escuelas y organizaciones deportivas de la comuna. Escríbenos y conversemos cómo colaborar.</p>
+      </div>
+      <a class="btn btn--rojo" href="https://wa.me/56965902238?text=Hola%2C%20represento%20a%20un%20club%20o%20entidad%20deportiva%20de%20Pencahue%20y%20queremos%20colaborar%20con%20Ultra-Sport19%20(web)" target="_blank" rel="noopener">Quiero colaborar</a>
     </div>
   </div>
 </section>
