@@ -74,6 +74,16 @@
   .cab .marca{font-family:'Anton',Impact,sans-serif;font-size:clamp(1.5rem,6vw,2.1rem);color:#f4f2ee;margin:0;line-height:1}
   .cab .marca span{color:var(--rojo)}
   .cab .lema{font-family:'Barlow Condensed',sans-serif;font-size:.76rem;letter-spacing:.26em;color:var(--rojo-neg);margin:7px 0 0;text-transform:uppercase}
+  /* 6-nov-2026: cabecera con hueco para el logo de la tienda y enlaces de
+     vuelta al gimnasio y a la academia. Mismo negro y rojo de siempre. */
+  .cab{display:flex;align-items:center;justify-content:space-between;gap:14px 20px;flex-wrap:wrap}
+  .cab__id{display:flex;align-items:center;gap:12px;min-width:0}
+  .cab__logo{width:48px;height:48px;object-fit:contain;flex:0 0 auto;display:block}
+  .cab__nav{display:flex;flex-wrap:wrap;gap:8px}
+  .cab__nav a{display:inline-flex;align-items:center;min-height:44px;padding:0 16px;border:1px solid #3d3d42;border-radius:999px;
+    color:#f4f2ee;text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.86rem;letter-spacing:.12em;text-transform:uppercase}
+  .cab__nav a:hover{border-color:var(--rojo-neg)}
+  .pie .sitios a{margin-right:12px}
 
   h1{font-family:'Anton',Impact,sans-serif;font-size:clamp(1.7rem,6vw,2.4rem);line-height:1.02;margin:26px 0 6px}
   .sub{color:var(--tinta-2);margin:0;max-width:60ch}
@@ -206,8 +216,23 @@
 <div class="wrap">
 
   <header class="cab">
-    <p class="marca">ULTRA-SPORT <span>19</span></p>
-    <p class="lema">Despierta tu instinto</p>
+    <div class="cab__id">
+      <!-- HUECO DEL LOGO DE LA TIENDA (6-nov-2026): el lobo nuevo se está
+           diseñando aparte. Cuando esté, guardarlo como tienda/img/lobo-tienda.png
+           (cuadrado, fondo transparente, 96 x 96 px o más) y aparece solo.
+           Mientras no exista, se muestra el lobo del gimnasio; si tampoco
+           carga, la imagen se quita y la cabecera queda como antes. -->
+      <img class="cab__logo" src="img/lobo-tienda.png" alt="" width="48" height="48" decoding="async"
+           onerror="if(!this.dataset.f){this.dataset.f='1';this.src='../img/lobo-grafito-96.png'}else{this.remove()}">
+      <div>
+        <p class="marca">ULTRA-SPORT <span>19</span></p>
+        <p class="lema">Despierta tu instinto</p>
+      </div>
+    </div>
+    <nav class="cab__nav" aria-label="Otros sitios de Ultra-Sport 19">
+      <a href="https://ultrasport19.com/">Gimnasio</a>
+      <a href="https://us19-academia-web.pages.dev/">Academia</a>
+    </nav>
   </header>
 
   <h1>Tienda</h1>
@@ -314,9 +339,12 @@
 
   <p class="pie">
     Se pide por WhatsApp y se paga por transferencia o en efectivo. Ultra-Sport 19,
-    Hernando Bravo de Villalba 811, Pencahue, Maule. <a href="../">Volver al gimnasio</a>.
+    Hernando Bravo de Villalba 811, Pencahue, Maule.
     <a href="../privacidad.html">Privacidad</a>.
     <span id="actualizado"></span>
+    <br><br>
+    <span class="sitios"><a href="https://ultrasport19.com/">Gimnasio Ultra-Sport 19</a>
+    <a href="https://us19-academia-web.pages.dev/">Academia US19</a></span>
     <br><br>
     <!-- El texto prellenado lleva la palabra «ropa» a proposito: asi el
          asistente sabe que la conversacion va de la tienda y no le ofrece
