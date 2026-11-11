@@ -104,9 +104,15 @@ comprobar('contrato · el tope por pedido lo manda el catalogo',
    campo en el bot... o que alguien uso `p`/`d` para otra cosa. Las dos
    merecen mirarse. */
 
+/* 11-nov-2026: la copia de OneDrive se borro el 2-nov; la unica copia del
+   bot es LOCAL_NEGOCIO\ASISTENTE_LIMPIO. Con la ruta vieja el contrato
+   llevaba dias sin correr (solo un aviso). Se prueba la nueva primero. */
 const RUTA_BOT = process.env.US19_BOT
-  || path.join('C:', 'Users', 'diego', 'OneDrive', 'Documentos',
-               'RESPALDO_ASISTENTE_APPSSCRIPT', 'proyecto_clasp', 'Código.js');
+  || [path.join('C:', 'Users', 'diego', 'LOCAL_NEGOCIO', 'ASISTENTE_LIMPIO', 'proyecto_clasp', 'Código.js'),
+      path.join('C:', 'Users', 'diego', 'OneDrive', 'Documentos',
+                'RESPALDO_ASISTENTE_APPSSCRIPT', 'proyecto_clasp', 'Código.js')]
+       .filter(r => fs.existsSync(r))[0]
+  || path.join('C:', 'Users', 'diego', 'LOCAL_NEGOCIO', 'ASISTENTE_LIMPIO', 'proyecto_clasp', 'Código.js');
 
 if (!fs.existsSync(RUTA_BOT)) {
   avisos.push('CONTRATO SIN COMPROBAR: no encuentro el Código.js del asistente en ' + RUTA_BOT
@@ -369,6 +375,30 @@ async function principal() {
   igual('copia fija · con la copia buena no se llama al bot', F0.peticiones(), 1);
   comprobar('copia fija · pinta lo que trae la copia', (F0.els.grid.innerHTML.match(/<li class="card/g) || []).length === 3,
     F0.els.grid.innerHTML.slice(0, 120));
+
+  /* d3) El bot contesta con el RESPALDO (11-nov-2026, pendiente 407) ---
+     Cuando Notion falla, el bot manda la ultima version guardada con
+     `respaldo: true`. La pagina tiene que enterarse: pinta igual, pero
+     avisa de que puede estar vieja y NO la guarda como copia buena (si la
+     guardara, la proxima visita arrancaria con un catalogo viejo como si
+     fuera fresco). Antes nada miraba esto: renombrar `d.respaldo` en la
+     pagina pasaba en verde si el contrato no podia correr. */
+
+  const RSP = nuevoEntorno([CATALOGO(3, { respaldo: true })]);
+  await esperar();
+  comprobar('respaldo · pinta las prendas del respaldo', (RSP.els.grid.innerHTML.match(/<li class="card/g) || []).length === 3,
+    RSP.els.grid.innerHTML.slice(0, 120));
+  comprobar('respaldo · avisa de que es la ultima version guardada',
+    RSP.els.nota.hidden === false && RSP.els.nota.innerHTML.indexOf('última versión guardada') >= 0,
+    'hidden=' + RSP.els.nota.hidden + ' · ' + RSP.els.nota.innerHTML.slice(0, 120));
+  comprobar('respaldo · NO lo guarda como copia buena para la proxima visita',
+    !RSP.store['us19_tienda_catalogo_v1'], 'un catalogo de respaldo no puede pasar por fresco');
+
+  /* Y el contraste: el mismo catalogo sin la marca no dice nada de respaldo. */
+  const RSP2 = nuevoEntorno([CATALOGO(3)]);
+  await esperar();
+  comprobar('respaldo · sin la marca no se avisa de respaldo',
+    RSP2.els.nota.innerHTML.indexOf('versión guardada') < 0, RSP2.els.nota.innerHTML.slice(0, 120));
 
   /* e) La copia local: la tienda aparece antes de que conteste nadie -- */
 

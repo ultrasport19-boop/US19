@@ -230,6 +230,34 @@ comprobar('mensaje · la atribucion viaja', /^Como llegaste: Recomendación$/m.t
 comprobar('mensaje · y quien recomendo tambien', /^Quien recomendo: Pedro$/m.test(MSG));
 comprobar('mensaje · el objetivo viaja limpio y con su etiqueta', /^Objetivo: Ganar fuerza$/m.test(MSG), (MSG.match(/^Objetivo:.*$/m) || [])[0]);
 
+/* 11-nov-2026 (pendiente 407): las etiquetas que lee el bot, comprobadas
+   AQUI y no solo en el contrato (seccion 6). El contrato necesita el
+   Código.js del asistente, que no viaja con este repositorio; sin el,
+   renombrar «Emergencia» a «Contacto» pasaba en verde. Esta lista es la
+   copia local de lo que US19_FICHA_campo_ busca, con el valor que debe
+   llevar cada linea: si el bot cambia una etiqueta, se cambia aqui. */
+const ETIQUETAS_BOT = {
+  'Nombre': 'Juan Pérez',
+  'RUT': '11.111.111-1',
+  'Nacimiento': '1990-05-02',
+  'Emergencia': 'María 912345678',
+  'Salud': 'Asma / Hipertensión',
+  'Antecedentes': 'ninguno',
+  'Medicamentos': '-',
+  'Fotos': 'SI',
+  'Como llegaste': 'Recomendación',
+  'Quien recomendo': 'Pedro',
+  'Objetivo': 'Ganar fuerza',
+};
+Object.keys(ETIQUETAS_BOT).forEach(function (etq) {
+  const lineas = MSG.split('\n').filter(l => l.indexOf(etq + ': ') === 0);
+  igual('mensaje · la etiqueta «' + etq + '» que lee el bot viaja una vez y con su valor',
+    lineas.join(' | '), etq + ': ' + ETIQUETAS_BOT[etq]);
+});
+comprobar('mensaje · el contacto de emergencia viaja bajo «Emergencia» y no con otra etiqueta',
+  (MSG.match(/^.*María 912345678.*$/gm) || []).join(' | ') === 'Emergencia: María 912345678',
+  (MSG.match(/^.*María 912345678.*$/gm) || []).join(' | '));
+
 const SIN_SALUD = (() => {
   const F = nuevoEntorno(COMPLETA, { imagen: 'Si', salud: [] });
   F.pulsar();
@@ -252,9 +280,15 @@ igual('interfaz · sin nada marcado, el aviso sigue escondido', H.els['aviso-sal
    igual, el socio lee «gracias» y el dato no llega. Asi que se usa el
    parser DE VERDAD, no una imitacion. */
 
+/* 11-nov-2026: la copia de OneDrive se borro el 2-nov; la unica copia del
+   bot es LOCAL_NEGOCIO\ASISTENTE_LIMPIO. Con la ruta vieja el contrato
+   llevaba dias sin correr (solo un aviso). Se prueba la nueva primero. */
 const RUTA_BOT = process.env.US19_BOT
-  || path.join('C:', 'Users', 'diego', 'OneDrive', 'Documentos',
-               'RESPALDO_ASISTENTE_APPSSCRIPT', 'proyecto_clasp', 'Código.js');
+  || [path.join('C:', 'Users', 'diego', 'LOCAL_NEGOCIO', 'ASISTENTE_LIMPIO', 'proyecto_clasp', 'Código.js'),
+      path.join('C:', 'Users', 'diego', 'OneDrive', 'Documentos',
+                'RESPALDO_ASISTENTE_APPSSCRIPT', 'proyecto_clasp', 'Código.js')]
+       .filter(r => fs.existsSync(r))[0]
+  || path.join('C:', 'Users', 'diego', 'LOCAL_NEGOCIO', 'ASISTENTE_LIMPIO', 'proyecto_clasp', 'Código.js');
 
 if (!fs.existsSync(RUTA_BOT)) {
   aviso('CONTRATO SIN COMPROBAR: no encuentro el Código.js del asistente en ' + RUTA_BOT
