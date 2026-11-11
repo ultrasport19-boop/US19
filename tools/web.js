@@ -282,6 +282,148 @@ if (telLd) aviso('telefono · uno solo en toda la pagina, y es el del asistente'
     aviso('recursos · todos los archivos que la web pide existen');
 }
 
+/* --- Los precios fechados: 2026 hasta el 31-dic, 2027 desde el 1-ene -----
+   El 1-ene-2027 a las 00:00 DE CHILE los planes pasan de 15/25/35 mil a
+   20/25/30 mil (clientes nuevos y los que vuelven; lo publico no distingue
+   a los antiguos). El HTML estatico trae los vigentes hoy y el script
+   `us19-precios` cambia de tramo con la fecha de Chile.
+
+   Lo que se rompe callado:
+     · que el script mire UTC o la hora del equipo: entre las 21:00 del
+       31-dic (UTC) y la medianoche de Chile mostraria el precio nuevo, o al
+       reves, segun donde este el visitante;
+     · que el HTML estatico, el JSON-LD (lo que lee Google) y el boton de
+       compartir digan precios distintos de las tarjetas.
+   Por eso aqui se ejecuta el script DE VERDAD (vm) contra un documento de
+   mentira armado con el propio HTML, con instantes a ambos lados del cambio. */
+{
+  const vm = require('vm');
+  const bloque = /<script id="us19-precios">([\s\S]*?)<\/script>/.exec(src);
+  comprobar('precios fechados · la página trae el script us19-precios', !!bloque);
+
+  const fmt = n => '$' + String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  const estaticos = {};
+  [...src.matchAll(/<span data-precio-plan="(\d)">\$(\d{1,3})\.(\d{3})<\/span>/g)]
+    .forEach(m => { estaticos[m[1]] = parseInt(m[2] + m[3], 10); });
+  igual('precios fechados · las 3 tarjetas llevan su precio marcado (2x, 3x, 4x)',
+    Object.keys(estaticos).sort().join(','), '2,3,4');
+
+  /* El JSON-LD estatico: makesOffer tiene que decir lo mismo que las tarjetas. */
+  if (gym) {
+    const ofertas = {};
+    (gym.makesOffer || []).forEach(o => {
+      const m = /^Plan (\d) veces/.exec(o.name || '');
+      if (m) ofertas[m[1]] = parseInt(o.price, 10);
+    });
+    igual('precios · las ofertas del JSON-LD (makesOffer) son las de las tarjetas',
+      JSON.stringify(ofertas), JSON.stringify(estaticos));
+  }
+
+  /* El boton de compartir: su texto y su enlace dicen el plan mas barato. */
+  const share = /<a class="share reveal" id="share" data-texto="([^"]*)" href="([^"]*)"/.exec(src);
+  comprobar('precios · el botón de compartir lleva data-texto y href', !!share);
+  if (share && Object.keys(estaticos).length) {
+    const min = Math.min.apply(null, Object.values(estaticos));
+    comprobar('precios · el texto de compartir dice «desde» el plan más barato',
+      share[1].indexOf('desde ' + fmt(min) + '.') >= 0, share[1]);
+    igual('precios · el enlace de compartir es ese mismo texto',
+      share[2], 'https://wa.me/?text=' + encodeURIComponent(share[1] + ' https://ultrasport19.com/'));
+  }
+
+  if (bloque) {
+    /* Documento de mentira: solo lo que el script toca, sacado del HTML. */
+    function documento() {
+      const precios = [...src.matchAll(/<span data-precio-plan="(\d)">([^<]*)<\/span>/g)]
+        .map(m => ({ attrs: { 'data-precio-plan': m[1] }, textContent: m[2],
+          getAttribute(k) { return this.attrs[k]; } }));
+      const lds = bloques.map(b => ({ textContent: b[1] }));
+      const sh = share ? { attrs: { 'data-texto': share[1], href: share[2] },
+        getAttribute(k) { return this.attrs[k]; }, setAttribute(k, v) { this.attrs[k] = v; } } : null;
+      return {
+        precios, lds, sh,
+        querySelectorAll(sel) {
+          if (sel === '[data-precio-plan]') return precios;
+          if (sel === 'script[type="application/ld+json"]') return lds;
+          throw new Error('selector no previsto en la prueba: ' + sel);
+        },
+        getElementById(id) { return id === 'share' ? sh : null; },
+      };
+    }
+    const docCarga = documento();
+    const ventana = {};
+    let error = null;
+    try { vm.runInNewContext(bloque[1], { window: ventana, document: docCarga }); }
+    catch (e) { error = e.message; }
+    comprobar('precios fechados · el script corre sin errores', !error, error);
+    const P = ventana.US19_PRECIOS;
+    comprobar('precios fechados · el script publica window.US19_PRECIOS', !!P);
+
+    if (P) {
+      const V26 = { 2: 15000, 3: 25000, 4: 35000 };
+      const V27 = { 2: 20000, 3: 25000, 4: 30000 };
+      const plano = o => [o[2], o[3], o[4]].join('/');
+      /* [instante UTC, que dia es en Chile, precios esperados]
+         Chile en enero esta en UTC-3: la medianoche del 1-ene son las 03:00Z.
+         El 02:30Z ya es 2027 en UTC y sigue siendo 31-dic en Chile: es el
+         caso que caza a un script que mire UTC en vez de America/Santiago. */
+      const CASOS = [
+        ['2026-11-11T15:00:00Z', '2026-11-11', V26, 'hoy (noviembre 2026)'],
+        ['2026-12-31T12:00:00Z', '2026-12-31', V26, '31-dic a mediodia'],
+        ['2027-01-01T02:30:00Z', '2026-12-31', V26, '31-dic 23:30 en Chile (ya es 1-ene en UTC)'],
+        ['2027-01-01T02:59:59Z', '2026-12-31', V26, '31-dic 23:59:59 en Chile'],
+        ['2027-01-01T03:00:00Z', '2027-01-01', V27, '1-ene 00:00 en Chile'],
+        ['2027-01-01T15:00:00Z', '2027-01-01', V27, '1-ene a mediodia'],
+        ['2027-07-15T12:00:00Z', '2027-07-15', V27, 'invierno 2027 (UTC-4)'],
+      ];
+      CASOS.forEach(([iso, dia, esp, que]) => {
+        const d = new Date(iso);
+        igual('precios fechados · ' + que + ' es ' + dia + ' en Chile', P.hoyChile(d), dia);
+        igual('precios fechados · ' + que + ' → ' + plano(esp), plano(P.vigentes(d)), plano(esp));
+      });
+
+      /* El HTML estatico tiene que ser el vigente HOY. Si esto falla despues
+         del 1-ene-2027, toca pasar el HTML (tarjetas, JSON-LD, compartir) a
+         los precios 2027: quien no ejecuta JS sigue viendo los viejos. */
+      igual('precios fechados · el HTML estático muestra los precios vigentes hoy en Chile ('
+        + P.hoyChile(new Date()) + ')', plano(estaticos), plano(P.vigentes(new Date())));
+
+      /* Y aplicado sobre el documento: tarjetas, JSON-LD y compartir. */
+      [['2027-01-01T02:59:59Z', V26, '31-dic 23:59:59'], ['2027-01-01T03:00:00Z', V27, '1-ene 00:00']]
+        .forEach(([iso, esp, que]) => {
+          const doc = documento();
+          let err = null;
+          try { P.aplicar(doc, new Date(iso)); } catch (e) { err = e.message; }
+          comprobar('precios aplicados · ' + que + ' · sin errores', !err, err);
+          const tarjetas = {};
+          doc.precios.forEach(e => { tarjetas[e.attrs['data-precio-plan']] = e.textContent; });
+          igual('precios aplicados · ' + que + ' · tarjetas',
+            [tarjetas[2], tarjetas[3], tarjetas[4]].join(' '), [fmt(esp[2]), fmt(esp[3]), fmt(esp[4])].join(' '));
+          const min = Math.min(esp[2], esp[3], esp[4]), max = Math.max(esp[2], esp[3], esp[4]);
+          let g = null;
+          doc.lds.forEach(l => { try { const j = JSON.parse(l.textContent); if (j['@type'] === 'ExerciseGym') g = j; } catch (e) { /* lo cuenta abajo */ } });
+          comprobar('precios aplicados · ' + que + ' · el JSON-LD sigue siendo JSON válido', !!g);
+          if (g) {
+            igual('precios aplicados · ' + que + ' · priceRange', g.priceRange, fmt(min) + ' - ' + fmt(max) + ' CLP');
+            const ofertas = {};
+            (g.makesOffer || []).forEach(o => { const m = /^Plan (\d) veces/.exec(o.name || ''); if (m) ofertas[m[1]] = o.price; });
+            igual('precios aplicados · ' + que + ' · makesOffer',
+              [ofertas[2], ofertas[3], ofertas[4]].join('/'), [esp[2], esp[3], esp[4]].join('/'));
+            const bio = (g.makesOffer || []).find(o => /bioimpedancia/i.test(o.name || ''));
+            igual('precios aplicados · ' + que + ' · la bioimpedancia no se toca', bio && bio.price, '5000');
+          }
+          if (doc.sh) {
+            comprobar('precios aplicados · ' + que + ' · compartir dice desde ' + fmt(min),
+              doc.sh.attrs['data-texto'].indexOf('desde ' + fmt(min) + '.') >= 0, doc.sh.attrs['data-texto']);
+            igual('precios aplicados · ' + que + ' · el enlace de compartir lleva ese texto',
+              doc.sh.attrs.href, 'https://wa.me/?text=' + encodeURIComponent(doc.sh.attrs['data-texto'] + ' https://ultrasport19.com/'));
+          }
+        });
+      aviso('precios fechados · hoy en Chile (' + P.hoyChile(new Date()) + '): ' + plano(P.vigentes(new Date()))
+        + '  ·  desde 2027-01-01: ' + plano(P.vigentes(new Date('2027-01-01T03:00:00Z'))));
+    }
+  }
+}
+
 /* --- salida ---------------------------------------------------------- */
 
 console.log('\nUS19 · web pública');

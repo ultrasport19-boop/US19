@@ -47,6 +47,61 @@
       "nombre": "una imagen se queda sin alt",
       "de": "<img src=\"img/sala-cardio.jpg\" alt=\"Sala de cardio con trotadora y bicicletas\" width=\"640\"",
       "a": "<img src=\"img/sala-cardio.jpg\" width=\"640\""
+    },
+    {
+      "nombre": "precios 2027: el cambio se corre un dia (2-ene en vez de 1-ene)",
+      "de": "{desde:'2027-01-01',p:{2:20000,3:25000,4:30000}}",
+      "a": "{desde:'2027-01-02',p:{2:20000,3:25000,4:30000}}"
+    },
+    {
+      "nombre": "precios 2027: el plan 4x queda con el precio viejo",
+      "de": "{desde:'2027-01-01',p:{2:20000,3:25000,4:30000}}",
+      "a": "{desde:'2027-01-01',p:{2:20000,3:25000,4:35000}}"
+    },
+    {
+      "nombre": "precios 2027: la fecha se calcula en UTC y no en Chile",
+      "de": "timeZone:'America/Santiago'",
+      "a": "timeZone:'UTC'"
+    },
+    {
+      "nombre": "precios 2027: el dia se saca de toISOString (UTC) en vez de la zona de Chile",
+      "de": "return o.year+'-'+o.month+'-'+o.day;",
+      "a": "return ahora.toISOString().slice(0,10);"
+    },
+    {
+      "nombre": "precios 2027: el 1-ene a las 00:00 todavia muestra el precio viejo (> en vez de >=)",
+      "de": "if(dia>=TRAMOS[i].desde)",
+      "a": "if(dia>TRAMOS[i].desde)"
+    },
+    {
+      "nombre": "precios: la tarjeta 2x estatica dice un precio que no es el vigente",
+      "de": "<span data-precio-plan=\"2\">$15.000</span>",
+      "a": "<span data-precio-plan=\"2\">$20.000</span>"
+    },
+    {
+      "nombre": "precios: el makesOffer del JSON-LD no coincide con la tarjeta 4x",
+      "de": "\"price\":\"35000\"",
+      "a": "\"price\":\"30000\""
+    },
+    {
+      "nombre": "precios 2027: el script deja el priceRange del JSON-LD con el rango viejo",
+      "de": "j.priceRange=clp(min)+' - '+clp(max)+' CLP';",
+      "a": ""
+    },
+    {
+      "nombre": "precios 2027: el script deja las ofertas del JSON-LD con el precio viejo",
+      "de": "if(m&&p[m[1]])o.price=String(p[m[1]])",
+      "a": "if(m&&p[m[1]])o.price=o.price"
+    },
+    {
+      "nombre": "precios 2027: el enlace de compartir sigue diciendo desde el precio viejo",
+      "de": "sh.setAttribute('href',",
+      "a": "sh.setAttribute('data-href',"
+    },
+    {
+      "nombre": "precios: el texto de compartir dice un minimo que no es el plan mas barato",
+      "de": "planes desde $15.000.\" href",
+      "a": "planes desde $20.000.\" href"
     }
   ]
 }

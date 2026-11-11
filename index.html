@@ -1039,7 +1039,7 @@
       <article class="plan reveal">
         <div class="plan__freq">2 veces por semana</div>
         <div class="plan__clases">8 sesiones al mes</div>
-        <div class="plan__precio">$15.000<small>por mes</small></div>
+        <div class="plan__precio"><span data-precio-plan="2">$15.000</span><small>por mes</small></div>
         <p class="plan__ideal">Para mantener actividad física y salud general con una base sólida.</p>
         <ul class="plan__incluye">
           <li>Máximo 8 personas por hora</li>
@@ -1053,7 +1053,7 @@
         <span class="plan__badge">Más elegido</span>
         <div class="plan__freq">3 veces por semana</div>
         <div class="plan__clases">12 sesiones al mes</div>
-        <div class="plan__precio">$25.000<small>por mes</small></div>
+        <div class="plan__precio"><span data-precio-plan="3">$25.000</span><small>por mes</small></div>
         <p class="plan__ideal">El equilibrio ideal para ganar fuerza, resistencia y condición física.</p>
         <ul class="plan__incluye">
           <li>Máximo 8 personas por hora</li>
@@ -1067,7 +1067,7 @@
       <article class="plan reveal">
         <div class="plan__freq">4 veces por semana</div>
         <div class="plan__clases">16 sesiones al mes</div>
-        <div class="plan__precio">$35.000<small>por mes</small></div>
+        <div class="plan__precio"><span data-precio-plan="4">$35.000</span><small>por mes</small></div>
         <p class="plan__ideal">Para objetivos específicos y quienes buscan mayor frecuencia de estímulo.</p>
         <ul class="plan__incluye">
           <li>Máximo 8 personas por hora</li>
@@ -1387,7 +1387,7 @@
       </a>
     </div>
     <p class="fine reveal">Trabajamos con cupos limitados para cuidar la calidad de cada sesión.</p>
-    <a class="share reveal" id="share" href="https://wa.me/?text=Mira%20este%20gimnasio%20en%20Pencahue%3A%20m%C3%A1ximo%208%20personas%20por%20hora%2C%20bioimpedancia%20desde%20el%20plan%203x%20y%20planes%20desde%20%2415.000.%20https%3A%2F%2Fultrasport19.com%2F" target="_blank" rel="noopener">
+    <a class="share reveal" id="share" data-texto="Mira este gimnasio en Pencahue: máximo 8 personas por hora, bioimpedancia desde el plan 3x y planes desde $15.000." href="https://wa.me/?text=Mira%20este%20gimnasio%20en%20Pencahue%3A%20m%C3%A1ximo%208%20personas%20por%20hora%2C%20bioimpedancia%20desde%20el%20plan%203x%20y%20planes%20desde%20%2415.000.%20https%3A%2F%2Fultrasport19.com%2F" target="_blank" rel="noopener">
       <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M17.5 14.4c-.3-.1-1.7-.8-2-.9-.3-.1-.5-.1-.7.1-.2.3-.7.9-.9 1.1-.2.2-.3.2-.6.1-1.6-.8-2.6-1.4-3.7-3.2-.3-.5.3-.5.8-1.5.1-.2 0-.4 0-.5 0-.1-.7-1.6-.9-2.2-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.3 5.2 4.6.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.2.2-1.4-.1-.1-.3-.2-.6-.3zM12 2a10 10 0 0 0-8.6 15l-1.3 4.7 4.8-1.3A10 10 0 1 0 12 2z"/></svg>
       Compartir con un amigo
     </a>
@@ -1547,6 +1547,55 @@
   <a class="btn btn--linea" href="#planes">Ver planes</a>
 </div>
 
+<script id="us19-precios">
+  /* Precios de los planes, FECHADOS. El HTML de arriba trae los vigentes HOY
+     (lo ve quien no tiene JS y el buscador que no lo ejecuta); este script
+     elige el tramo por la FECHA EN CHILE (America/Santiago), no por la del
+     equipo del visitante ni por UTC: el cambio es el 1-ene-2027 a las 00:00
+     de Chile, que en UTC son las 03:00 (horario de verano, UTC-3).
+     Si cambia un precio: aqui, en el HTML estatico y en el JSON-LD.
+     Lo prueba tools/web.js a ambos lados de la fecha. */
+  (function(w,d){
+    var TRAMOS=[
+      {desde:'2000-01-01',p:{2:15000,3:25000,4:35000}},
+      {desde:'2027-01-01',p:{2:20000,3:25000,4:30000}}
+    ];
+    function hoyChile(ahora){
+      var o={};
+      new Intl.DateTimeFormat('en-CA',{timeZone:'America/Santiago',year:'numeric',month:'2-digit',day:'2-digit'})
+        .formatToParts(ahora).forEach(function(x){o[x.type]=x.value});
+      return o.year+'-'+o.month+'-'+o.day;
+    }
+    function vigentes(ahora){
+      var dia=hoyChile(ahora),t=TRAMOS[0];
+      for(var i=1;i<TRAMOS.length;i++){if(dia>=TRAMOS[i].desde)t=TRAMOS[i]}
+      return t.p;
+    }
+    function clp(n){return '$'+String(n).replace(/\B(?=(\d{3})+(?!\d))/g,'.')}
+    function aplicar(doc,ahora){
+      var p=vigentes(ahora),min=Math.min(p[2],p[3],p[4]),max=Math.max(p[2],p[3],p[4]);
+      [].forEach.call(doc.querySelectorAll('[data-precio-plan]'),function(el){
+        var v=p[el.getAttribute('data-precio-plan')];if(v)el.textContent=clp(v);
+      });
+      [].forEach.call(doc.querySelectorAll('script[type="application/ld+json"]'),function(s){
+        var j;try{j=JSON.parse(s.textContent)}catch(e){return}
+        if(!j||j['@type']!=='ExerciseGym')return;
+        j.priceRange=clp(min)+' - '+clp(max)+' CLP';
+        (j.makesOffer||[]).forEach(function(o){var m=/^Plan (\d) veces/.exec(o.name||'');if(m&&p[m[1]])o.price=String(p[m[1]])});
+        s.textContent=JSON.stringify(j,null,2);
+      });
+      var sh=doc.getElementById('share');
+      if(sh){
+        var tx='Mira este gimnasio en Pencahue: máximo 8 personas por hora, bioimpedancia desde el plan 3x y planes desde '+clp(min)+'.';
+        sh.setAttribute('data-texto',tx);
+        sh.setAttribute('href','https://wa.me/?text='+encodeURIComponent(tx+' https://ultrasport19.com/'));
+      }
+      return p;
+    }
+    w.US19_PRECIOS={vigentes:vigentes,aplicar:aplicar,hoyChile:hoyChile,clp:clp};
+    try{aplicar(d,new Date())}catch(e){}  // sin Intl con zonas horarias: queda el HTML estatico
+  })(window,document);
+</script>
 <script>
   // Aparición al hacer scroll
   const io=new IntersectionObserver((es)=>{
@@ -1637,7 +1686,7 @@
   if(share&&navigator.share){
     share.addEventListener('click',e=>{
       e.preventDefault();
-      navigator.share({title:'Ultra-Sport19',text:'Mira este gimnasio en Pencahue: máximo 8 personas por hora, bioimpedancia desde el plan 3x y planes desde $15.000.',url:'https://ultrasport19.com/'}).catch(()=>{});
+      navigator.share({title:'Ultra-Sport19',text:share.getAttribute('data-texto'),url:'https://ultrasport19.com/'}).catch(()=>{});
     });
   }
 
