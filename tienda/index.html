@@ -179,7 +179,7 @@
   a{color:var(--rojo-txt)}
   @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 
-  /* 14-sep-2026 · Dos modalidades: entrega inmediata (fardo) y por encargo. */
+  /* 14-sep-2026: Dos modalidades: entrega inmediata (fardo) y por encargo. */
   .secciones{display:flex;gap:0;margin:22px 0 0;border-bottom:2px solid var(--linea-fuerte)}
   .secciones button{
     flex:1 1 0;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1rem;letter-spacing:.08em;text-transform:uppercase;
@@ -231,7 +231,7 @@
     </div>
     <nav class="cab__nav" aria-label="Otros sitios de Ultra-Sport 19">
       <a href="https://ultrasport19.com/">Gimnasio</a>
-      <a href="https://us19-academia-web.pages.dev/">Academia</a>
+      <a href="https://ultrasport19.com/#academia">Academia</a>
     </nav>
   </header>
 
@@ -240,7 +240,7 @@
   Eliges, pides por WhatsApp y coordinamos el pago y la entrega.</p>
 
   <!-- Solo si el catálogo llega VACÍO: el script la muestra y la esconde.
-       14-sep-2026 · Empieza escondida: con 1.252 camisetas publicadas, dejarla
+       14-sep-2026: Empieza escondida: con 1.252 camisetas publicadas, dejarla
        visible mientras carga le anunciaba a todo el que entraba que la ropa venía en camino. -->
   <section class="pronto" id="pronto" hidden>
     <span class="eti">Próximamente</span>
@@ -344,7 +344,7 @@
     <span id="actualizado"></span>
     <br><br>
     <span class="sitios"><a href="https://ultrasport19.com/">Gimnasio Ultra-Sport 19</a>
-    <a href="https://us19-academia-web.pages.dev/">Academia US19</a></span>
+    <a href="https://ultrasport19.com/#academia">Academia US19</a></span>
     <br><br>
     <!-- El texto prellenado lleva la palabra «ropa» a proposito: asi el
          asistente sabe que la conversacion va de la tienda y no le ofrece
@@ -371,7 +371,7 @@
 
   var $ = function(id){ return document.getElementById(id); };
   var prendas = [], carro = {}, ultimaCarga = 0;
-  /* 14-sep-2026 · Apartados por la columna «Categoria» de Notion: las de
+  /* 14-sep-2026: Apartados por la columna «Categoria» de Notion: las de
      fardo (TIENDA_CFG.CATS_FARDO) van juntas en «Fardo»; cualquier otra
      categoria —Camiseta de fútbol, NBA, la que se agregue— tiene su propio
      apartado sin tocar codigo. Cada apartado guarda su busqueda, sus filtros
@@ -752,7 +752,7 @@
     var x = elecDe(p.id), t = x.talla;
     var puesto = !!(t && carro[claveEnc(p.id, x)]);
     var oferta = PRECIO_REF > 0 && Number(p.precio) > 0 && Number(p.precio) < PRECIO_REF;
-    var meta = [p.equipo, p.temporada, p.modelo].filter(Boolean).join(', ');
+    var meta = [p.equipo, p.temporada, p.modelo].filter(function(v){ return v && !/confirmar/i.test(v); }).join(', ');
     var opciones = '<option value="">Elige talla</option>' + tallasDe(p).map(function(v){
       return '<option value="' + esc(v) + '"' + (v === t ? ' selected' : '') + '>' + esc(v) + '</option>';
     }).join('');
@@ -1113,10 +1113,10 @@
 
   /* Apps Script en frio tarda segundos y a veces no contesta. Sin plazo, la
      pagina se quedaba en «Cargando el catálogo…» para siempre.
-     14-sep-2026 · Con 1.252 camisetas Notion tarda ~12 s en entregar el
+     14-sep-2026: Con 1.252 camisetas Notion tarda ~12 s en entregar el
      catalogo cuando la cache del bot vence (ahora cada 45 min): el plazo
      de 9 s lo cortaba siempre. 20 s por intento.
-     15-sep-2026 · Con 2.432 camisetas tarda ~39 s en frio: 20 s cortaba casi
+     15-sep-2026: Con 2.432 camisetas tarda ~39 s en frio: 20 s cortaba casi
      toda visita (con poco trafico, casi todas llegan con la cache vencida).
      60 s el primer intento y 45 s el reintento; a los 6 s se avisa que carga. */
   function pedirCatalogo(ms){
@@ -1208,7 +1208,7 @@
     enlacePreguntar();
   }
 
-  /* 15-sep-2026 · Copia fija del catálogo en la propia web (tienda/catalogo.json), escrita por
+  /* 15-sep-2026: Copia fija del catálogo en la propia web (tienda/catalogo.json), escrita por
      C:/yupoo_trabajo/scripts/catalogo_estatico.js cuando el catálogo del bot cambia. Con 2.432
      camisetas el bot entrega ~800 KB y el enlace de Google falla a ratos (404 «No se pudo abrir
      el archivo»). La copia carga en ~1 s; si falta o viene rota, se sigue con el bot como antes.

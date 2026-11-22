@@ -27,7 +27,7 @@ mejor las instrucciones de movimiento en ingles. Y describe MOVIMIENTO,
 no contenido: el contenido ya esta en la foto.
 
 REGLAS DE CONTENIDO, las de siempre: nada clinico, ninguna cifra sin
-confirmar, ninguna promesa de resultado. Ver [[us19-nada-de-kinesiologia]].
+confirmar, ninguna promesa de resultado. Ver [[regla-lenguaje-no-clinico]].
 """
 import json
 import os

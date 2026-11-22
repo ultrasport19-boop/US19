@@ -40,7 +40,7 @@ Páginas estáticas. No hay backend propio, no hay Apps Script, no hay Node en p
 
 1. Repositorio público: nunca escribir tokens, claves ni `US19_CLAVE_APP`. El catálogo no lleva clave.
 2. No poner aquí la URL del webhook de Meta. Esa entra mensajes de WhatsApp. La tienda solo puede usar el despliegue de catálogo que ya está en `tienda/index.html`.
-3. Hasta el título en 2027, no introducir kinesiología ni lenguaje clínico en contenido público. Las únicas apariciones válidas son negaciones ya revisadas («no constituye diagnóstico médico», textos legales de la ficha).
+3. No introducir lenguaje clínico ni de profesiones de la salud en contenido público. Las únicas apariciones válidas son negaciones ya revisadas («no constituye diagnóstico médico», textos legales de la ficha).
 4. `Disponibilidad` del catálogo es stock real, no modalidad de venta.
 5. Notion manda sobre precios y stock; este repo no inventa cifras.
 6. No desplegar el asistente ni ejecutar `clasp`.

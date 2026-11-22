@@ -28,7 +28,7 @@ serifa propia al repo, entra sola por delante.
 
 REGLAS DE TEXTO: nada clinico, ninguna cifra sin confirmar, ninguna
 promesa de resultado, y ningun punto ni simbolo como separador (regla de
-Diego del 9-sep-2026). Ver [[us19-nada-de-kinesiologia]].
+Diego del 9-sep-2026). Ver [[regla-lenguaje-no-clinico]].
 
 BORRADOR: esto NO programa nada. Genera los PNG y ya. Diego pidio el
 9-sep-2026 ver un borrador antes de que nada entre al calendario.

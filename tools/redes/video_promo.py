@@ -18,7 +18,7 @@ laminas: Anton para el titular, Barlow para lo demas.
 REGLAS DE TEXTO, las de siempre: nada clinico, ninguna cifra sin
 confirmar, ninguna promesa de resultado. «Velocidad de reaccion» es
 lenguaje de entrenamiento, no de clinica, y es como lo llama Diego.
-Ver [[us19-nada-de-kinesiologia]].
+Ver [[regla-lenguaje-no-clinico]].
 
 FFMPEG
 En este PC no hay ffmpeg propio: se usa el que trae Kinovea. Si algun dia

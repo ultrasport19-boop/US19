@@ -375,8 +375,8 @@ comprobar('plan · y dice que ese derecho no se esta renunciando',
   'el HTML parte las frases largas en varias lineas: la expresion tiene que tolerar el salto');
 
 /* --- Vocabulario prohibido en una pagina publica ---------------------
-   Regla de Diego del 8-sep-2026: nada de kinesiologia en contenido
-   publico, «ni el tema, ni insinuado». El 9-sep se encontro la palabra
+   Regla de Diego del 8-sep-2026: nada de profesiones de la salud en
+   contenido publico, «ni el tema, ni insinuado». El 9-sep se encontro la palabra
    dentro del consentimiento —en una negacion, puesta para protegerle— y
    se cambio por «de salud», que cubre lo mismo y ademas cubre mas.
 

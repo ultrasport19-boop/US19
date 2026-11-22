@@ -1,0 +1,17 @@
+# GitHub Pages arma este sitio con Jekyll (no hay .nojekyll): todo lo que
+# esta en el repo se publica, salvo lo que se excluye aqui.
+#
+# 21-nov-2026: /AGENTS (AGENTS.md convertido a HTML) y /tools/redes/piezas.py
+# respondian 200 en ultrasport19.com. Lo interno (herramientas, pruebas,
+# informes, notas para agentes) NO se sirve. Las paginas (/, /tienda/,
+# /ficha/, /sorteo/, /wifi/, privacidad.html, 404.html), img/, media/,
+# social/ y tienda/catalogo.json siguen publicados.
+#
+# Ojo: si algun dia se agrega un .nojekyll, esta lista deja de aplicar.
+exclude:
+  - AGENTS.md
+  - informes_nube
+  - tools
+  - .cursor
+  - .claude
+  - .gitattributes
