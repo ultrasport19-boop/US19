@@ -5,13 +5,12 @@ Los textos, aparte del dibujo. `historias.py` sabe pintar cuatro pieles;
 esto dice QUE se pinta y con cual. Asi rehacer una tanda entera con otra
 piel es cambiar una palabra.
 
-REGLAS QUE NO SE NEGOCIAN (Diego es interno de kinesiologia hasta
-diciembre de 2026):
-  · Nada de «diagnostico», «tratamiento», «rehabilitacion», «paciente»,
+REGLAS QUE NO SE NEGOCIAN (contenido de acondicionamiento fisico):
+  - Nada de «diagnostico», «tratamiento», «rehabilitacion», «paciente»,
     «deficit» ni «riesgo de lesion».
-  · Ninguna cifra que no este confirmada.
-  · Ninguna promesa de resultado.
-  · Antes de la titulacion, NADA que deje entender que ya es kinesiologo.
+  - Ninguna cifra que no este confirmada.
+  - Ninguna promesa de resultado.
+  - NADA de lenguaje de profesiones de la salud.
 """
 
 # =========================================================================
@@ -100,16 +99,14 @@ RECLUTAR = [
 ]
 
 # =========================================================================
-#  RETIRADO · 8-sep-2026
+#  RETIRADO: 8-sep-2026
 #
-#  Habia una tanda de diciembre que jugaba con la titulacion de Diego
-#  («algo cambia este mes», «cinco anos de carrera terminan»). El mismo
-#  dia la descarto: «no hablemos nada de kinesiologia hasta posterior a
-#  mi titulacion».
+#  Habia una tanda de diciembre que anunciaba un cambio («algo cambia
+#  este mes»). Diego la descarto el mismo dia.
 #
-#  REGLA, hasta que el titulo sea real: ni una pieza que hable de
-#  kinesiologia, ni que la insinue, ni que anuncie «algo que viene».
-#  Tampoco de refilon con «carrera», «cinco anos» o «una capacidad mas».
+#  REGLA: ni una pieza que hable de profesiones de la salud, ni que lo
+#  insinue, ni que anuncie «algo que viene».
+#  Tampoco de refilon: nada de anuncios personales de Diego.
 #  No es solo el texto: es que hoy la web, la ficha de ingreso y el bot
 #  dicen por escrito que aqui no se presta atencion de salud, y una
 #  historia que sugiera lo contrario contradice eso con fecha.

@@ -32,7 +32,7 @@ llevan.
 
 REGLAS DE TEXTO: nada clinico, ninguna cifra sin confirmar, ninguna promesa
 de resultado, y ningun punto ni simbolo como separador entre las dos
-mitades de un titular. Ver [[us19-nada-de-kinesiologia]].
+mitades de un titular. Ver [[regla-lenguaje-no-clinico]].
 """
 import os
 

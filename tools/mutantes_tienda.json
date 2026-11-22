@@ -110,8 +110,13 @@
     },
     {
       "nombre": "la tarjeta pinta un campo interno si el bot lo manda",
-      "de": "    var meta = [p.equipo, p.temporada, p.modelo].filter(Boolean).join(', ');",
-      "a": "    var meta = [p.equipo, p.temporada, p.modelo, p.costo, p.vendidaA].filter(Boolean).join(', ');"
+      "de": "    var meta = [p.equipo, p.temporada, p.modelo].filter(function(v){ return v && !/confirmar/i.test(v); }).join(', ');",
+      "a": "    var meta = [p.equipo, p.temporada, p.modelo, p.costo, p.vendidaA].filter(function(v){ return v && !/confirmar/i.test(v); }).join(', ');"
+    },
+    {
+      "nombre": "la tarjeta muestra la temporada «Dato a confirmar» que viene de Notion",
+      "de": "    var meta = [p.equipo, p.temporada, p.modelo].filter(function(v){ return v && !/confirmar/i.test(v); }).join(', ');",
+      "a": "    var meta = [p.equipo, p.temporada, p.modelo].filter(Boolean).join(', ');"
     },
     {
       "nombre": "la busqueda de un apartado se ve en los demas",

@@ -582,6 +582,12 @@ async function principal() {
   igual('tallas · «S-4XL» → el rango entero', opciones(tarj[4]), 'S,M,L,XL,XXL,3XL,4XL');
   igual('tallas · «S / M / L» → la lista', opciones(tarj[5]), 'S,M,L');
   igual('tallas · «Dato a confirmar» → las del catalogo', opciones(tarj[6]), 'S,M,L,XL,XXL');
+  /* 21-nov-2026: 18 camisetas traian la temporada «Dato a confirmar» desde
+     Notion y la tarjeta lo mostraba tal cual. Es un texto interno. */
+  const P2t = nuevoEntorno([CAT_ENC([ENC(0, { temporada: 'Dato a confirmar' }), ENC(1, { temporada: 'dato a CONFIRMAR' })])]);
+  await esperar();
+  comprobar('temporada: «Dato a confirmar» no se ve en la tarjeta', !/confirmar/i.test(P2t.els.grid.innerHTML), P2t.els.grid.innerHTML.slice(0, 400));
+  comprobar('temporada: el equipo y el modelo siguen en la tarjeta', P2t.els.grid.innerHTML.indexOf('Equipo 0, Local') >= 0, P2t.els.grid.innerHTML.slice(0, 400));
   comprobar('talla · el boton nace desactivado', /data-enc="1" disabled>Elige talla/.test(tarj[1]), tarj[1].slice(-160));
   comprobar('extras · NO aparecen antes de elegir talla (el precio queda limpio)', P2.els.grid.innerHTML.indexOf('Estampado con tu nombre') < 0);
   comprobar('extras · ningún valor de extra junto al precio de la tarjeta', P2.els.grid.innerHTML.indexOf('2.000') < 0 && P2.els.grid.innerHTML.indexOf('3.500') < 0);

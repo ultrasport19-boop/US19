@@ -160,7 +160,7 @@ comprobar('contacto · la página enlaza a WhatsApp', numeros.length > 0);
     comunes.length > 0, 'web: ' + numeros.join(', ') + '  ·  ' + rel + ': ' + suyos.join(', '));
 });
 
-/* --- 4 · Lo que protege a Diego mientras es interno ------------------ */
+/* --- 4. Lo que protege a Diego ------------------------------------- */
 /* No se prohíben las palabras: la página las usa BIEN, negando. Lo que
    no puede desaparecer son las frases que hacen que sea una negación. */
 

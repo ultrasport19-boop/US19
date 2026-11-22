@@ -28,7 +28,7 @@ frases se cortan con coma o con salto de linea, nunca con un punto ni un
 punto medio.
 
 REGLAS DE TEXTO: nada clinico, ninguna cifra sin confirmar, ninguna
-promesa de resultado. Ver [[us19-nada-de-kinesiologia]].
+promesa de resultado. Ver [[regla-lenguaje-no-clinico]].
 
 DERECHOS: los personajes son de terceros. Diego afirma el 9-sep-2026 que
 cuenta con autorizacion. Las fuentes viven en fuentes_img/, que esta en
